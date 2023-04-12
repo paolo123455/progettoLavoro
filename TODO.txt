@@ -1,0 +1,10 @@
+Client
+    Versionamento
+    File configurazione esterni
+	InserisciCommesse -> Project review
+Server
+	InserisciCommesse -> Project review
+    Versionamento
+    File configurazione esterni
+    Gestione log con log su File
+    Nomenclatura api

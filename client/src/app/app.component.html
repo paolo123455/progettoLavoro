@@ -1,0 +1,108 @@
+<div style=" display: flex;">
+    <div style="flex: 1;padding: 1em;">
+<header >
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#" routerLink="/" aria-current="page" routerLinkActive="active">Home</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownPractice" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Practice
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownPractice">
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/practice" >Practice</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspd"  >Responsabili practice</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownRisorse" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Risorse
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownRisorse">
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/insp"   >Risorse</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspl"  >Livelli risorsa</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspr"  >Ruoli risorsa</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/insprar">Risorse-Practice</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownCommesse" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Commesse
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownCommesse">
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/insc"   >Commesse</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#" routerLink="/inscr"  >Giornate</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdownReport" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Report
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReport">
+                            <li class="nav-item"><a class="nav-link disabled" href="#">Visualizza grafico totale</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Bootstrap</strong>
+          <small>11 mins ago</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Hello, world! This is a toast message.
+        </div>
+      </div>
+
+    <!-- Navbar
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler"
+          type="button"
+          aria-controls="fixedNavbarExample"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+        <div
+          mdbCollapse
+          class="collapse navbar-collapse"
+          id="fixedNavbarExample"
+        >
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" >Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" >Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" >About</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+     Navbar -->
+  </header>
+</div>
+</div>
+<div style=" display: flex;">   
+    <div style="flex: 2;padding: 1em;">
+        <router-outlet ></router-outlet>
+    </div>
+    
+ </div> 

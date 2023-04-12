@@ -1,0 +1,34 @@
+version: "3"
+services:
+
+  server:
+    image: project_review_node:beta
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: "node"
+    restart: always
+    hostname: "node"
+    networks:
+      - project_review_interno
+
+  client:
+    image: project_review_angular:beta
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: "angular"
+    restart: always
+    depends_on:
+      - server
+    hostname: "angular"
+    networks:
+      - project_review_interno
+    ports:
+      - 4200:4200
+    volumes:
+      - ./conf:/etc/nginx/conf.d
+
+networks:
+  project_review_interno:
+    external: true
