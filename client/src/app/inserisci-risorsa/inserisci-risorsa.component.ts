@@ -27,6 +27,9 @@ export class InserisciRisorsaComponent implements OnInit {
   myMap = new Map<string, string>();
   livelli: any[] = []
   ruoli: any[] = []
+  practice : any[] = []
+  disabilitato = false;
+
   
   
   
@@ -43,7 +46,8 @@ export class InserisciRisorsaComponent implements OnInit {
 
     this.formRL = this.fb.group({
       ruolo : '',
-      livello : '', 
+      livello : '',
+      practice : '' ,
       data : '', 
      
   
@@ -51,10 +55,47 @@ export class InserisciRisorsaComponent implements OnInit {
     var nome = ""
     var cognome = ""
     var email = ""
-    var ruolo : ""
-    var livello : ""
-    var dara : ""
+    var ruolo = ""
+    var livello = ""
+    var data = ""
+    var practice = ""
+  
+    this.formRL.valueChanges.subscribe((data)=>{
+      this.disabilitato = this.form.valid
+      console.log(data)
+      var ruoloD = data.ruolo
+      ruolo = ruoloD  === undefined || ruoloD === null  ? "" : ruoloD.descrizione2
+      ruolo = (ruolo+"").split(":")[0] === undefined ? "" : (ruolo+"").split(":")[0]
+      ruolo = ruolo === undefined || ruolo  === "undefined"  ? "" : ruolo
+      var livelloD = data.livello
+      livello = livelloD  === undefined || livelloD === null  ? "" : livelloD.descrizione2 
+      livello = (livello+"").split(":")[0] === undefined ? "" : (livello+"").split(":")[0]
+      livello = livello === undefined || livello  === "undefined"  ? "" : livello
+      var practiceD = data.practice
+      practice = practiceD  === undefined || practiceD === null  ? "" : practiceD.descrizione2 
+      practice = (practice+"").split(":")[0] === undefined ? "" : (practice+"").split(":")[0]
+      practice = practice === undefined || practice  === "undefined"  ? "" : practice
+
+
+     console.log(livello ,"--",ruolo,"--",practice)
+      var filteredData = this.dati.filter((item: {
+        practice: any;
+        livello: any;
+        ruoli: any;
+        email: any;
+        cognome: String;
+        nome: String; id_risorsa: any; }) => 
+        item.nome.includes(nome) 
+        && item.cognome.includes(cognome) 
+        && item.email.includes(email)
+        && (item.ruoli +"").includes(ruolo)
+        && (item.livello+"").includes(livello)
+        && (item.practice+"").includes(practice));
+      this.agGrid.api.setRowData(filteredData)
+    })
+
     this.form.valueChanges.subscribe((data)=>{
+      this.disabilitato = this.form.valid
     console.log(data)
     nome = data.nome
     nome = nome === undefined || nome === null  ? "" : nome
@@ -62,19 +103,28 @@ export class InserisciRisorsaComponent implements OnInit {
     cognome = cognome === undefined   || cognome === null ? "" : cognome
     email = data.email
     email = email === undefined    || email === null ? "" : email
+    
 
     var filteredData = this.dati.filter((item: {
+      practice: any;
+      livello: any;
+      ruoli: any;
       email: any;
       cognome: String;
-      nome: String; id_risorsa: any; }) => item.nome.includes(nome) && item.cognome.includes(cognome) && item.email.includes(email));
+      nome: String; id_risorsa: any; }) => 
+      item.nome.includes(nome) 
+      && item.cognome.includes(cognome) 
+      && item.email.includes(email)
+      && (item.ruoli +"").includes(ruolo)
+      && (item.livello+"").includes(livello)
+      && (item.practice+"").includes(practice));
     this.agGrid.api.setRowData(filteredData)
   })
-    this.test()
-    this.testR()
+    
     this.select()
-    this.strucElaboration()
+    
     this.setup1()
-    this.setup2()
+
     
    
   }
@@ -88,7 +138,8 @@ export class InserisciRisorsaComponent implements OnInit {
 
   public columnDefs : ColDef[] = [
     {field: '' ,
-    cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
+    maxWidth: 60,
+    cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red; weight:10px"></i></button></div>'}},
    ];
   
  
@@ -105,6 +156,7 @@ export class InserisciRisorsaComponent implements OnInit {
   private id_touch : String = ""
   private datvalid_livello : String = "" 
   private datvalid_ruolo : String = "" 
+  private id_practice : String = ""
   
   
   // For accessing the Grid's API
@@ -112,7 +164,7 @@ export class InserisciRisorsaComponent implements OnInit {
 
 
   private tabella =  "risorse"
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_risorsa  +""+ params.data.dtvalid_ruolo + params.data.dtvalid_livello;
+  getRowId: GetRowIdFunc<any>  = params => params.data.id_risorsa  +""+ ( params.data.dtvalid_ruolo === null ||  params.data.dtvalid_ruolo === undefined ?  "" :  params.data.dtvalid_ruolo +"rr"  )+ (params.data.dtvalid_livello === null ? "" :  params.data.dtvalid_livello  ) + (params.data.id_practice  === null ? "" :  params.data.id_practice) ;
 
   
  
@@ -122,6 +174,7 @@ export class InserisciRisorsaComponent implements OnInit {
 
    // Example load data from sever
    onGridReady(params: GridReadyEvent) {
+    this.agGrid.api.sizeColumnsToFit()
     this.agGrid.api.showNoRowsOverlay()
     //this.agGrid.getRowId   =  params =>{return params.data.id_risorsa}
     this.rowData$ = new Observable<any[]>
@@ -130,15 +183,35 @@ export class InserisciRisorsaComponent implements OnInit {
   // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
     
-
+    
     console.log('cellClicked', e);
+    
+    if (e.colDef.cellEditorParams != undefined)
+    { 
+      console.log(e.value)
+      var lista : any [] = e.colDef.cellEditorParams.values
+      console.log(lista)
+      let index = lista.findIndex(value => (value+"").includes(e.value +":"));
+      console.log(index)
+      if (index === -1)
+      {}
+      else 
+      {
+      var appoggio = lista[0]
+      lista[0] = lista[index]
+      lista[index] = appoggio
+      }
+    }
     this.id_touch =  e.data.id_risorsa
      this.datvalid_livello  = "" + e.data.dtvalid_ruolo
      this.datvalid_ruolo  = ""+e.data.dtvalid_livello 
+     this.id_practice = e.data.id_practice
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    if (numeroC == 0)
+    var left = e.column.getLeft()
+    console.log(left)
+    if (left === 0)
     {
       this.delete("delete from  rilatt.risorse  where id_risorsa = " + this.id_touch)
     }
@@ -158,9 +231,83 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   console.log(datiC)
   var colonna = e.colDef.field
   console.log(colonna)
-  var valore = e.value
-  var query = "update rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
-  console.log(valore)  
+  var query =""
+  var flag = false
+  if (colonna === "ruoli") 
+  {  
+    flag = true
+    if (datiC.id_ruolo === null )  
+    {
+      Swal.fire({  
+        icon: 'warning',  
+        title: 'ettenzione',  
+        text: 'non è presente alcun ruolo associato a questa persona, \n per inserire un nuovo ruolo bisogna andare alla pagina dedicata  '  
+        
+      })  
+      this.select()
+    
+
+    }
+    else{
+    var valore = e.value
+    valore = (valore+"").split(":")[1]
+    query = "update rilatt.risorse_ruoli set id_ruolo = '" + valore +"' where id_risorsa = " +datiC.id_risorsa+" and  id_ruolo = "+datiC.id_ruolo
+    }
+  }
+  if (colonna === "livello") 
+  { 
+
+    flag = true 
+    if (datiC.id_livello === null )  
+    {
+
+      Swal.fire({  
+        icon: 'warning',  
+        title: 'ettenzione',  
+        text: 'non è presente alcun livello associato a questa persona, \n per inserire un nuovo livello bisogna andare alla pagina dedicata  '  
+        
+      })  
+      this.select()
+    
+    }
+    else{
+
+     
+    var valore = e.value
+    valore = (valore+"").split(":")[1]
+    query = "update rilatt.risorse_livello set id_livello = '" + valore +"' where id_risorsa = " +datiC.id_risorsa+" and  id_livello = "+datiC.id_livello
+    }
+  }
+  if (colonna === "practice") 
+  { 
+
+    flag = true
+    if (datiC.id_practice === null )  
+    {
+      Swal.fire({  
+        icon: 'warning',  
+        title: 'ettenzione',  
+        text: 'non è presente alcuna practice associata a questa persona, \n per inserire un nuovo practice bisogna andare alla pagina dedicata  '  
+        
+      })  
+      this.select()
+    }
+    else{
+    
+        
+    var valore = e.value
+    valore = (valore+"").split(":")[1]
+    query = "update rilatt.risorse_practice set id_practice = '" + valore +"' where id_risorsa  = " +datiC.id_risorsa+" and  id_practice = "+datiC.id_practice
+    }
+  
+  }
+  if(!flag)
+  {
+    var valore = e.value
+     query = "update rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
+  }
+  
+
   console.log(query)
   this.update(query)
 
@@ -168,25 +315,38 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct id_livello || ':' || descrizione as descrizione2 from rilatt.livello order by descrizione2 " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.livelli = dati; console.log(this.livelli)})
-
+    var query = "select distinct descrizione || ':' ||  id_livello  as descrizione2 from rilatt.livello order by descrizione2 " 
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.livelli = dati; console.log(this.livelli)
+      this.setup2();
+    })
+    
   }
   setup2= () => {
-    var query = "select distinct  id_ruolo || ':' || descrizione as descrizione2 from rilatt.ruoli order by descrizione2"
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.ruoli = dati})
+    var query = "select distinct   descrizione || ':' ||  id_ruolo as descrizione2 from rilatt.ruoli order by descrizione2"
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.ruoli = dati
+      this.setup3();
+    })
+  
   }
 
-  test = () : void => this.insP.test()
+ setup3  = () => {
+    var query = "select distinct   descrizione || ':' ||  id_practice as descrizione2 from rilatt.practice  order by descrizione2"
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.practice = dati
+      this.strucElaboration();
+    })
+  
+  }
 
-  testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
+
  
-  select  = ()  => {var query = "Select r.*, r2.dtvalid_ruolo , rl.dtvalid_livello , l.descrizione as livello , r3.descrizione  as ruoli from rilatt.risorse r " 
+  select  = ()  => {var query = "Select distinct  r.*, pra2.* , r2.id_ruolo, r2.dtvalid_ruolo ,rl.id_livello, rl.dtvalid_livello , pra2.descrizione as practice,l.descrizione as livello , r3.descrizione  as ruoli from rilatt.risorse r " 
        +"left join rilatt.risorse_livello  rl  on  r.id_risorsa  = rl.id_risorsa " 
        +" left  join  rilatt.livello l  on l.id_livello  = rl.id_livello "
        + " left join rilatt.risorse_ruoli  r2  on  r.id_risorsa  = r2.id_risorsa "
-       + " left  join  rilatt.ruoli r3   on r3.id_ruolo  = r2.id_ruolo order by r.nome "
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
+       + " left  join  rilatt.ruoli r3   on r3.id_ruolo  = r2.id_ruolo "
+       +"left join rilatt.risorse_practice pra on pra.id_risorsa = r.id_risorsa "
+       +"left join rilatt.practice pra2 on pra.id_practice = pra2.id_practice order by r.nome  "
+ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati); })
 
 }
  
@@ -205,7 +365,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       Swal.fire({  
         icon: 'error',  
         title: 'errore',  
-        text: 'errore update dati',  
+        text: 'errore update dati per la query: \n' +query,  
         
       })  
     }
@@ -214,19 +374,61 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select  importanza ,maschera,column_name , table_name , table_schema , editable  , visible from rilatt.setting_colonne   sc where (table_name  = 'ruoli'or table_name  = 'risorse' or table_name ='risorse_ruoli' or table_name ='risorse_livello' or table_name ='livello') and table_schema ='rilatt' and maschera = 'risorse' order by importanza "
+  strucElaboration = () => this.insP.structUndestanding("select  importanza ,maschera,column_name , table_name , table_schema , editable  , visible from rilatt.setting_colonne   sc where table_schema ='rilatt' and maschera = 'risorse' order by importanza "
   ).subscribe(response =>{
     console.log("ciao") ;  console.log(response)
     console.log(response)
     console.log("finito")
     var responsej = JSON.parse(JSON.stringify(response))
+
+
     for( let element of  responsej.rows) {
+      var list : any[] = []
+      var flag = false
       console.log(element)
-     this.columnDefs.push({"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
-     this.myMap.set(element.column_name === "descrizione" ? element.table_name : element.column_name, element.table_name)
+      if(element.table_name === "ruoli" && element.column_name === "descrizione")  
+         {
+          console.log("entrato")
+          flag = true 
+          list =    [...new Map(this.ruoli.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
+          list.push(null)
+          this.columnDefs.push({resizable: true, cellEditor: 'agSelectCellEditor',   cellEditorParams: { values:list},"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+     
+         } 
+      
+      if(element.table_name === "livello" && element.column_name === "descrizione")
+            {  console.log("entrato")
+        flag = true 
+        list =    [...new Map(this.livelli.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
+        list.push(null)
+        this.columnDefs.push({ resizable: true,cellEditor: 'agSelectCellEditor', cellEditorParams: { values:list},"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+   
+       } 
+       if(element.table_name === "practice" && element.column_name === "descrizione") 
+      {   
+        console.log("entrato")
+        flag = true 
+        
+        list =    [...new Map(this.practice.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
+        list.push(null)
+        this.columnDefs.push({resizable: true , cellEditor: 'agSelectCellEditor', cellEditorParams: { values:list},"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+      }
+       if (!flag )
+       {  console.log("entrato 2 ")
+
+          this.columnDefs.push({resizable: true , "field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+
+       }
+      console.log()
+      console.log(list)
+
+
+    
     };
-    console.log(this.myMap)
+
     this.agGrid.api.setColumnDefs(this.columnDefs)
+    this.agGrid.columnApi.autoSizeAllColumns()
+    
     
 
   
@@ -240,7 +442,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     if(risposata.upd === "ok")
     {
           console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_risorsa : this.id_touch , dtvalid_livello : this.datvalid_livello, dtvalid_ruolo : this.datvalid_ruolo}]});
+          this.agGrid.api.applyTransaction({remove:[{id_risorsa : this.id_touch , dtvalid_livello : this.datvalid_livello === "null" ? "" : this.datvalid_livello, dtvalid_ruolo : this.datvalid_ruolo === "null" ? "":this.datvalid_ruolo , id_practice : this.id_practice }]});
     }
     else 
     { console.log("errore")
@@ -250,8 +452,8 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       Swal.fire({  
         icon: 'error',  
         title: 'Oops...',  
-        text: 'errore delete',  
-        footer: '<a href>Why do I have this issue?</a>'  
+        text: 'errore nel delete dal database  con codice :  ' + risposata.code,  
+        
       })  
     }
   
@@ -273,12 +475,16 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     ruolo = ruolo === undefined ? "" : ruolo
     var livello = insertRL.livello === undefined  ||  insertRL.livello === null? "" : insertRL.livello.descrizione2 === undefined ? "" : insertRL.livello.descrizione2
     livello = livello === undefined ? "" : livello
+    var practice = insertRL.practice === undefined  ||  insertRL.practice === null? "" : insertRL.practice.descrizione2 === undefined ? "" : insertRL.practice.descrizione2
+    practice = practice === undefined ? "" : practice
+      
     console.log(data)
     console.log(ruolo)
     console.log(livello)
     var falg1 = false 
     var flag2 = false 
     var flag3 = false
+    var flag4 = false 
 
     var query = "insert into rilatt.risorse (nome , cognome , email) values ('"+insertD.nome+"','"+insertD.cognome+"','"+insertD.email+"' )  RETURNING id_risorsa"
     this.insP.select(query).subscribe(response =>{
@@ -286,20 +492,19 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       var risposta = JSON.parse(JSON.stringify(response)) 
       if(risposta.upd === "ok")
       {     
-             /*Swal.fire({  
-                 icon: 'success',  
-                 title: 'successo',  
-                 text: 'inserimento utetnte avvenuto con successo',  
-                   
-             }) */ 
+          
+      
              falg1 = true
              var id_risorsa = risposta.rows[0].id_risorsa
+
+              
+
              if(true)//!(insertRL.livello.descrizione2 === undefined || insertRL.livello.descrizione2 === ""))
              {
               var descrizioneU : String =livello
              
              
-              var id_livello = descrizioneU.split(":")[0]
+              var id_livello = descrizioneU.split(":")[1]
               console.log(id_livello)
             
               var query2 = "insert into rilatt.risorse_livello(id_risorsa, id_livello , dtvalid_livello) values ('"+id_risorsa+"','"+id_livello+"','"+insertRL.data+"' )"
@@ -334,7 +539,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
               if(true)//!(insertRL.ruolo.descrizione2 === undefined || insertRL.ruolo.descrizione2 === ""))
               {
                 var descrizioneR : String = ruolo
-                var id_ruolo = descrizioneR.split(":")[0]
+                var id_ruolo = descrizioneR.split(":")[1]
                 console.log(id_ruolo)
                var query3 = "insert into rilatt.risorse_ruoli(id_risorsa, id_ruolo , dtvalid_ruolo) values ('"+id_risorsa+"','"+id_ruolo+"','"+insertRL.data+"' )"
                
@@ -344,14 +549,9 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                 var risposta = JSON.parse(JSON.stringify(response)) 
                 if(risposta.upd === "ok")
                 {     
-                     /*  Swal.fire({  
-                           icon: 'success',  
-                           title: 'successo',  
-                           text: 'inserimento ruolo avvenuto con successo',  
-                             
-                       }) */
+                    
                        flag3 = true
-                       this.select()
+                      
                 }
                 else 
                 { console.log("errore")
@@ -359,16 +559,34 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                  console.log(this.datiV)
                    
                 
-                 /* Swal.fire({  
-                    icon: 'error',  
-                    title: 'errore',  
-                    text: 'inserimento ruolo errato!',  
-                    footer: '<a>controlla i dati inseriti</a>'  
-                  })  */
+              
+                }   var descrizioneR : String = practice
+                var id_practice = descrizioneR.split(":")[1]
+                console.log(id_practice)
+               var query4 = "insert into rilatt.risorse_practice(id_risorsa, id_practice , dtvalid_risorsa_practice) values ('"+id_risorsa+"','"+id_practice+"','"+insertRL.data+"' )"
+               
+               console.log(query4)
+               this.insP.select(query4).subscribe(response =>{
+                console.log(response)
+                var risposta = JSON.parse(JSON.stringify(response))
+
+                if(risposta.upd === "ok")
+                {     
+                    
+                       flag4 = true
+                      
                 }
-  
-  
+                else 
+                { console.log("errore")
+                  console.log(risposta)
+                 console.log(this.datiV)
+                   
                 
+              
+                } 
+                var messaggio = ""
+                 if (flag4){  messaggio = "practice inserita "}
+                 else{messaggio = "practice non inserita"}
                 if (falg1)
                 {  
                   if (!flag2  && !flag3)
@@ -376,43 +594,59 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                    Swal.fire({  
                      icon: 'success',  
                      title: 'successo',  
-                     text: "inserito correttamente  l'utente,  \n ruolo e livello non inseriti. ",  
+                     text: "inserito correttamente  l'utente,  \n ruolo e livello non inseriti. " +messaggio,  
                        
                  })
                  }
-                   if (flag2  && flag3)
-                   {
-                    Swal.fire({  
-                      icon: 'success',  
-                      title: 'successo',  
-                      text: 'inseriti correttamente utente, ruolo e livello. ',  
-                        
-                  })
+                
+                
+                  if (flag2  && flag3)
+                {
+                 Swal.fire({  
+                   icon: 'success',  
+                   title: 'successo',  
+                   text: 'inseriti correttamente utente, ruolo e livello. ' + messaggio,  
+                     
+               })}
+               this.select()
+             }
+                else
+                {
+                   if (flag2)
+                   {  this.select()
+                     Swal.fire({  
+                       icon: 'success',  
+                       title: 'successo',  
+                       text: 'inseriti correttamente utente e livello \n ruolo non inserito' + messaggio,  
+                         
+                   })
+ 
                    }
-                   else
-                   {
-                      if (flag2)
-                      {
-                        Swal.fire({  
-                          icon: 'success',  
-                          title: 'successo',  
-                          text: 'inseriti correttamente utente e livello \n ruolo non inserito',  
-                            
-                      })
-    
-                      }
-                      if (flag3)
-                      {
-                        Swal.fire({  
-                          icon: 'success',  
-                          title: 'successo',  
-                          text: 'inseriti correttamente utente e ruolo \n livello non inserito',  
-                            
-                      })
-                      }
+                   if (flag3)
+                   {  this.select()
+                     Swal.fire({  
+                       icon: 'success',  
+                       title: 'successo',  
+                       text: 'inseriti correttamente utente e ruolo \n livello non inserito' + messaggio,  
+                         
+                   })
+
                    }
+                   this.select()
                 }
-                   
+              
+              
+              
+              
+              
+              
+              
+              
+              })
+  
+  
+                
+             
                      
   
                })

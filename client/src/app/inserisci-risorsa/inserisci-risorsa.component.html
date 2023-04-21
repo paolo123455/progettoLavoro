@@ -3,22 +3,23 @@
   <div style="flex: 1;padding: 1em;border: solid;">
    <form [formGroup] = "form">
    
-     <mat-form-field>
-          <mat-label>emaill</mat-label>
-          <input matInput formControlName="email" placeholder="email">
-     </mat-form-field><br>
+     
      
      <mat-form-field>
-      <mat-label>nome</mat-label>
-      <input matInput formControlName="nome" placeholder="name">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome" placeholder="Nome">
       </mat-form-field><br>
 
  <mat-form-field>
-  <mat-label>cognome</mat-label>
-  <input matInput formControlName="cognome" placeholder="cognome">
+  <mat-label>Cognome</mat-label>
+  <input matInput formControlName="cognome" placeholder="Cognome">
+</mat-form-field><br>
+<mat-form-field>
+  <mat-label>Emaill</mat-label>
+  <input matInput formControlName="email" placeholder="Email">
 </mat-form-field><br>
   
-   <button mat-raised-button color="primary" (click)="inserisciRiga()">inserisci dati</button>
+   <button mat-raised-button color="primary" [disabled]= "!disabilitato" (click)="inserisciRiga()">inserisci dati</button>
 
           
    </form>
@@ -29,7 +30,7 @@
     <form [formGroup] = "formRL">
      
       <mat-form-field>
-        <mat-label>livello</mat-label>
+        <mat-label>Livello</mat-label>
         <mat-select formControlName="livello" placeholder="livello">
           <mat-option></mat-option>
           <mat-option *ngFor="let livello of livelli" [value]="livello">{{livello.descrizione2}}</mat-option>
@@ -40,12 +41,20 @@
       </mat-form-field><br>
       
       <mat-form-field>
-       <mat-label>ruolo</mat-label>
+       <mat-label>Ruolo</mat-label>
        <mat-select formControlName="ruolo" placeholder="ruolo">
        <mat-option></mat-option>
           <mat-option *ngFor="let ruolo of ruoli" [value]="ruolo">{{ruolo.descrizione2}}</mat-option>
         </mat-select>
        </mat-form-field><br>
+
+       <mat-form-field>
+        <mat-label>Practice</mat-label>
+        <mat-select formControlName="practice" placeholder="Practice">
+        <mat-option></mat-option>
+           <mat-option *ngFor="let practice of practice" [value]="practice">{{practice.descrizione2}}</mat-option>
+         </mat-select>
+        </mat-form-field><br>
    
  
   <mat-form-field>

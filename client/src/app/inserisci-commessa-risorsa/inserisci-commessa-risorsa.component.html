@@ -5,68 +5,50 @@
     
        
       <mat-form-field>
-        <mat-label>commessa</mat-label>
-        <mat-select formControlName="commessa" placeholder="commessa">
+        <mat-label>Commessa</mat-label>
+        <mat-select formControlName="commessa" placeholder="Commessa">
           <mat-option></mat-option>
           <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa.descrizione2}}</mat-option>
         </mat-select>
       </mat-form-field><br>
       <mat-form-field>
-        <mat-label>risorsa</mat-label>
-        <mat-select formControlName="risorsa" placeholder="risorsa">
+        <mat-label>Risorsa</mat-label>
+        <mat-select formControlName="risorsa" placeholder="Risorsa">
           <mat-option></mat-option>
           <mat-option *ngFor="let risorsa of risorse" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
         </mat-select>
       </mat-form-field><br>
-      
-       
-     
-    
+
      <button mat-raised-button color="primary" [disabled]= "!disabilitato" (click)="inserisciRiga()">inserisci dati</button>
-  
-            
-     </form>
-  
-    
+    </form>
     </div>
     <div style="flex: 2;padding: 1em;border: solid;">
         <form [formGroup] = "form2">
      
            
               <mat-form-field>
-                <mat-label>anno</mat-label>
-                <mat-select formControlName="anno" placeholder="anno">
+                <mat-label>Anno</mat-label>
+                <mat-select formControlName="anno" placeholder="Anno">
                   <mat-option></mat-option>
                   <mat-option *ngFor="let anno of anni" [value]="anno">{{anno}}</mat-option>
                 </mat-select>
               </mat-form-field><br>
               <mat-form-field>
                 <mat-label>mese</mat-label>
-                <mat-select formControlName="mese" placeholder="mese">
+                <mat-select formControlName="Mese" placeholder="Mese">
                   <mat-option></mat-option>
                   <mat-option *ngFor="let mese of mesi" [value]="mese">{{mese}}</mat-option>
                 </mat-select>
               </mat-form-field><br>
               <mat-form-field>
-                <mat-label>giornate</mat-label>
-                <input matInput formControlName="giornate" placeholder="giornate">
+                <mat-label>Giornate</mat-label>
+                <input matInput formControlName="giornate" placeholder="Giornate">
                 </mat-form-field><br>
              
                 <mat-checkbox id="amateur" class="amateur" color="primary"
                 formControlName="budget">budget</mat-checkbox>
-                
-              
-       
-         
-         
-       
-                 
           </form>
      </div>
-   
-    
-    
-    
   </div>
   
   <ag-grid-angular

@@ -53,11 +53,10 @@ export class PracticeRisorsaComponent {
     console.log(datid)
     var date : String  = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()< 10 ? 0 +""+datid.getDate(): datid.getDate())
     date = date === undefined ? "" : date
-    var risn =  datis === undefined ||  datis ===  "" ? "" : datis.split(":")[1].split("-")[0] ===  undefined ? "" : datis.split(":")[1].split("-")[0]
-    var risc = datis === undefined ||  datis ===  "" ? "" : datis.split(":")[1].split("-")[1]  ===  undefined ? "" :  datis.split(":")[1].split("-")[1]
-    var rise = datis === undefined ||  datis ===  "" ? "" : datis.split(":")[1].split("-")[2]  ===  undefined ? "" :  datis.split(":")[1].split("-")[2] 
-    var practice =  datil === undefined ? "" : datil.split(":")[1] ===  undefined ? "" :  datil.split(":")[1]
-    console.log(risn,risc,rise,"-",date, "-",practice)
+    var risn =  datis === undefined ||  datis ===  "" ? "" : datis.split(":")[0].split("-")[1] ===  undefined ? "" : datis.split(":")[0].split("-")[1]
+    var risc = datis === undefined ||  datis ===  "" ? "" : datis.split(":")[0].split("-")[0]  ===  undefined ? "" :  datis.split(":")[0].split("-")[0]
+   var practice =  datil === undefined ? "" : datil.split(":")[1] ===  undefined ? "" :  datil.split(":")[0]
+    console.log(risn,risc,"-",date, "-",practice)
     console.log(this.dati)
     var filteredData = this.dati.filter((item: {
       dtvalid_risorsa_practice: any;
@@ -69,7 +68,7 @@ export class PracticeRisorsaComponent {
        && item.practice.includes(practice) 
        && item.cognome.includes(risc)
         && item.dtvalid_risorsa_practice.includes(date) 
-        && item.email.includes(rise));
+       );
     this.agGrid.api.setRowData(filteredData)
   })
   
@@ -136,7 +135,9 @@ export class PracticeRisorsaComponent {
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    if (numeroC == 0)
+    var left = e.column.getLeft()
+    console.log(left)
+    if (left === 0)
     {
       this.delete("delete from  rilatt.risorse_practice where id_risorse_practice = " + this.id_touch)
     }
@@ -152,26 +153,18 @@ export class PracticeRisorsaComponent {
     }
 onCellValueChanged( e: CellValueChangedEvent): void {
  console.log(e);
- /*  var datiC = e.data
-  console.log(datiC)
-  var colonna = e.colDef.field
-  console.log(colonna)
-  var valore = e.value
-  var query = "update rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
-  console.log(valore)  
-  console.log(query)
-  this.update(query)*/
+
 
   }
  
 
   setup1= () => {
-    var query = "select distinct id_practice || ':' || descrizione as descrizione2 from rilatt.practice order by descrizione2 " 
+    var query = "select distinct  descrizione || ':' || id_practice  as descrizione2 from rilatt.practice order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.practices = dati; console.log(this.practices)})
 
   }
   setup2= () => {
-    var query = "select distinct  id_risorsa || ':' || nome || '-' || cognome || '-' || email  as descrizione2 from rilatt.risorse order by descrizione2"
+    var query = "select distinct  cognome  || '-' || nome || ':' || id_risorsa   as descrizione2 from rilatt.risorse order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
   }
 
@@ -265,10 +258,10 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
     var data = insertD.data 
     var descrizioneU : String = insertD.practice.descrizione2      
-    var id_practice = descrizioneU.split(":")[0]
+    var id_practice = descrizioneU.split(":")[1]
     console.log(id_practice)
     var descrizioneR : String = insertD.risorsa.descrizione2      
-    var id_risorsa = descrizioneR.split(":")[0]
+    var id_risorsa = descrizioneR.split(":")[1]
     console.log(id_risorsa)
 
     var query = "insert into rilatt.risorse_practice (id_risorsa, id_practice, dtvalid_risorsa_practice) values ('"+id_risorsa+"','"+id_practice+"','"+data+"' )  RETURNING id_risorsa"

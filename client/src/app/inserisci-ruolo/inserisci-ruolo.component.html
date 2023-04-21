@@ -3,8 +3,8 @@
     <div style="flex: 1;padding: 1em;border: solid;">
      <form [formGroup] = "form">
         <mat-form-field>
-        <mat-label>ruolo</mat-label>
-        <mat-select formControlName="ruolo" placeholder="ruolo">
+        <mat-label>Ruolo</mat-label>
+        <mat-select formControlName="ruolo" placeholder="Ruolo">
           <mat-option></mat-option>
           <mat-option *ngFor="let ruolo of ruoli" [value]="ruolo">{{ruolo.descrizione2}}</mat-option>
 
@@ -12,8 +12,8 @@
         </mat-select>
         </mat-form-field><br>
         <mat-form-field>
-            <mat-label>risorsa</mat-label>
-            <mat-select formControlName="risorsa" placeholder="risorsa">
+            <mat-label>Risorsa</mat-label>
+            <mat-select formControlName="risorsa" placeholder="Risorsa">
               <mat-option></mat-option>
               <mat-option *ngFor="let risorsa of risorse" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
     

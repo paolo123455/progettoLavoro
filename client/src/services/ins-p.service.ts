@@ -25,12 +25,12 @@ export class InsPService {
   rootURL = '/esegui/query';
 
   select(query: String): Observable<any[]> {
-    return  this.client.post<any[]>('http://localhost:8080/esegui/query/selezione' , {"query" : query})
+    return  this.client.post<any[]>('/esegui/query/selezione' , {"query" : query})
   }
 
   structUndestanding(tabella: string | undefined): Observable<Object> {
     console.log("fatto")
-    return  this.client.post('http://localhost:8080/esegui/query/dizionario' , {"query" :tabella})
+    return  this.client.post('/esegui/query/dizionario' , {"query" :tabella})
   }
 
   // select(query: String): Observable<any[]> {

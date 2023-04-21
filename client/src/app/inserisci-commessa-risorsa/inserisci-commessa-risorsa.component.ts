@@ -24,8 +24,9 @@ export class InserisciCommessaRisorsaComponent {
   commesse: any[] = []
   mesi : Number[] = [1,2,3,4,5,6,7,8,9,10,11,12]
   anni: Number[] = [2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
-  disabilitato = true;
-  
+  disabilitato = false;
+  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
+  getRowId: GetRowIdFunc<any>  = params => params.data.id_attivita;
   
   
 
@@ -37,21 +38,19 @@ export class InserisciCommessaRisorsaComponent {
     this.form = this.fb.group({
       risorsa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       commessa: new FormControl("",[ Validators.required,Validators.minLength(1)])
-    
-     
-  
+
     })
     this.form2 = this.fb.group({
       anno: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       mese :  new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      giornate:  new FormControl("",[ Validators.required,Validators.pattern("^([1-9]|1[0-9]|2[0-4])$")]),
+      giornate:  new FormControl(""),
       budget : '' 
      
   
     })
     var anno : string = ""
     var mese : string = ""
-    var budget : boolean = true
+    var budget : boolean = false
     var giornate : string = ""
     var codice : string = ""
     var descrizione : string = ""
@@ -70,8 +69,10 @@ export class InserisciCommessaRisorsaComponent {
      
   
    
-     budget  =  data.budget === undefined || data.budget === null  ? false :data.budget
+     budget  =  data.budget === undefined || data.budget === '' || data.budget === null  ? false :data.budget
+     budget = budget === undefined ? false : budget
       giornate =  data.giornate === undefined || data.giornate === null  ? "" :data.giornate
+      giornate = giornate === undefined || giornate === null ? "" : giornate
      console.log(budget)
      console.log(this.dati)
   
@@ -80,11 +81,10 @@ export class InserisciCommessaRisorsaComponent {
         flag_budget : String;
         giornate : String;
         anno: String;
-        descrizione: any;
+        descrizione_codice: any;
         codice: any;
         dtvalid_ruolo: any;
          ruoli: any;
-        email: String;
         cognome: String;
         nome: String; id_risorsa: any;
 
@@ -96,8 +96,8 @@ export class InserisciCommessaRisorsaComponent {
         &&item.nome.includes(nome)
         && item.cognome.includes(cognome)
         && item.codice.includes(codice)
-        && item.descrizione.includes(descrizione)
-        && item.email.includes(email)
+        && item.descrizione_codice.includes(descrizione)
+
           );
       this.agGrid.api.setRowData(filteredData)
     })
@@ -115,14 +115,19 @@ export class InserisciCommessaRisorsaComponent {
     
     console.log(datic , datir)
 
-    codice =  datic === undefined ? "" : datic.split(":")[1].split("--")[0]
+    codice =  datic === undefined ? "" : datic.split(":")[0].split("--")[1]
     codice = codice === undefined ? "" : codice
-    descrizione =  datic === undefined ? "" : datic.split(":")[1].split("--")[1]
+    descrizione =  datic === undefined ? "" : datic.split(":")[0].split("--")[0]
     descrizione = descrizione === undefined ? "" : descrizione
     console.log(codice ,"/", descrizione)
-    nome = datir === undefined ? "" : datir.split(":")[1].split("-")[0]  === undefined ? "" : datir.split(":")[1].split("-")[0]
-    cognome = datir === undefined ? "" : datir.split(":")[1].split("-")[1]  === undefined ? "" : datir.split(":")[1].split("-")[1]
-    email = datir === undefined ? "" : datir.split(":")[1].split("-")[2]  === undefined ? "" : datir.split(":")[1].split("-")[2]
+    
+    nome = datir === undefined ? "" : datir.split(":")[0].split("-")[1]  === undefined ? "" : datir.split(":")[0].split("-")[1]
+  
+    nome = nome === undefined || nome === "undefined" || nome === null ? "" : nome
+    cognome = datir === undefined ? "" : datir.split(":")[0].split("-")[0]  === undefined ? "" : datir.split(":")[0].split("-")[0]
+    cognome = cognome === undefined || cognome === "undefined" || cognome === null ? "" : cognome
+   // email = datir === undefined ? "" : datir.split(":")[0].split("-")[2]  === undefined ? "" : datir.split(":")[0].split("-")[2]
+   // email = email === undefined || email === "undefined" || email === null ? "" : email
    
     
 
@@ -131,11 +136,10 @@ export class InserisciCommessaRisorsaComponent {
       flag_budget : String;
       giornate : String;
       anno: String;
-      descrizione: any;
+      descrizione_codice: any;
       codice: any;
       dtvalid_ruolo: any;
        ruoli: any;
-      email: String;
       cognome: String;
       nome: String; id_risorsa: any; }) => 
       (item.anno+"").includes(anno)
@@ -145,15 +149,15 @@ export class InserisciCommessaRisorsaComponent {
         &&item.nome.includes(nome)
         && item.cognome.includes(cognome)
         && item.codice.includes(codice)
-        && item.descrizione.includes(descrizione)
-        && item.email.includes(email));
+        && item.descrizione_codice.includes(descrizione))
+ 
     this.agGrid.api.setRowData(filteredData)
   })
     
     this.select()
-    this.strucElaboration()
+    
     this.setup1()
-    this.setup2()
+ 
 
     
    
@@ -188,11 +192,7 @@ export class InserisciCommessaRisorsaComponent {
   
   
   // For accessing the Grid's API
-  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
-
-
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_attivita;
 
   
  
@@ -218,7 +218,10 @@ export class InserisciCommessaRisorsaComponent {
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    if (numeroC === 0)
+    var valore = e.column.getColId
+    var left = e.column.getLeft()
+    console.log(left)
+    if (left === 0)
     {
       this.delete("delete from  rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
     }
@@ -248,24 +251,35 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct  id_risorsa || ':' || nome || '-' || cognome || '-' || email  as descrizione2 from rilatt.risorse order by descrizione2 " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse= dati; console.log(this.risorse)})
+    var query = "select distinct   cognome || '-' || nome || '-' || ':' ||   id_risorsa as descrizione2 from rilatt.risorse order by descrizione2 " 
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse= dati; console.log(this.risorse)
+      this.setup2()
+    })
 
   }
   setup2= () => {
-    var query = "select id_progetto  || ':' || codice || '--' || descrizione as descrizione2 from rilatt.progetti order by descrizione2"
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.commesse = dati})
+    var query = "select   descrizione_codice || '--'  ||codice || ':' || id_progetto   as descrizione2 from rilatt.progetti order by descrizione2"
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.commesse = dati
+    this.strucElaboration()
+    })
   }
 
-  test = () : void => this.insP.test()
 
-  testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
- 
-  select  = ()  => {var query = "select *, p.descrizione as progetti from rilatt.attivita_risorsa ar inner join rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
+  select  = ()  => {var query = "select *, p.descrizione_codice as progetti from rilatt.attivita_risorsa ar inner join rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
                                 "inner join rilatt.progetti  p on p.id_progetto = ar.id_progetto "
       
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
+ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)
+  var  filteredData = this.dati.filter((item: {
+    flag_budget: String;
+      }) =>
+    
+     (item.flag_budget+ "").includes("false") 
 
+  );
+  this.agGrid.api.setRowData(filteredData)})
+
+
+ 
 }
  
   update = (query : String)   => this.insP.select(query).subscribe(response =>{
@@ -300,9 +314,11 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     for( let element of  responsej.rows) {
       console.log(element)
      this.columnDefs.push({"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
-     this.myMap.set(element.column_name === "descrizione" ? element.table_name : element.column_name, element.table_name)
+
     };
-    console.log(this.myMap)
+
+    
+    this.agGrid.api.setColumnDefs(this.columnDefs)
     this.agGrid.api.setColumnDefs(this.columnDefs)
     
 
@@ -343,11 +359,13 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var insert1 =  JSON.parse(JSON.stringify(this.form.value))
     var insert2 =  JSON.parse(JSON.stringify(this.form2.value))
     console.log(insert1,insert2)
-    var id_progetto = insert1.commessa.descrizione2 === undefined ? "" : insert1.commessa.descrizione2.split(":")[0]
-    var id_risorsa =  insert1.risorsa.descrizione2 === undefined ? "" :  insert1.risorsa.descrizione2.split(":")[0] 
+    var id_progetto = insert1.commessa.descrizione2 === undefined ? "" : insert1.commessa.descrizione2.split(":")[1]
+    var id_risorsa =  insert1.risorsa.descrizione2 === undefined ? "" :  insert1.risorsa.descrizione2.split(":")[1] 
     
   
     var giornate = insert2.giornate 
+    giornate = giornate === undefined || giornate === null || giornate === '' ? "0" : giornate
+    console.log(giornate)
     var flag_attivita  = false
     var flag_budget = insert2.budget === "" || insert2.budget === undefined ? false : insert2.budget
     var anno = insert2.anno

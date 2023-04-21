@@ -123,7 +123,9 @@ export class NuovaPracticeComponent {
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    if (numeroC === 0)
+    var left = e.column.getLeft()
+    console.log(left)
+    if (left === 0)
     {
       this.delete("delete from  rilatt.practice where id_practice = " + this.id_touch)
     }

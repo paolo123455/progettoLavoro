@@ -1,0 +1,98 @@
+
+<div style=" display: flex; height: 100%;">
+    <div style="flex: 1;padding: 1em;border: solid;">
+     <form [formGroup] = "form">
+    
+       
+      <mat-form-field>
+        <mat-label>commessa</mat-label>
+        <mat-select formControlName="commessa" placeholder="commessa">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa.descrizione3}}</mat-option>
+        </mat-select>
+      </mat-form-field><br>
+      <mat-form-field>
+        <mat-label>risorsa</mat-label>
+        <mat-select formControlName="risorsa" placeholder="risorsa">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let risorsa of risorse" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
+        </mat-select>
+      </mat-form-field><br>
+      <mat-form-field>
+        <mat-label>anno</mat-label>
+        <mat-select formControlName="anno" placeholder="anno">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let anno of anni" [value]="anno">{{anno.anno}}</mat-option>
+        </mat-select>
+      </mat-form-field><br>
+      <mat-form-field>
+        <mat-label>mese</mat-label>
+        <mat-select formControlName="mese" placeholder="mese">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let mese of mesi" [value]="mese">{{mese.mese}}</mat-option>
+        </mat-select>
+      </mat-form-field><br>
+      
+       
+     
+    
+     <button mat-raised-button color="primary" [disabled]= "!disabilitato" (click)="inserisciRiga()">consolida pianificazione</button>
+  
+            
+     </form>
+  
+    
+    </div>
+    <div style="flex: 2;padding: 1em;border: solid;">
+      <form [formGroup] = "form2">
+     
+        
+      
+       <mat-form-field>
+         <mat-label>da anno</mat-label>
+         <mat-select formControlName="daanno" placeholder="daanno">
+           <mat-option></mat-option>
+           <mat-option *ngFor="let anno of daanni" [value]="anno">{{anno}}</mat-option>
+         </mat-select>
+       </mat-form-field><br>
+       <mat-form-field>
+         <mat-label>da mese</mat-label>
+         <mat-select formControlName="damese" placeholder="damese">
+           <mat-option></mat-option>
+           <mat-option *ngFor="let mese of damesi" [value]="mese">{{mese}}</mat-option>
+         </mat-select>
+       </mat-form-field><br>
+       <mat-form-field>
+        <mat-label>a anno</mat-label>
+        <mat-select formControlName="aanno" placeholder="aanno">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let anno of aanni" [value]="anno">{{anno}}</mat-option>
+        </mat-select>
+      </mat-form-field><br>
+      <mat-form-field>
+        <mat-label>a mese</mat-label>
+        <mat-select formControlName="amese" placeholder="amese">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let mese of amesi" [value]="mese">{{mese}}</mat-option>
+        </mat-select>
+      </mat-form-field><br>
+       
+        
+      
+     
+      <button mat-raised-button color="primary" [disabled]= "!disabilitato2" (click)="inserisciRiga2()">consolida pianificazione</button>
+   
+             
+      </form>
+   
+     
+     </div>
+  
+   
+    
+    
+    
+  </div>
+  
+
+  

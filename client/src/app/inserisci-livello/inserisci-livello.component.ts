@@ -25,7 +25,7 @@ export class InserisciLivelloComponent {
   livelli: any[] = []
   ruoli: any[] = []
   risorse: any[] = []
-  disabilitato = true;
+  disabilitato = false;
   
   
 
@@ -52,21 +52,20 @@ export class InserisciLivelloComponent {
     console.log(datid)
     var date : String  = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()+1< 10 ? 0 +""+datid.getDate(): datid.getDate())
     date = date === undefined ? "" : date
-    var risn =  datis === undefined ? "" : datis.split(":")[1].split("-")[0]
+    var risn =  datis === undefined ? "" : datis.split(":")[0].split("-")[1]
     risn = risn === undefined ? "" : risn
-    var risc = datis === undefined ? "" : datis.split(":")[1].split("-")[1] 
+    var risc = datis === undefined ? "" : datis.split(":")[0].split("-")[0] 
     risc = risc === undefined ? "" : risc
-    var rise = datis === undefined ? "" : datis.split(":")[1].split("-")[2]
-    rise = rise === undefined ? "" : rise
-    var livello =  datil === undefined ? "" : datil.split(":")[1]
+  
+    var livello =  datil === undefined ? "" : datil.split(":")[0]
     livello = livello === undefined ? "" : livello
-    console.log(risn,risc,rise,"-",date, "-",livello)
+    console.log(risn,risc,"-",date, "-",livello)
     var filteredData = this.dati.filter((item: {
       dtvalid_livello: any;
       livello: any;
       email: any;
       cognome: String;
-      nome: String; id_risorsa: any; }) => item.nome.includes(risn)  && item.livello.includes(livello) && item.cognome.includes(risc) && item.dtvalid_livello.includes(date) && item.email.includes(rise));
+      nome: String; id_risorsa: any; }) => item.nome.includes(risn)  && item.livello.includes(livello) && item.cognome.includes(risc) && item.dtvalid_livello.includes(date));
     this.agGrid.api.setRowData(filteredData)
   })
     this.test()
@@ -138,7 +137,9 @@ export class InserisciLivelloComponent {
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    if (numeroC == 0)
+    var left = e.column.getLeft()
+    console.log(left)
+    if (left === 0)
     {
       this.delete("delete from  rilatt.risorse_livello where id_risorsa_livello = " + this.id_touch)
     }
@@ -168,12 +169,12 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct id_livello || ':' || descrizione as descrizione2 from rilatt.livello order by descrizione2 " 
+    var query = "select distinct  descrizione || ':' || id_livello  as descrizione2 from rilatt.livello order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.livelli = dati; console.log(this.livelli)})
 
   }
   setup2= () => {
-    var query = "select distinct  id_risorsa || ':' || nome || '-' || cognome || '-' || email  as descrizione2 from rilatt.risorse order by descrizione2"
+    var query = "select distinct  cognome || '-'  || nome || ':' || id_risorsa  as descrizione2 from rilatt.risorse order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
   }
 
@@ -276,10 +277,10 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
    console.log(data)
     var descrizioneU : String = insertD.livello.descrizione2      
-    var id_livello = descrizioneU.split(":")[0]
+    var id_livello = descrizioneU.split(":")[1]
     console.log(id_livello)
     var descrizioneR : String = insertD.risorsa.descrizione2      
-    var id_risorsa = descrizioneR.split(":")[0]
+    var id_risorsa = descrizioneR.split(":")[1]
     console.log(id_risorsa)
 
     var query = "insert into rilatt.risorse_livello (id_risorsa, id_livello, dtvalid_livello) values ('"+id_risorsa+"','"+id_livello+"','"+data+"' )  RETURNING id_risorsa"

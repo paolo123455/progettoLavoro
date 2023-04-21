@@ -50,15 +50,14 @@ export class InserisciRuoloComponent {
     console.log(datid)
     var date : String  = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()< 10 ? 0 +""+datid.getDate(): datid.getDate())
     data = data === undefined ? "" : data
-    var risn =  datis === undefined ? "" : datis.split(":")[1].split("-")[0]
+    var risn =  datis === undefined ? "" : datis.split(":")[0].split("-")[1]
     risn = risn === undefined ? "" : risn
-    var risc = datis === undefined ? "" : datis.split(":")[1].split("-")[1] 
+    var risc = datis === undefined ? "" : datis.split(":")[0].split("-")[0] 
     risc = risc === undefined ? "" : risc
-    var rise = datis === undefined || datis === null ? "" : datis.split(":")[1].split("-")[2]
-    rise = rise === undefined ? "" : rise
-    var ruolo =  datil === undefined ? "" : datil.split(":")[1]
+   
+    var ruolo =  datil === undefined ? "" : datil.split(":")[0]
     ruolo = ruolo === undefined ? "" : ruolo
-    console.log(risn,risc,rise,"-",date, "-",ruolo)
+    console.log(risn,risc,"-",date, "-",ruolo)
     var filteredData = this.dati.filter((item: {
       dtvalid_ruolo: any;
        ruoli: any;
@@ -68,7 +67,7 @@ export class InserisciRuoloComponent {
       && item.ruoli.includes(ruolo) 
       && item.cognome.includes(risc) 
       && item.dtvalid_ruolo.includes(date )
-       && item.email.includes(rise));
+      );
     this.agGrid.api.setRowData(filteredData)
   })
     
@@ -140,7 +139,9 @@ export class InserisciRuoloComponent {
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    if (numeroC == 0)
+    var left = e.column.getLeft()
+    console.log(left)
+    if (left === 0)
     {
       this.delete("delete from  rilatt.risorse_ruoli where id_risorsa_ruolo = " + this.id_touch)
     }
@@ -170,12 +171,12 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct id_ruolo || ':' || descrizione as descrizione2 from rilatt.ruoli order by descrizione2 " 
+    var query = "select distinct descrizione || ':' || id_ruolo  as descrizione2 from rilatt.ruoli order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.ruoli= dati; console.log(this.livelli)})
 
   }
   setup2= () => {
-    var query = "select distinct  id_risorsa || ':' || nome || '-' || cognome || '-' || email  as descrizione2 from rilatt.risorse order by descrizione2"
+    var query = "select distinct  cognome   || '-' || nome || ':'|| id_risorsa  as descrizione2 from rilatt.risorse order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
   }
 
@@ -268,10 +269,10 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
     var data = insertD.data 
     var descrizioneU : String = insertD.ruolo.descrizione2      
-    var id_ruolo = descrizioneU.split(":")[0]
+    var id_ruolo = descrizioneU.split(":")[1]
     console.log(id_ruolo)
     var descrizioneR : String = insertD.risorsa.descrizione2      
-    var id_risorsa = descrizioneR.split(":")[0]
+    var id_risorsa = descrizioneR.split(":")[1]
     console.log(id_risorsa)
 
     var query = "insert into rilatt.risorse_ruoli (id_risorsa, id_ruolo, dtvalid_ruolo) values ('"+id_risorsa+"','"+id_ruolo+"','"+data+"' )  RETURNING id_ruolo"
