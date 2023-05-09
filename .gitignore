@@ -1,7 +1,2 @@
 **/node_modules/
 **/node_modules/
-
-
-# Ignore proxy file
-**/client/proxy.conf.json
-client/proxy.conf.json

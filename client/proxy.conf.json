@@ -1,0 +1,6 @@
+{
+    "/esegui/query/": {
+      "target": "http://node:8080",
+      "secure": false
+    }
+  }
