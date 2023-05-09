@@ -4,3 +4,4 @@
 
 # Ignore proxy file
 **/client/proxy.conf.json
+client/proxy.conf.json
