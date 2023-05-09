@@ -67,15 +67,13 @@
              </mat-form-field><br>
 
              <mat-form-field>
-              <mat-label>Cliente</mat-label>
-              <mat-select formControlName="cliente" placeholder="Cliente">
+              <mat-label>Progetto</mat-label>
+              <mat-select formControlName="progetto" placeholder="Progetto">
               <mat-option></mat-option>
-                 <mat-option *ngFor="let cliente of clienti" [value]="cliente">{{cliente.descrizione2}}</mat-option>
+                 <mat-option *ngFor="let progetto of progetti" [value]="progetto">{{progetto.descrizione2}}</mat-option>
                </mat-select>
               </mat-form-field><br>
-             
-                <mat-checkbox id="amateur" class="amateur" color="primary"
-                formControlName="istituito">istituito</mat-checkbox>
+            
                 
               
        

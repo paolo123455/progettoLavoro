@@ -12,17 +12,17 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-inserisci-nuova-commessa',
-  templateUrl: './inserisci-nuova-commessa.component.html',
-  styleUrls: ['./inserisci-nuova-commessa.component.css']
+  selector: 'app-ins-odl',
+  templateUrl: './ins-odl.component.html',
+  styleUrls: ['./ins-odl.component.css']
 })
-export class InserisciNuovaCommessaComponent {
+export class InsOdlComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
   form2!: FormGroup; 
   myMap = new Map<string, string>();
   tipologie: any[] = []
-  clienti: any[] = []
+  progetti: any[] = []
   stati: any[] = []
   risorse: any[] = []
   disabilitato = false;
@@ -38,22 +38,21 @@ export class InserisciNuovaCommessaComponent {
     this.form = this.fb.group({
       codice: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       descrizione : new FormControl("",[ Validators.required,Validators.minLength(1)]), 
-      effortTot : new FormControl(""),
-      effortPreg :new FormControl(""),
+      effortTot : '',
+      effortPreg :'',
       note : '', 
-      budget : new FormControl(""),
-      budgetPreg : new FormControl(""),
+      budget : '',
+      budgetPreg : '',
     })
     this.form2 = this.fb.group({
       stato: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      istituito : new FormControl(""),
       tipologia:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      cliente:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      progetto:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
      
   
     })
      var stato = ""
-     var istituito = false
+    var descrizionep =""
      var tipologia = ""
     var codice = ""
     var descrizione = ""
@@ -73,37 +72,36 @@ export class InserisciNuovaCommessaComponent {
     stato = stato === undefined || stato === "undefined"  ? "" : stato
     tipologia  =  data.tipologia === undefined || data.tipologia === null ? "" :data.tipologia.descrizione2 === undefined  || data.tipologia.descrizione2 === null ? "" :  data.tipologia.descrizione2
     tipologia = tipologia === undefined || tipologia === "undefined"  ? "" : tipologia
-    cliente  =  data.cliente === undefined || data.cliente === null ? "" :data.cliente.descrizione2 === undefined  || data.cliente.descrizione2 === null ? "" :  data.cliente.descrizione2.split(":")[0].split("-")[0]
-    cliente = cliente === undefined || cliente === "undefined"  ? "" : cliente
-    istituito = data.istituito === undefined || data.istituito == null ? false : data.istituito
-    istituito = istituito === undefined   ? false : istituito
+  
+    descrizionep  =  data.progetto === undefined || data.progetto === null  ? "" :data.progetto.descrizione2 === undefined  || data.progetto.descrizione2 === null ? "" :  data.progetto.descrizione2.split(":")[0].split("-")[0]
+    descrizionep = descrizionep === undefined || descrizionep === "undefined"  ? "" : descrizionep
+
 
     var filteredData = this.dati.filter((item: {
-      flag_istituto: String;
+
       tipologia: String;
       flag_stato: String;
       effort_pregresso: string;
       effort_totale: string;
       note: string;
       budget: string;
-      descrizione_codice: string;
+      descrizione_progetto: string;
       codice: String;
       budget_pregresso : string
-      descrizione_cliente : string
+      descrizione_odl : string
 
   
         }) =>
         item.flag_stato.includes(stato)  
       && (item.tipologia + "").includes(tipologia) 
-      && (item.flag_istituto+ "").includes(istituito+"") 
       && (item.codice+"").includes(codice)  
-      && (item.descrizione_codice+"").includes(descrizione) 
+      && (item.descrizione_progetto+"").includes(descrizionep) 
       && (item.budget+"").includes(budget) 
       && (item.note+"").includes(note) 
       && (item.effort_totale+ "").includes(effort_totale) 
       && (item.effort_pregresso+ "").includes(effort_pregresso) 
       && (item.budget_pregresso+ "").includes(budget_pregresso) 
-      && (item.descrizione_cliente+ "").includes(cliente) 
+      && (item.descrizione_odl+ "").includes(descrizione) 
     );
     this.agGrid.api.setRowData(filteredData)
   })
@@ -115,6 +113,7 @@ export class InserisciNuovaCommessaComponent {
     codice = codice === undefined || codice === "undefined"  ? "" : codice
     descrizione  =  data.descrizione === undefined || data.descrizione === null  ? "" :data.descrizione
     descrizione = descrizione === undefined || descrizione === "undefined"  ? "" : descrizione
+    
     budget  =  data.budget === undefined || data.budget === null  ? "" :data.budget
     budget = budget === undefined || budget === "undefined"  ? "" : budget
     note =  data.note === undefined || data.note === null ? "" :data.note
@@ -129,35 +128,36 @@ export class InserisciNuovaCommessaComponent {
 
     var filteredData = this.dati.filter((item: {
       budget_pregresso: string;
-      flag_istituto: String;
       tipologia: String;
       flag_stato: String;
       effort_pregresso: string;
       effort_totale: string;
       note: string;
       budget: string;
-      descrizione_progetto: string;
-      codice: string;
-      descrizione_cliente : string
+      descrizione_odl: string;
+      codice_odl: string;
+      descrizione_progetto : string
   
         }) =>
         item.flag_stato.includes(stato)  
       && (item.tipologia + "").includes(tipologia) 
-      && (item.flag_istituto+ "").includes(istituito+"") 
-      && (item.codice+"").includes(codice)  
+      && (item.codice_odl+"").includes(codice)  
       && (item.descrizione_progetto+"").includes(descrizione) 
       && (item.budget+"").includes(budget) 
       && (item.note+"").includes(note) 
       && (item.effort_totale+ "").includes(effort_totale) 
       && (item.effort_pregresso+ "").includes(effort_pregresso) 
       && (item.budget_pregresso+ "").includes(budget_pregresso) 
-      && (item.descrizione_cliente+ "").includes(cliente) 
+      && (item.descrizione_odl+ "").includes(descrizionep) 
     );
     this.agGrid.api.setRowData(filteredData)
   })
     this.select()
   
     this.setup1()
+    this.setup2()
+    this.setup3()
+    this.strucElaboration()
    
 
     
@@ -197,13 +197,7 @@ export class InserisciNuovaCommessaComponent {
 
 
 
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_progetto;
-
-  
- 
-
-
-
+  getRowId: GetRowIdFunc<any>  = params => params.data.id_odl +"" + params.data.id_progetto ;
 
    // Example load data from sever
    onGridReady(params: GridReadyEvent) {
@@ -217,7 +211,7 @@ export class InserisciNuovaCommessaComponent {
     
 
     console.log('cellClicked', e);
-    this.id_touch =  e.data.id_progetto
+    this.id_touch =  e.data.id_odl
 
      
     console.log(this.id_touch) 
@@ -228,7 +222,7 @@ export class InserisciNuovaCommessaComponent {
     if (left === 0)
    
     {
-      this.delete("delete from  new_rilatt.progetti where id_progetto = " + this.id_touch)
+      this.delete("delete from  new_rilatt.odl where id_odl = " + this.id_touch)
     }
   }
 
@@ -247,7 +241,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   var colonna = e.colDef.field
   console.log(colonna)
   var valore = e.value
-  var query = "update new_rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
+  var query = "update new_rilatt.odl set " + colonna + " = '" + valore +"' where id_odl  = "+datiC.id_odl
   console.log(valore)  
   console.log(query)
   this.update(query)
@@ -258,37 +252,30 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   setup1= () => {
     var query = "select valore as descrizione2  from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='TIPOLOGIA' " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.tipologie= dati; console.log(this.tipologie)
-    this.setup2()
+   
     })
 
   }
   setup2= () => {
     var query = "select valore as descrizione2 from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='FLAG_STATO'"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.stati = dati
-    this.setup3()
-      this.strucElaboration()
+    
     })
   }
   setup3= () => {
-    var query = "select descrizione_cliente || '-' || codice_cliente || ':' || id_cliente as descrizione2 from new_rilatt.clienti"
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.clienti = dati
+    var query = "select descrizione_progetto || '-' || codice || ':' || id_progetto as descrizione2 from new_rilatt.progetti"
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.progetti = dati
   
     })
   }
 
 
  
-  select  = ()  => {var query = "select * from new_rilatt.progetti p left join new_rilatt.clienti c on c.id_cliente = p.id_cliente "
+  select  = ()  => {var query = "select p.* ,c.descrizione_progetto from new_rilatt.odl p left join new_rilatt.progetti c on c.id_progetto = p.id_progetto "
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows; 
-  var  filteredData = this.dati.filter((item: {
-    flag_istituto: String;
-      }) =>
-    
-     (item.flag_istituto+ "").includes("false") 
 
-  );
-  this.agGrid.api.setRowData(filteredData)})
+  this.agGrid.api.setRowData(this.dati)})
 
 }
  
@@ -316,7 +303,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'progetti' and table_name  = 'progetti' order by importanza"  ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'odl'  order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
  
@@ -342,7 +329,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     if(risposata.upd === "ok")
     {
           console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_progetto : this.id_touch}]});
+          this.agGrid.api.applyTransaction({remove:[{id_odl : this.id_touch}]});
     }
     else 
     { console.log("errore")
@@ -351,9 +338,9 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       
       Swal.fire({  
         icon: 'error',  
-        title: 'Oops...',  
+        title: 'errore',  
         text: 'errore delete',  
-        footer: '<a href>Why do I have this issue?</a>'  
+      
       })  
     }
   
@@ -377,19 +364,19 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var  budget_pregresso = insert1.budgetPreg
     budget_pregresso = budget_pregresso === undefined || budget_pregresso === "" ? 0 : budget_pregresso
     var note = insert1.note
-    var  cliente = insert2.cliente === undefined  || insert2.cliente === "" ? "" : insert2.cliente.descrizione2
-    console.log(cliente)
-    cliente = cliente === undefined || cliente === "" ? null :  cliente.split(":")[1]
+    var  progetto = insert2.progetto === undefined  || insert2.progetto === "" ? "" : insert2.progetto.descrizione2
+    console.log(progetto)
+    progetto = progetto === undefined || progetto === "" ? null :  progetto.split(":")[1]
     var budget = insert1.budget
     budget = budget === undefined || budget === "" ? 0 : budget
     var stato = insert2.stato.descrizione2
     var tipologia = insert2.tipologia.descrizione2
-    var istituito = insert2.istituito === "" || insert2.istituito === undefined ? false :  insert2.istituito 
+   
        
   
     
 
-    var query = "insert into new_rilatt.progetti (codice, descrizione_progetto, note ,effort_totale , effort_pregresso, budget  , flag_stato , flag_istituto , tipologia, budget_pregresso,id_cliente) values ('"+codice+"','"+descrizione+"','"+note+"','"+effort_totale+"','"+effort_pregresso+"','"+budget+"','"+stato+"',"+istituito+",'"+tipologia+"','"+budget_pregresso+"',"+cliente+" )  RETURNING id_progetto"
+    var query = "insert into new_rilatt.odl (codice_odl, descrizione_odl, note ,effort_totale , effort_pregresso, budget  , flag_stato  , tipologia, budget_pregresso,id_progetto) values ('"+codice+"','"+descrizione+"','"+note+"','"+effort_totale+"','"+effort_pregresso+"','"+budget+"','"+stato+"','"+tipologia+"','"+budget_pregresso+"',"+progetto+" )  RETURNING id_odl"
     console.log(query)
     this.insP.select(query).subscribe(response =>{
       console.log(response)
@@ -399,7 +386,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
              Swal.fire({  
                  icon: 'success',  
                  title: 'successo',  
-                 text: 'inserimento commessa  avvenuto con successo',  
+                 text: 'inserimento odl avvenuto con successo',  
                    
              }) 
            
@@ -418,7 +405,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         Swal.fire({  
           icon: 'error',  
           title: 'errore',  
-          text: 'inserimento commessa a utente andata in errore ',  
+          text: 'inserimento odl  andata in errore ',  
         })  
       }
     

@@ -22,6 +22,7 @@ export class InserisciCommessaRisorsaComponent {
   myMap = new Map<string, string>();
   risorse: any[] = []
   commesse: any[] = []
+  odls: any[] = []
   mesi : Number[] = [1,2,3,4,5,6,7,8,9,10,11,12]
   anni: Number[] = [2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
   disabilitato = false;
@@ -37,13 +38,14 @@ export class InserisciCommessaRisorsaComponent {
     
     this.form = this.fb.group({
       risorsa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      commessa: new FormControl("",[ Validators.required,Validators.minLength(1)])
+      commessa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      odl: new FormControl("",[ Validators.required,Validators.minLength(1)])
 
     })
     this.form2 = this.fb.group({
       anno: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       mese :  new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      giornate:  new FormControl(""),
+      giornate:  '',
       budget : '' 
      
   
@@ -57,6 +59,7 @@ export class InserisciCommessaRisorsaComponent {
     var nome : string = ""
     var cognome : string = ""
     var email : string = ""
+    var odl: string = ""
     
     this.form2.valueChanges.subscribe((data)=>{
       this.disabilitato = this.form.valid && this.form2.valid
@@ -81,7 +84,8 @@ export class InserisciCommessaRisorsaComponent {
         flag_budget : String;
         giornate : String;
         anno: String;
-        descrizione_codice: any;
+        descrizione_progetto: any;
+        descrizione_odl: any;
         codice: any;
         dtvalid_ruolo: any;
          ruoli: any;
@@ -96,7 +100,8 @@ export class InserisciCommessaRisorsaComponent {
         &&item.nome.includes(nome)
         && item.cognome.includes(cognome)
         && item.codice.includes(codice)
-        && item.descrizione_codice.includes(descrizione)
+        && item.descrizione_odl.includes(odl)
+        && item.descrizione_progetto.includes(descrizione)
 
           );
       this.agGrid.api.setRowData(filteredData)
@@ -110,11 +115,13 @@ export class InserisciCommessaRisorsaComponent {
     console.log(this.form.valid && this.form2.valid)
     
     console.log(data)
+    var datio: String =  data.odl === undefined || data.odl === null  ? undefined :data.odl.descrizione2
     var datic: String =  data.commessa === undefined || data.commessa === null  ? undefined :data.commessa.descrizione2
     var datir : String =  data.risorsa === undefined || data.risorsa === null ? undefined :data.risorsa.descrizione2
     
     console.log(datic , datir)
-
+    odl =  datio === undefined ? "" : datio.split(":")[0].split("--")[0]
+    odl = odl === undefined ? "" : odl
     codice =  datic === undefined ? "" : datic.split(":")[0].split("--")[1]
     codice = codice === undefined ? "" : codice
     descrizione =  datic === undefined ? "" : datic.split(":")[0].split("--")[0]
@@ -136,7 +143,8 @@ export class InserisciCommessaRisorsaComponent {
       flag_budget : String;
       giornate : String;
       anno: String;
-      descrizione_codice: any;
+      descrizione_odl : any;
+      descrizione_progetto: any;
       codice: any;
       dtvalid_ruolo: any;
        ruoli: any;
@@ -149,7 +157,8 @@ export class InserisciCommessaRisorsaComponent {
         &&item.nome.includes(nome)
         && item.cognome.includes(cognome)
         && item.codice.includes(codice)
-        && item.descrizione_codice.includes(descrizione))
+        && item.descrizione_odl.includes(odl)
+        && item.descrizione_progetto.includes(descrizione))
  
     this.agGrid.api.setRowData(filteredData)
   })
@@ -223,7 +232,7 @@ export class InserisciCommessaRisorsaComponent {
     console.log(left)
     if (left === 0)
     {
-      this.delete("delete from  rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
+      this.delete("delete from  new_rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
     }
   }
 
@@ -242,7 +251,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   var colonna = e.colDef.field
   console.log(colonna)
   var valore = e.value
-  var query = "update rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
+  var query = "update new_rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
   console.log(valore)  
   console.log(query)
   this.update(query)*/
@@ -251,22 +260,30 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct   cognome || '-' || nome || '-' || ':' ||   id_risorsa as descrizione2 from rilatt.risorse order by descrizione2 " 
+    var query = "select distinct   cognome || '-' || nome || '-' || ':' ||   id_risorsa as descrizione2 from new_rilatt.risorse order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse= dati; console.log(this.risorse)
       this.setup2()
     })
 
   }
   setup2= () => {
-    var query = "select   descrizione_codice || '--'  ||codice || ':' || id_progetto   as descrizione2 from rilatt.progetti order by descrizione2"
+    var query = "select   descrizione_progetto || '--'  ||codice || ':' || id_progetto   as descrizione2 from new_rilatt.progetti order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.commesse = dati
-    this.strucElaboration()
+      this.setup3()
+      this.strucElaboration()
+    })
+  }  
+  setup3= () => {
+    var query = "select   descrizione_odl || '--'  ||codice_odl || ':' || id_odl  as descrizione2 from new_rilatt.odl order by descrizione2"
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.odls = dati
+    
     })
   }
 
 
-  select  = ()  => {var query = "select *, p.descrizione_codice as progetti from rilatt.attivita_risorsa ar inner join rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
-                                "inner join rilatt.progetti  p on p.id_progetto = ar.id_progetto "
+
+  select  = ()  => {var query = "select *  from new_rilatt.attivita_risorsa ar inner join new_rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
+                                "inner join new_rilatt.progetti  p on p.id_progetto = ar.id_progetto left join new_rilatt.odl o on ar.id_odl = o.id_odl  "
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)
   var  filteredData = this.dati.filter((item: {
@@ -306,19 +323,19 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select * from rilatt.setting_colonne sc where maschera  = 'attivita_risorsa'  order by importanza"  ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'attivita_risorsa'  order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
  
     var responsej = JSON.parse(JSON.stringify(response))
     for( let element of  responsej.rows) {
       console.log(element)
-     this.columnDefs.push({"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+     this.columnDefs.push({"field" :  element.column_name, editable : element.editable, hide : !element.visible}) 
 
     };
 
     
-    this.agGrid.api.setColumnDefs(this.columnDefs)
+    //this.agGrid.api.setColumnDefs(this.columnDefs)
     this.agGrid.api.setColumnDefs(this.columnDefs)
     
 
@@ -362,7 +379,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var id_progetto = insert1.commessa.descrizione2 === undefined ? "" : insert1.commessa.descrizione2.split(":")[1]
     var id_risorsa =  insert1.risorsa.descrizione2 === undefined ? "" :  insert1.risorsa.descrizione2.split(":")[1] 
     
-  
+    var id_odl = insert1.odl.descrizione2 === undefined ? null : insert1.odl.descrizione2.split(":")[1]
     var giornate = insert2.giornate 
     giornate = giornate === undefined || giornate === null || giornate === '' ? "0" : giornate
     console.log(giornate)
@@ -372,7 +389,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var mese = insert2.mese
     var flag = false
     var flag2 = false
-    var queryc = "SELECT rilatt.fnc_controllo_rendicontazione("+id_progetto+", "+id_risorsa+","+anno+","+mese+","+giornate+");"
+    var queryc = "SELECT new_rilatt.fnc_controllo_rendicontazione("+id_progetto+", "+id_risorsa+","+anno+","+mese+","+giornate+","+id_odl+");"
     console.log(queryc)
     this.insP.select(queryc).subscribe(response =>{
       console.log(response)
@@ -419,7 +436,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                else {
            
                
-               var query = "insert into rilatt.attivita_risorsa ( id_risorsa, id_progetto ,giornate  ,flag_attivita, flag_budget  , anno , mese) values ('"+id_risorsa+"','"+id_progetto+"','"+giornate+"',"+flag_attivita+","+flag_budget+",'"+anno+"','"+mese+"' )  RETURNING id_progetto"
+               var query = "insert into new_rilatt.attivita_risorsa ( id_risorsa, id_progetto ,giornate  ,flag_attivita, flag_budget  , anno , mese , id_odl) values ('"+id_risorsa+"','"+id_progetto+"','"+giornate+"',"+flag_attivita+","+flag_budget+",'"+anno+"','"+mese+"','"+id_odl+"' )  RETURNING id_progetto"
                console.log(query)
                this.insP.select(query).subscribe(response =>{
                  console.log(response)

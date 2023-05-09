@@ -110,9 +110,9 @@ ngOnInit(): void {
 
 
 setup1= () => {
-  var query = "select distinct    cognome || '-' || nome || '-' || email  || ':'  ||   r.id_risorsa as descrizione2, codice || '-' || descrizione_codice || ':' || p.id_progetto as descrizione3 , anno,mese from rilatt.progetti_pm pm inner join rilatt.progetti p  on p.id_progetto  = pm.id_progetti " +
- " inner join rilatt.attivita_risorsa r  on pm.id_risorsa  = r.id_risorsa " +
- " inner join rilatt.risorse r2 on r.id_risorsa  = r2.id_risorsa " + 
+  var query = "select distinct    cognome || '-' || nome || '-' || email  || ':'  ||   r.id_risorsa as descrizione2, codice || '-' || descrizione_progetto || ':' || p.id_progetto as descrizione3 , anno,mese from new_rilatt.progetti_pm pm inner join new_rilatt.progetti p  on p.id_progetto  = pm.id_progetti " +
+ " inner join new_rilatt.attivita_risorsa r  on pm.id_risorsa  = r.id_risorsa " +
+ " inner join new_rilatt.risorse r2 on r.id_risorsa  = r2.id_risorsa " + 
  " order by descrizione2 " 
   this.insP.select(query).subscribe(response =>{
    
@@ -155,7 +155,7 @@ inserisciRiga2 = () : void => {
   var anno: string =  insert1.anno === undefined || insert1.anno === null  ? "" :insert1.anno.anno  
   var mese: string =  insert1.mese === undefined || insert1.mese === null  ? "" :insert1.mese.mese
 
-  var queryc = " select rilatt.fnc_crea_pianificazione("+id_progetto+","+anno+","+mese+","+daanno+","+damese+","+aanno+","+amese+")"
+  var queryc = " select new_rilatt.fnc_crea_pianificazione("+id_progetto+","+anno+","+mese+","+daanno+","+damese+","+aanno+","+amese+")"
   console.log(queryc)
   var flag = false
   var flag2 = false
@@ -228,7 +228,7 @@ inserisciRiga = () : void => {
   var anno: string =  insert1.anno === undefined || insert1.anno === null  ? "" :insert1.anno.anno  
   var mese: string =  insert1.mese === undefined || insert1.mese === null  ? "" :insert1.mese.mese
 
-  var queryc = "SELECT rilatt.fnc_consolida_pianificazione("+id_progetto+","+anno+","+mese+")"
+  var queryc = "SELECT new_rilatt.fnc_consolida_pianificazione("+id_progetto+","+anno+","+mese+")"
   console.log(queryc)
   var flag = false
   var flag2 = false

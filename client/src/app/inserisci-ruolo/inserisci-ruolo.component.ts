@@ -143,7 +143,7 @@ export class InserisciRuoloComponent {
     console.log(left)
     if (left === 0)
     {
-      this.delete("delete from  rilatt.risorse_ruoli where id_risorsa_ruolo = " + this.id_touch)
+      this.delete("delete from  new_rilatt.risorse_ruoli where id_risorsa_ruolo = " + this.id_touch)
     }
   }
 
@@ -162,7 +162,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   var colonna = e.colDef.field
   console.log(colonna)
   var valore = e.value
-  var query = "update rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
+  var query = "update new_rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
   console.log(valore)  
   console.log(query)
   this.update(query)*/
@@ -171,12 +171,12 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct descrizione || ':' || id_ruolo  as descrizione2 from rilatt.ruoli order by descrizione2 " 
+    var query = "select distinct descrizione || ':' || id_ruolo  as descrizione2 from new_rilatt.ruoli order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.ruoli= dati; console.log(this.livelli)})
 
   }
   setup2= () => {
-    var query = "select distinct  cognome   || '-' || nome || ':'|| id_risorsa  as descrizione2 from rilatt.risorse order by descrizione2"
+    var query = "select distinct  cognome   || '-' || nome || ':'|| id_risorsa  as descrizione2 from new_rilatt.risorse order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
   }
 
@@ -184,9 +184,9 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
   testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
  
-  select  = ()  => {var query = "Select r.*, rl.id_ruolo, rl.id_risorsa_ruolo,  to_char( dtvalid_ruolo, 'YYYY-MM-DD') as dtvalid_ruolo , l.descrizione as ruoli from rilatt.risorse r " 
-       +"inner join rilatt.risorse_ruoli  rl  on  r.id_risorsa  = rl.id_risorsa " 
-       +"inner  join  rilatt.ruoli l  on l.id_ruolo  = rl.id_ruolo "
+  select  = ()  => {var query = "Select r.*, rl.id_ruolo, rl.id_risorsa_ruolo,  to_char( dtvalid_ruolo, 'YYYY-MM-DD') as dtvalid_ruolo , l.descrizione as ruoli from new_rilatt.risorse r " 
+       +"inner join new_rilatt.risorse_ruoli  rl  on  r.id_risorsa  = rl.id_risorsa " 
+       +"inner  join  new_rilatt.ruoli l  on l.id_ruolo  = rl.id_ruolo "
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
 
@@ -216,7 +216,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select  * from rilatt.setting_colonne   sc where  table_schema ='rilatt' and maschera  = 'risorse_ruoli' order by importanza"  ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select  * from new_rilatt.setting_colonne   sc where  table_schema ='new_rilatt' and maschera  = 'risorse_ruoli' order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
  
@@ -275,7 +275,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var id_risorsa = descrizioneR.split(":")[1]
     console.log(id_risorsa)
 
-    var query = "insert into rilatt.risorse_ruoli (id_risorsa, id_ruolo, dtvalid_ruolo) values ('"+id_risorsa+"','"+id_ruolo+"','"+data+"' )  RETURNING id_ruolo"
+    var query = "insert into new_rilatt.risorse_ruoli (id_risorsa, id_ruolo, dtvalid_ruolo) values ('"+id_risorsa+"','"+id_ruolo+"','"+data+"' )  RETURNING id_ruolo"
     this.insP.select(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 

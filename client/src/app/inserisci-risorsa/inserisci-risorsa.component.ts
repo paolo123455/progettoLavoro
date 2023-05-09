@@ -157,6 +157,8 @@ export class InserisciRisorsaComponent implements OnInit {
   private datvalid_livello : String = "" 
   private datvalid_ruolo : String = "" 
   private id_practice : String = ""
+  private id_ruolo : String = ""
+  private id_risorsa_livello : String = ""
   
   
   // For accessing the Grid's API
@@ -164,7 +166,7 @@ export class InserisciRisorsaComponent implements OnInit {
 
 
   private tabella =  "risorse"
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_risorsa  +""+ ( params.data.dtvalid_ruolo === null ||  params.data.dtvalid_ruolo === undefined ?  "" :  params.data.dtvalid_ruolo +"rr"  )+ (params.data.dtvalid_livello === null ? "" :  params.data.dtvalid_livello  ) + (params.data.id_practice  === null ? "" :  params.data.id_practice) ;
+  getRowId: GetRowIdFunc<any>  = params => (params.data.id_risorsa === null ? "aa" : params.data.id_risorsa ) +"-" + (params.data.id_risorsa_livello  === null ? "bb" : params.data.id_risorsa_livello )+"-"+(params.data.id_practice  === null ?"cc" : params.data.id_practice) +"-"+ (params.data.id_ruolo  === null ? "ee" : params.data.id_ruolo)
 
   
  
@@ -202,19 +204,46 @@ export class InserisciRisorsaComponent implements OnInit {
       lista[index] = appoggio
       }
     }
+    
     this.id_touch =  e.data.id_risorsa
      this.datvalid_livello  = "" + e.data.dtvalid_ruolo
      this.datvalid_ruolo  = ""+e.data.dtvalid_livello 
      this.id_practice = e.data.id_practice
+     this.id_ruolo = e.data.id_ruolo
+     this.id_risorsa_livello = e.data.id_risorsa_livello
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
     var left = e.column.getLeft()
     console.log(left)
+    var id_risorsa = e.data.id_risorsa 
     if (left === 0)
     {
-      this.delete("delete from  rilatt.risorse  where id_risorsa = " + this.id_touch)
-    }
+       this.insP.select("select * from new_rilatt.attivita_risorsa where id_risorsa = " + id_risorsa).subscribe(Response => {
+      var jsonR = JSON.parse(JSON.stringify(Response))
+      console.log(Response)
+      console.log(jsonR.rowCount)
+      if (jsonR.rowCount === 0)
+      { 
+        console.log("caso non update")
+        this.delete("delete from  new_rilatt.risorse_livello where id_risorsa = " + id_risorsa ,"1")
+
+       
+
+        
+      }
+      else
+      {
+        Swal.fire({  
+          icon: 'error',  
+          title: 'Oops...',  
+          text: 'impossibile eliminare questa risorsa poichè essa è presente ancora nel registro attività ',  
+          
+        })  
+      }
+   
+       })
+  }
   }
 
   onCellEditingStarted( e: CellEditingStartedEvent): void { 
@@ -233,10 +262,10 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   console.log(colonna)
   var query =""
   var flag = false
-  if (colonna === "ruoli") 
+  if (colonna === "descrizione_livello") 
   {  
     flag = true
-    if (datiC.id_ruolo === null )  
+    if (datiC.id_livello === null )  
     {
       Swal.fire({  
         icon: 'warning',  
@@ -251,10 +280,30 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     else{
     var valore = e.value
     valore = (valore+"").split(":")[1]
-    query = "update rilatt.risorse_ruoli set id_ruolo = '" + valore +"' where id_risorsa = " +datiC.id_risorsa+" and  id_ruolo = "+datiC.id_ruolo
+    query = "update new_rilatt.risorse_livello set id_livello = '" + valore +"' where id_risorsa = " +datiC.id_risorsa+" and  id_livello = "+datiC.id_livello
     }
   }
-  if (colonna === "livello") 
+  if (colonna === "descrizione_ruolo") 
+  {  
+    flag = true
+   
+   
+    var valore = e.value
+    valore = (valore+"").split(":")[1]
+    query = "update new_rilatt.risorse set id_ruolo = '" + valore +"' where id_risorsa = " +datiC.id_risorsa
+    }
+    if (colonna === "descrizione_practice") 
+   {  
+    flag = true
+   
+   
+    var valore = e.value
+    valore = (valore+"").split(":")[1]
+    query = "update new_rilatt.risorse set id_practice = '" + valore +"' where id_risorsa = " +datiC.id_risorsa
+    }
+  
+  
+ /* if (colonna === "livello") 
   { 
 
     flag = true 
@@ -275,7 +324,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
      
     var valore = e.value
     valore = (valore+"").split(":")[1]
-    query = "update rilatt.risorse_livello set id_livello = '" + valore +"' where id_risorsa = " +datiC.id_risorsa+" and  id_livello = "+datiC.id_livello
+    query = "update new_rilatt.risorse_livello set id_livello = '" + valore +"' where id_risorsa = " +datiC.id_risorsa+" and  id_livello = "+datiC.id_livello
     }
   }
   if (colonna === "practice") 
@@ -297,14 +346,14 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         
     var valore = e.value
     valore = (valore+"").split(":")[1]
-    query = "update rilatt.risorse_practice set id_practice = '" + valore +"' where id_risorsa  = " +datiC.id_risorsa+" and  id_practice = "+datiC.id_practice
+    query = "update new_rilatt.risorse_practice set id_practice = '" + valore +"' where id_risorsa  = " +datiC.id_risorsa+" and  id_practice = "+datiC.id_practice
     }
   
-  }
+  } */
   if(!flag)
   {
     var valore = e.value
-     query = "update rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
+     query = "update new_rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
   }
   
 
@@ -315,14 +364,14 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct descrizione || ':' ||  id_livello  as descrizione2 from rilatt.livello order by descrizione2 " 
+    var query = "select distinct descrizione_livello || ':' ||  id_livello  as descrizione2 from new_rilatt.livello order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.livelli = dati; console.log(this.livelli)
       this.setup2();
     })
     
   }
   setup2= () => {
-    var query = "select distinct   descrizione || ':' ||  id_ruolo as descrizione2 from rilatt.ruoli order by descrizione2"
+    var query = "select distinct   descrizione_ruolo || ':' ||  id_ruolo as descrizione2 from new_rilatt.ruoli order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.ruoli = dati
       this.setup3();
     })
@@ -330,7 +379,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   }
 
  setup3  = () => {
-    var query = "select distinct   descrizione || ':' ||  id_practice as descrizione2 from rilatt.practice  order by descrizione2"
+    var query = "select distinct   descrizione_practice || ':' ||  id_practice as descrizione2 from new_rilatt.practice  order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.practice = dati
       this.strucElaboration();
     })
@@ -339,14 +388,16 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
  
-  select  = ()  => {var query = "Select distinct  r.*, pra2.* , r2.id_ruolo, r2.dtvalid_ruolo ,rl.id_livello, rl.dtvalid_livello , pra2.descrizione as practice,l.descrizione as livello , r3.descrizione  as ruoli from rilatt.risorse r " 
-       +"left join rilatt.risorse_livello  rl  on  r.id_risorsa  = rl.id_risorsa " 
-       +" left  join  rilatt.livello l  on l.id_livello  = rl.id_livello "
-       + " left join rilatt.risorse_ruoli  r2  on  r.id_risorsa  = r2.id_risorsa "
-       + " left  join  rilatt.ruoli r3   on r3.id_ruolo  = r2.id_ruolo "
-       +"left join rilatt.risorse_practice pra on pra.id_risorsa = r.id_risorsa "
-       +"left join rilatt.practice pra2 on pra.id_practice = pra2.id_practice order by r.nome  "
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati); })
+  select  = ()  => {var query = "Select distinct  r.* ,rl.id_risorsa_livello,rl.id_livello, rl.dtinizio_livello,  rl.dtfine_livello, pra2.descrizione_practice,l.descrizione_livello  , r3.descrizione_ruolo   from new_rilatt.risorse r " 
+       +"left join new_rilatt.risorse_livello  rl  on  r.id_risorsa  = rl.id_risorsa and attivo = true  " 
+       +" left  join  new_rilatt.livello l  on l.id_livello  = rl.id_livello "
+       + " left  join  new_rilatt.ruoli r3   on r3.id_ruolo  = r.id_ruolo "
+       +"left join new_rilatt.practice pra2 on r.id_practice = pra2.id_practice  order by r.nome  "
+ this.insP.select(query).subscribe(response =>{
+  console.log(response) ;
+  this.dati = JSON.parse(JSON.stringify(response)).rows;  
+  this.agGrid.api.setRowData(this.dati);
+ })
 
 }
  
@@ -374,9 +425,9 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select  importanza ,maschera,column_name , table_name , table_schema , editable  , visible from rilatt.setting_colonne   sc where table_schema ='rilatt' and maschera = 'risorse' order by importanza "
+  strucElaboration = () => this.insP.structUndestanding("select  importanza ,maschera,column_name , table_name , table_schema , editable  , visible from new_rilatt.setting_colonne   sc where  maschera = 'risorse' order by importanza "
   ).subscribe(response =>{
-    console.log("ciao") ;  console.log(response)
+      console.log(response)
     console.log(response)
     console.log("finito")
     var responsej = JSON.parse(JSON.stringify(response))
@@ -386,25 +437,25 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       var list : any[] = []
       var flag = false
       console.log(element)
-      if(element.table_name === "ruoli" && element.column_name === "descrizione")  
+      if(element.column_name === "descrizione_livello")  
          {
           console.log("entrato")
           flag = true 
-          list =    [...new Map(this.ruoli.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
+          list =    [...new Map(this.livelli.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
           list.push(null)
-          this.columnDefs.push({resizable: true, cellEditor: 'agSelectCellEditor',   cellEditorParams: { values:list},"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+          this.columnDefs.push({resizable: true, cellEditor: 'agSelectCellEditor',   cellEditorParams: { values:list},"field" : element.column_name , editable : element.editable, hide : !element.visible}) 
      
          } 
       
-      if(element.table_name === "livello" && element.column_name === "descrizione")
+      if(element.column_name === "descrizione_ruolo")
             {  console.log("entrato")
         flag = true 
-        list =    [...new Map(this.livelli.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
+        list =    [...new Map(this.ruoli.map((item: { [x: string]: any; }) =>[item["descrizione2"], item["descrizione2"]])).values()]; 
         list.push(null)
-        this.columnDefs.push({ resizable: true,cellEditor: 'agSelectCellEditor', cellEditorParams: { values:list},"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
+        this.columnDefs.push({ resizable: true,cellEditor: 'agSelectCellEditor', cellEditorParams: { values:list},"field" : element.column_name, editable : element.editable, hide : !element.visible}) 
    
        } 
-       if(element.table_name === "practice" && element.column_name === "descrizione") 
+       if(element.table_name === "practice" && element.column_name === "descrizione_practice") 
       {   
         console.log("entrato")
         flag = true 
@@ -434,16 +485,21 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   
   })
 
+   
 
-
-  delete =  (query : String)   => this.insP.select(query).subscribe(response =>{
+  delete =  (query : String , numero : string)   => this.insP.select(query).subscribe(response =>{
     console.log(response)
+    console.log(this.id_risorsa_livello)
     var risposata = JSON.parse(JSON.stringify(response)) 
     if(risposata.upd === "ok")
-    {
-          console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_risorsa : this.id_touch , dtvalid_livello : this.datvalid_livello === "null" ? "" : this.datvalid_livello, dtvalid_ruolo : this.datvalid_ruolo === "null" ? "":this.datvalid_ruolo , id_practice : this.id_practice }]});
-    }
+     {
+         console.log("delete  andato a buon fine "+ this.id_touch)
+         if(numero === "1")
+          {
+            this.delete("delete from  new_rilatt.risorse  where id_risorsa = " +  this.id_touch, "2")
+          this.agGrid.api.applyTransaction({remove:[{id_risorsa : this.id_touch ,  id_risorsa_livello : this.id_risorsa_livello, id_ruolo : this.id_ruolo,id_practice :  this.id_practice}]});
+          }
+        }
     else 
     { console.log("errore")
     
@@ -477,7 +533,12 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     livello = livello === undefined ? "" : livello
     var practice = insertRL.practice === undefined  ||  insertRL.practice === null? "" : insertRL.practice.descrizione2 === undefined ? "" : insertRL.practice.descrizione2
     practice = practice === undefined ? "" : practice
-      
+    var descrizioneR : String = ruolo
+    var id_ruolo : string | null = descrizioneR.split(":")[1]
+    var descrizioneR : String = practice
+    var id_practice : string | null = descrizioneR.split(":")[1] 
+    id_practice = id_practice === undefined ? null : id_practice
+    id_ruolo = id_ruolo === undefined ? null : id_ruolo  
     console.log(data)
     console.log(ruolo)
     console.log(livello)
@@ -486,19 +547,14 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var flag3 = false
     var flag4 = false 
 
-    var query = "insert into rilatt.risorse (nome , cognome , email) values ('"+insertD.nome+"','"+insertD.cognome+"','"+insertD.email+"' )  RETURNING id_risorsa"
+    var query = "insert into new_rilatt.risorse (nome , cognome , email ,id_ruolo , id_practice ) values ('"+insertD.nome+"','"+insertD.cognome+"','"+insertD.email+"',"+id_ruolo+","+id_practice+" )  RETURNING id_risorsa"
     this.insP.select(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
       if(risposta.upd === "ok")
       {     
-          
-      
              falg1 = true
              var id_risorsa = risposta.rows[0].id_risorsa
-
-              
-
              if(true)//!(insertRL.livello.descrizione2 === undefined || insertRL.livello.descrizione2 === ""))
              {
               var descrizioneU : String =livello
@@ -506,8 +562,9 @@ onCellValueChanged( e: CellValueChangedEvent): void {
              
               var id_livello = descrizioneU.split(":")[1]
               console.log(id_livello)
-            
-              var query2 = "insert into rilatt.risorse_livello(id_risorsa, id_livello , dtvalid_livello) values ('"+id_risorsa+"','"+id_livello+"','"+insertRL.data+"' )"
+              if(id_livello != undefined)
+              {
+              var query2 = "insert into new_rilatt.risorse_livello(id_risorsa, id_livello , dtinizio_livello, attivo) values ('"+id_risorsa+"','"+id_livello+"','"+insertRL.data+"',"+true+" )"
               console.log(query2)
               this.insP.select(query2).subscribe(response =>{
               console.log(response)
@@ -529,133 +586,15 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                console.log(this.datiV)
                  
               
-              /*  Swal.fire({  
+                Swal.fire({  
                   icon: 'error',  
                   title: 'errore',  
-                  text: 'inserimento livello errato!',  
-                  footer: '<a>controlla i dati inseriti</a>'  
-                })  */
+                  text: 'inserimento utente andato bene, inserimento livello errato!',  
+                  
+                })  
               }
-              if(true)//!(insertRL.ruolo.descrizione2 === undefined || insertRL.ruolo.descrizione2 === ""))
-              {
-                var descrizioneR : String = ruolo
-                var id_ruolo = descrizioneR.split(":")[1]
-                console.log(id_ruolo)
-               var query3 = "insert into rilatt.risorse_ruoli(id_risorsa, id_ruolo , dtvalid_ruolo) values ('"+id_risorsa+"','"+id_ruolo+"','"+insertRL.data+"' )"
-               
-               console.log(query3)
-               this.insP.select(query3).subscribe(response =>{
-                console.log(response)
-                var risposta = JSON.parse(JSON.stringify(response)) 
-                if(risposta.upd === "ok")
-                {     
-                    
-                       flag3 = true
-                      
-                }
-                else 
-                { console.log("errore")
-                  console.log(risposta)
-                 console.log(this.datiV)
-                   
-                
-              
-                }   var descrizioneR : String = practice
-                var id_practice = descrizioneR.split(":")[1]
-                console.log(id_practice)
-               var query4 = "insert into rilatt.risorse_practice(id_risorsa, id_practice , dtvalid_risorsa_practice) values ('"+id_risorsa+"','"+id_practice+"','"+insertRL.data+"' )"
-               
-               console.log(query4)
-               this.insP.select(query4).subscribe(response =>{
-                console.log(response)
-                var risposta = JSON.parse(JSON.stringify(response))
 
-                if(risposta.upd === "ok")
-                {     
-                    
-                       flag4 = true
-                      
-                }
-                else 
-                { console.log("errore")
-                  console.log(risposta)
-                 console.log(this.datiV)
-                   
-                
-              
-                } 
-                var messaggio = ""
-                 if (flag4){  messaggio = "practice inserita "}
-                 else{messaggio = "practice non inserita"}
-                if (falg1)
-                {  
-                  if (!flag2  && !flag3)
-                  {
-                   Swal.fire({  
-                     icon: 'success',  
-                     title: 'successo',  
-                     text: "inserito correttamente  l'utente,  \n ruolo e livello non inseriti. " +messaggio,  
-                       
-                 })
-                 }
-                
-                
-                  if (flag2  && flag3)
-                {
-                 Swal.fire({  
-                   icon: 'success',  
-                   title: 'successo',  
-                   text: 'inseriti correttamente utente, ruolo e livello. ' + messaggio,  
-                     
-               })}
-               this.select()
-             }
-                else
-                {
-                   if (flag2)
-                   {  this.select()
-                     Swal.fire({  
-                       icon: 'success',  
-                       title: 'successo',  
-                       text: 'inseriti correttamente utente e livello \n ruolo non inserito' + messaggio,  
-                         
-                   })
- 
-                   }
-                   if (flag3)
-                   {  this.select()
-                     Swal.fire({  
-                       icon: 'success',  
-                       title: 'successo',  
-                       text: 'inseriti correttamente utente e ruolo \n livello non inserito' + messaggio,  
-                         
-                   })
-
-                   }
-                   this.select()
-                }
-              
-              
-              
-              
-              
-              
-              
-              
-              })
-  
-  
-                
-             
-                     
-  
-               })
-              }
-            
-            
-            
-            
-            })
+            })}
              
             }
    

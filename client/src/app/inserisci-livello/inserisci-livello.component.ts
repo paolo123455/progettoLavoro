@@ -26,6 +26,7 @@ export class InserisciLivelloComponent {
   ruoli: any[] = []
   risorse: any[] = []
   disabilitato = false;
+  olDate : String = ""
   
   
 
@@ -51,6 +52,11 @@ export class InserisciLivelloComponent {
     if (datid.toString() === "Invalid Date") datid = new Date("1970-1-1") 
     console.log(datid)
     var date : String  = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()+1< 10 ? 0 +""+datid.getDate(): datid.getDate())
+    var datid2 = datid
+    datid2.setDate(datid2.getDate() -1)
+    
+    this.olDate  = datid2.getFullYear() <=1970  || datid2 === undefined ? "" : datid2.getFullYear() + "-" + ( datid2.getMonth()+1 < 10 ? 0 +""+(datid2.getMonth()+1): datid2.getMonth()+1) + "-" + (datid2.getDate()+1< 10 ? 0 +""+datid2.getDate(): datid2.getDate())
+
     date = date === undefined ? "" : date
     var risn =  datis === undefined ? "" : datis.split(":")[0].split("-")[1]
     risn = risn === undefined ? "" : risn
@@ -61,11 +67,11 @@ export class InserisciLivelloComponent {
     livello = livello === undefined ? "" : livello
     console.log(risn,risc,"-",date, "-",livello)
     var filteredData = this.dati.filter((item: {
-      dtvalid_livello: any;
+      dtinizio_livello: any;
       livello: any;
       email: any;
       cognome: String;
-      nome: String; id_risorsa: any; }) => item.nome.includes(risn)  && item.livello.includes(livello) && item.cognome.includes(risc) && item.dtvalid_livello.includes(date));
+      nome: String; id_risorsa: any; }) => item.nome.includes(risn)  && item.livello.includes(livello) && item.cognome.includes(risc) && item.dtinizio_livello.includes(date));
     this.agGrid.api.setRowData(filteredData)
   })
     this.test()
@@ -74,18 +80,8 @@ export class InserisciLivelloComponent {
     this.strucElaboration()
     this.setup1()
     this.setup2()
-
-    
-   
   }
     
-  
-    //email = new FormControl(null ,[Validators.required, Validators.maxLength(3)])
-    //nome = new FormControl(null ,[Validators.required, Validators.maxLength(4)])
-    //cognome = new FormControl(null ,[Validators.required, Validators.maxLength(5)])
-
-
-
   public columnDefs : ColDef[] = [
     {field: '' ,
     cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
@@ -114,11 +110,6 @@ export class InserisciLivelloComponent {
   private tabella =  "risorse"
   getRowId: GetRowIdFunc<any>  = params => params.data.id_risorsa_livello;
 
-   
-
-
-
-
    // Example load data from sever
    onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
@@ -132,17 +123,73 @@ export class InserisciLivelloComponent {
 
     console.log('cellClicked', e);
     this.id_touch =  e.data.id_risorsa_livello
-     this.datvalid_livello  = "" + e.data.dtvalid_ruolo
-     this.datvalid_ruolo  = ""+e.data.dtvalid_livello 
+    var id_risora = e.data.id_risorsa 
+    var attivo = e.data.attivo  
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
     var left = e.column.getLeft()
     console.log(left)
+ 
+   
     if (left === 0)
-    {
-      this.delete("delete from  rilatt.risorse_livello where id_risorsa_livello = " + this.id_touch)
+    {  if(attivo )
+      {
+      this.insP.select("select * from new_rilatt.attivita_risorsa where id_risorsa = " + id_risora).subscribe(Response => {
+      var jsonR = JSON.parse(JSON.stringify(Response))
+      console.log(Response)
+      console.log(jsonR.rowCount)
+      if (jsonR.rowCount === 0)
+      { 
+        console.log("caso non update")
+        this.delete("delete from  new_rilatt.risorse_livello where id_risorsa_livello = " + this.id_touch)
+
+        
+      }
+      else 
+      {
+        this.insP.select("select * from new_rilatt.risorse_livello  where id_risorsa = " + id_risora).subscribe(Response => {
+          var jsonR = JSON.parse(JSON.stringify(Response))
+          if (jsonR.rowCount > 1)
+          { 
+            this.delete("delete from  new_rilatt.risorse_livello where id_risorsa_livello = " + this.id_touch)
+            console.log("caso update")
+            setTimeout(() => {
+            this.update(`
+        update  new_rilatt.risorse_livello set dtfine_livello = null , attivo = true    
+            where id_risorsa =  `+id_risora+` and dtinizio_livello = (select max(dtinizio_livello) as max_age 
+            from  new_rilatt.risorse_livello where attivo = false and id_risorsa = `+id_risora+` limit 1);
+            
+        
+        `)},0)
+          }
+          else
+          {
+            Swal.fire({  
+              icon: 'error',  
+              title: 'Oops...',  
+              text: 'impossibile eliminare il livello a questa risorsa poichè essa è presente ancora nel registro attività ',  
+              
+            })  
+          }
+        })
+      
+      }
+      
+    })
+     
     }
+    else 
+    {   
+      Swal.fire({  
+        icon: 'error',  
+        title: 'Oops...',  
+        text: 'impossibile eliminare un livello non attivo ',  
+        
+
+    })}
+    }
+   
   }
 
   onCellEditingStarted( e: CellEditingStartedEvent): void { 
@@ -160,7 +207,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   var colonna = e.colDef.field
   console.log(colonna)
   var valore = e.value
-  var query = "update rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
+  var query = "update new_rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
   console.log(valore)  
   console.log(query)
   this.update(query)*/
@@ -169,12 +216,12 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct  descrizione || ':' || id_livello  as descrizione2 from rilatt.livello order by descrizione2 " 
+    var query = "select distinct  descrizione_livello || ':' || id_livello  as descrizione2 from new_rilatt.livello order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.livelli = dati; console.log(this.livelli)})
 
   }
   setup2= () => {
-    var query = "select distinct  cognome || '-'  || nome || ':' || id_risorsa  as descrizione2 from rilatt.risorse order by descrizione2"
+    var query = "select distinct  cognome || '-'  || nome || ':' || id_risorsa  as descrizione2 from new_rilatt.risorse order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
   }
 
@@ -182,9 +229,9 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
   testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
  
-  select  = ()  => {var query = "Select r.*, rl.id_risorsa_livello,  to_char( dtvalid_livello, 'YYYY-MM-DD') as dtvalid_livello , l.descrizione as livello from rilatt.risorse r " 
-       +"inner join rilatt.risorse_livello  rl  on  r.id_risorsa  = rl.id_risorsa " 
-       +"inner  join  rilatt.livello l  on l.id_livello  = rl.id_livello "
+  select  = ()  => {var query = "Select r.*,rl.attivo, rl.id_risorsa_livello, to_char( dtfine_livello, 'YYYY-MM-DD') as dtfine_livello ,to_char( dtinizio_livello, 'YYYY-MM-DD') as dtinizio_livello , l.descrizione_livello as livello from new_rilatt.risorse r " 
+       +"inner join new_rilatt.risorse_livello  rl  on  r.id_risorsa  = rl.id_risorsa " 
+       +"inner  join  new_rilatt.livello l  on l.id_livello  = rl.id_livello "
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
 
@@ -214,7 +261,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select  * from rilatt.setting_colonne   sc where ( table_name  = 'risorse' or table_name ='risorse_livello'  or table_name ='livello') and table_schema ='rilatt' and maschera  = 'risorse_livello' order by importanza "
+  strucElaboration = () => this.insP.structUndestanding("select  * from new_rilatt.setting_colonne  where  maschera  = 'risorse_livello' order by importanza "
   ).subscribe(response =>{
     console.log("ciao") ;  console.log(response)
     console.log(response)
@@ -253,7 +300,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         icon: 'error',  
         title: 'Oops...',  
         text: 'errore delete',  
-        footer: '<a href>Why do I have this issue?</a>'  
+         
       })  
     }
   
@@ -282,17 +329,19 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var descrizioneR : String = insertD.risorsa.descrizione2      
     var id_risorsa = descrizioneR.split(":")[1]
     console.log(id_risorsa)
-
-    var query = "insert into rilatt.risorse_livello (id_risorsa, id_livello, dtvalid_livello) values ('"+id_risorsa+"','"+id_livello+"','"+data+"' )  RETURNING id_risorsa"
-    this.insP.select(query).subscribe(response =>{
+    console.log(insertD)
+    console.log(this.olDate)
+    var query2 = "update new_rilatt.risorse_livello  set attivo = false , dtfine_livello  = '" +this.olDate+"' where attivo is true and id_risorsa =  " +id_risorsa
+    
+    this.insP.select(query2).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
       if(risposta.upd === "ok")
       {     
-             Swal.fire({  
+             Swal.fire({ 
                  icon: 'success',  
                  title: 'successo',  
-                 text: 'inserimento ruolo ad utente avvenuto con successo',  
+                 text: 'inserimento livello ad utente avvenuto con successo',  
                    
              }) 
            
@@ -310,12 +359,49 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         Swal.fire({  
           icon: 'error',  
           title: 'errore',  
-          text: 'inserimento ruolo ad  utente errato!',  
-          footer: '<a>controlla i dati inseriti</a>'  
+          text: 'update vecchio livello andato in errore!',  
+         
         })  
       }
+      var query = "insert into new_rilatt.risorse_livello (id_risorsa, id_livello, dtinizio_livello, attivo) values ('"+id_risorsa+"','"+id_livello+"','"+ data+"', true )  RETURNING id_risorsa"
+   
+      this.insP.select(query).subscribe(response =>{
+        console.log(response)
+        var risposta = JSON.parse(JSON.stringify(response)) 
+        if(risposta.upd === "ok")
+        {     
+               Swal.fire({ 
+                   icon: 'success',  
+                   title: 'successo',  
+                   text: 'inserimento livello ad utente avvenuto con successo',  
+                     
+               }) 
+             
+               
+              
+              this.form.reset()
+              this.select()
+        }
+        else 
+        { console.log("errore")
+          console.log(risposta)
+         console.log(this.datiV)
+           
+        
+          Swal.fire({  
+            icon: 'error',  
+            title: 'errore',  
+            text: 'inserimento livello ad  utente errato!',  
+          
+          })  
+        }
+      
+      })
     
     })
+    
+    
+  
 
   } 
 

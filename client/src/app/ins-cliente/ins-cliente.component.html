@@ -1,0 +1,51 @@
+
+<div style=" display: flex; height: 340px;">
+    <div style="flex: 1;padding: 1em;border: solid;">
+     <form [formGroup] = "form">
+        <mat-form-field>
+            <mat-label>Codice</mat-label>
+            <input matInput formControlName="codice" placeholder="Practice">
+        </mat-form-field><br>
+        <mat-form-field>
+            <mat-label>Descrizione</mat-label>
+            <input matInput formControlName="descrizione" placeholder="Descrizione">
+        </mat-form-field><br>
+        <mat-form-field>
+            <mat-label>Note</mat-label>
+            <input matInput formControlName="note" placeholder="Note">
+        </mat-form-field><br>
+         
+         
+           
+       
+       
+     
+    
+     <button mat-raised-button color="primary" (click)="inserisciRiga()">inserisci dati</button>
+  
+            
+     </form>
+  
+    
+    </div>
+   
+   
+    
+    
+    
+  </div>
+  
+  <ag-grid-angular
+     style="width: 100%; height: 100%"
+     class="ag-theme-alpine"
+     [getRowId]="getRowId"
+     [columnDefs]="columnDefs"
+     [defaultColDef]="defaultColDef"
+     [rowData]="rowData$ | async"
+     [rowSelection]="'multiple'"
+     (gridReady)="onGridReady($event)"
+     (cellClicked)="onCellClicked($event)"
+     (cellEditingStarted)="onCellEditingStarted($event)"
+     (cellValueChanged)="onCellValueChanged($event)"
+   ></ag-grid-angular>
+  

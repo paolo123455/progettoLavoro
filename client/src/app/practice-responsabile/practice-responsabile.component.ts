@@ -62,12 +62,12 @@ export class PracticeResponsabileComponent {
     console.log(this.dati)
     var filteredData = this.dati.filter((item: {
       dtvalid_responsabile_practice: any;
-      practice: String;
+      descrizione_practice: String;
       email: any;
       cognome: String;
       nome: String; id_risorsa: any; }) => 
       item.nome.includes(risn) 
-       && item.practice.includes(practice) 
+       && item.descrizione_practice.includes(practice) 
        && item.cognome.includes(risc)
         && item.dtvalid_responsabile_practice.includes(date) 
 );
@@ -141,7 +141,7 @@ export class PracticeResponsabileComponent {
     console.log(left)
     if (left === 0)
     {
-      this.delete("delete from  rilatt.responsabile_practice where id_responsabile_practice = " + this.id_touch)
+      this.delete("delete from  new_rilatt.responsabile_practice where id_responsabile_practice = " + this.id_touch)
     }
   }
 
@@ -161,19 +161,19 @@ onCellValueChanged( e: CellValueChangedEvent): void {
  
 
   setup1= () => {
-    var query = "select distinct  descrizione || ':' || id_practice  as descrizione2 from rilatt.practice order by descrizione2 " 
+    var query = "select distinct  descrizione_practice || ':' || id_practice  as descrizione2 from new_rilatt.practice order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.practices = dati; console.log(this.practices)})
 
   }
   setup2= () => {
-    var query = "select distinct   cognome ||   '-' || nome ||':'|| id_risorsa  as descrizione2 from rilatt.risorse order by descrizione2"
+    var query = "select distinct   cognome ||   '-' || nome ||':'|| id_risorsa  as descrizione2 from new_rilatt.risorse order by descrizione2"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
   }
 
  
-  select  = ()  => {var query = "select *, descrizione as practice from rilatt.responsabile_practice rp "+ 
-                                "inner join rilatt.risorse r on r.id_risorsa = rp.id_risorsa " + 
-                                "inner join rilatt.practice p on p.id_practice  = rp.id_practice"
+  select  = ()  => {var query = "select r.* , rp. from new_rilatt.responsabile_practice rp "+ 
+                                "inner join new_rilatt.risorse r on r.id_risorsa = rp.id_risorsa " + 
+                                "inner join new_rilatt.practice p on p.id_practice  = rp.id_practice"
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
 
@@ -203,7 +203,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding(" select * from rilatt.setting_colonne where maschera  = 'responsabile_practice' order by importanza  "
+  strucElaboration = () => this.insP.structUndestanding(" select * from new_rilatt.setting_colonne where maschera  = 'responsabile_practice' order by importanza  "
   ).subscribe(response =>{
     console.log("ciao") ;  console.log(response)
     console.log(response)
@@ -263,7 +263,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var id_risorsa = descrizioneR.split(":")[1]
     console.log(id_risorsa)
 
-    var query = "insert into rilatt.responsabile_practice (id_risorsa, id_practice, dtvalid_responsabile_practice) values ('"+id_risorsa+"','"+id_practice+"','"+data+"' )  RETURNING id_risorsa"
+    var query = "insert into new_rilatt.responsabile_practice (id_risorsa, id_practice, dtvalid_responsabile_practice) values ('"+id_risorsa+"','"+id_practice+"','"+data+"' )  RETURNING id_risorsa"
     this.insP.select(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 

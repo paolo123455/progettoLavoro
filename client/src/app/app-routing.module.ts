@@ -12,6 +12,8 @@ import { PracticeResponsabileComponent } from './practice-responsabile/practice-
 import { PracticeRisorsaComponent } from './practice-risorsa/practice-risorsa.component';
 import { GestioneRendicontazioneComponent } from './gestione-rendicontazione/gestione-rendicontazione.component';
 import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/consolida-rendicontazione.component';
+import { InsClienteComponent } from './ins-cliente/ins-cliente.component';
+import { InsOdlComponent } from './ins-odl/ins-odl.component';
 
 const routes: Routes = [  
 {path : 'inserisci/rendicontazione', component : GestioneRendicontazioneComponent},
@@ -25,6 +27,8 @@ const routes: Routes = [
 {path : 'inspr', component : InserisciRuoloComponent},
 {path : 'inspd', component : PracticeResponsabileComponent},
 {path : 'inscr', component : InserisciCommessaRisorsaComponent},
+{path : 'inserisci/cliente', component : InsClienteComponent},
+{path : 'inserisci/odl', component : InsOdlComponent},
 {path : '**', component : ErrorComponentComponent}];
 
 

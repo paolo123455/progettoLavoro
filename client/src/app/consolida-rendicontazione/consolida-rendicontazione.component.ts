@@ -76,7 +76,8 @@ export class ConsolidaRendicontazioneComponent {
       risn = risn === undefined ? "" : risn
       var risc = datir === undefined ? "" : datir.split(":")[0].split("-")[1] 
       risc = risc === undefined ? "" : risc
-      var descrizione = datic.split(":")[0].split("--")[1]
+      var descrizione = datic.split(":")[0].split("--")[0] 
+      descrizione = descrizione === undefined ? "" : descrizione 
       console.log(risn,risc)
       var risn2 =  datir2 === undefined ? "" : datir2.split(":")[0].split("-")[1]
       risn2 = risn2 === undefined ? "" : risn2
@@ -91,6 +92,7 @@ export class ConsolidaRendicontazioneComponent {
 
       console.log(datic,"--",datir,"--",anno,"--",mese)
       var filteredData = this.datiS.filter((item: {
+       
         descrizione2: string;
         descrizione3: string;
         anno: string
@@ -99,7 +101,7 @@ export class ConsolidaRendicontazioneComponent {
         
         // item.descrizione3.includes(datic)
          item.descrizione3.includes(datic)
-         && item.descrizione2.includes(datir)
+         && (item.descrizione2+ "").includes(datir)
          &&  (item.anno === anno || anno === "")
          &&  (item.mese === mese || mese === ""))
          
@@ -122,7 +124,7 @@ export class ConsolidaRendicontazioneComponent {
             var filteredData2 = this.dati.filter((item: {
               cognome_risorsa: string;
               nome_risorsa: string;
-              descrizione_codice: string;
+              descrizione_progetto: string;
               nome: string;
               cognome: string;
               anno: string;
@@ -132,7 +134,7 @@ export class ConsolidaRendicontazioneComponent {
               
                 for(let t of colP )
                    {
-                    
+             
                     flag = (t in item  || flag  && (descrizione in item  || descrizione === "")  )
                     
                    }
@@ -154,12 +156,10 @@ export class ConsolidaRendicontazioneComponent {
   
    
   
-    this.select()
+   // this.select()
     this.setup1()
+    this.setup3()
     this.setup2()
-
-
-    
    
   }
     
@@ -223,7 +223,7 @@ export class ConsolidaRendicontazioneComponent {
     console.log(left)
     if (left === 0)
     {
-      this.delete("delete from  rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
+      this.delete("delete from  new_rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
     }
   }
 
@@ -242,7 +242,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   var colonna = e.colDef.field
   console.log(colonna)
   var valore = e.value
-  var query = "update rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
+  var query = "update new_rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
   console.log(valore)  
   console.log(query)
   this.update(query)*/
@@ -252,18 +252,35 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
   setup2= () => {
-    var query = "select distinct   cognome || '-' || nome || '-' || ':' ||   id_risorsa as descrizione2 from rilatt.risorse order by descrizione2 " 
+    var query = "select distinct   cognome || '-' || nome ||  ':' ||   id_risorsa as descrizione2 from new_rilatt.risorse order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse2= dati; 
     
     })
 
   }
 
+  setup3= () => {
+    var query = "select distinct   cognome || '-' || nome || ':' ||   r.id_risorsa as descrizione2 from new_rilatt.risorse r "
+              +" inner join new_rilatt.progetti_pm r2  on  r.id_risorsa = r2.id_risorsa order by descrizione2 " 
+    this.insP.select(query).subscribe(response =>{console.log(response) ;
+      var dati = JSON.parse(JSON.stringify(response)).rows;  
+      this.risorse=  [...new Map(dati.map((item: { [x: string]: any; }) =>
+      [item["descrizione2"], item])).values()];
+    
+    })
+    
+  }
+
 
   setup1= () => {
-    var query = "select distinct    cognome || '-' || nome || '-' || email  || ':'  ||   r.id_risorsa as descrizione2, REPLACE(descrizione_codice, '.', '-') || '--' ||  codice   || ':' || p.id_progetto as descrizione3 , anno,mese from rilatt.progetti_pm pm inner join rilatt.progetti p  on p.id_progetto  = pm.id_progetti " +
-   " inner join rilatt.attivita_risorsa r  on pm.id_risorsa  = r.id_risorsa " +
-   " inner join rilatt.risorse r2 on r.id_risorsa  = r2.id_risorsa " + 
+    var query = `select distinct    cognome || '-' || nome ||  ':'  ||   
+    r2.id_risorsa as descrizione2, REPLACE(descrizione_progetto, '.', '-') || '--' ||  codice   || ':' || p.id_progetto as descrizione3 
+    , anno,mese from new_rilatt.attivita_risorsa ar 
+     inner join new_rilatt.progetti p  on p.id_progetto  = ar.id_progetto
+     left join new_rilatt.progetti_pm pm on pm.id_progetti =  p.id_progetto
+     left join new_rilatt.risorse r2 on r2.id_risorsa  = pm.id_risorsa`
+
+   "  " + 
    " order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{
      
@@ -272,8 +289,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       this.commesse =  [...new Map(dati.map((item: { [x: string]: any; }) =>
       [item["descrizione3"], item])).values()];
       this.datiS = dati
-      this.risorse=  [...new Map(dati.map((item: { [x: string]: any; }) =>
-        [item["descrizione2"], item])).values()];
+     
      // this.commesse = dati
   
      this.mesi =    [...new Map(dati.map((item: { [x: string]: any; }) =>
@@ -294,10 +310,11 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
  
 
-select = ()  => {var query = "select *, p.descrizione_codice as progetti from rilatt.attivita_risorsa ar inner join rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
-"inner join rilatt.progetti  p on p.id_progetto = ar.id_progetto "
+select = ()  => {var query = "select *, p.descrizione_progetto as progetti from new_rilatt.attivita_risorsa ar inner join new_rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
+"inner join new_rilatt.progetti  p on p.id_progetto = ar.id_progetto "
 
-this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows; console.log(this.dati); this.agGrid.api.setRowData(this.dati)})
+this.insP.select(query).subscribe(response =>{console.log(response) ;
+  this.dati = JSON.parse(JSON.stringify(response)).rows; console.log(this.dati); this.agGrid.api.setRowData(this.dati)})
 
 }
  
@@ -325,17 +342,18 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati =
 
 
   strucElaboration = () =>{
-  var query = "select   id_attivita , p.id_progetto ,REPLACE(p.descrizione_codice, '.' , '-') as descrizione_codice ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
+  var query = "select   id_attivita , p.id_progetto ,REPLACE(p.descrizione_progetto, '.' , '-') as descrizione_progetto ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
   + "r2.nome as nome_risorsa,r2.cognome as cognome_risorsa,ar.anno ,ar.mese,ar.giornate ,ar.flag_attivita from"
-  + " rilatt.progetti p"
-  + " join rilatt.progetti_pm pp"
+  + " new_rilatt.progetti p"
+  + " left join new_rilatt.progetti_pm pp"
   + " on pp.id_progetti =p.id_progetto"
-  + " join rilatt.risorse r"
+  + " left join new_rilatt.risorse r"
   + " on r.id_risorsa =pp.id_risorsa"
-  + " join rilatt.attivita_risorsa ar"
+  + " join new_rilatt.attivita_risorsa ar"
   + "  on ar.id_progetto =p.id_progetto"
-  + " join rilatt.risorse r2"
-  + " on r2.id_risorsa =ar.id_risorsa";
+  + " join new_rilatt.risorse r2"
+  + " on r2.id_risorsa =ar.id_risorsa"
+ 
     this.insP.structUndestanding(query ).subscribe(response =>{
     console.log(response)
     console.log(response)
@@ -364,9 +382,9 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati =
      // console.log(found2)
       if (found2 === -1)
       { 
-        console.log(" non presente")
+        
         var t : any = {"id_attivita" : element.id_attivita, "contatore" : contatore, "nome_risorsa" : element.nome_risorsa , "cognome_risorsa" : element.cognome_risorsa , "anno" : element.anno , "mese" : element.mese } 
-        var descrizione  =(element.descrizione_codice+"")
+        var descrizione  =(element.descrizione_progetto+"")
         t[descrizione] = element.giornate
         listaD2.push(t)
       
@@ -376,7 +394,7 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati =
       {      //console.log("presente")
              
             
-             var descrizione = (element.descrizione+"")
+             var descrizione = (element.descrizione_progetto+"")
              var valore = (element.giornate+"")
              var it = listaD2[found2]
             // console.log(it)
@@ -389,16 +407,16 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati =
      
      
      // console.log(listaD2)
-      let found = listaD.find((item: any)  => { return item === element.descrizione_codice  } );
+      let found = listaD.find((item: any)  => { return item === element.descrizione_progetto  } );
       
       //console.log(found)
       if (found === undefined){
       //  console.log("non trovato")
        // console.log(element)
-        this.listaColonne.push(element.descrizione_codice)
-        this.columnDefs.push({"field" : element.descrizione_codice,  headerTooltip: element.codice, editable : !element.flag_attivita, hide : false}) 
+        this.listaColonne.push(element.descrizione_progetto)
+        this.columnDefs.push({"field" : element.descrizione_progetto,  headerTooltip: element.codice, editable : !element.flag_attivita, hide : false}) 
         
-        listaD.push(element.descrizione_codice)
+        listaD.push(element.descrizione_progetto)
       }
       else 
       {
@@ -458,7 +476,7 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati =
     var anno: string =  insert1.anno === undefined || insert1.anno === null  ? "" :insert1.anno.anno  
     var mese: string =  insert1.mese === undefined || insert1.mese === null  ? "" :insert1.mese.mese
   
-    var queryc = "SELECT rilatt.fnc_consolida_pianificazione("+id_progetto+","+anno+","+mese+")"
+    var queryc = "SELECT new_rilatt.fnc_consolida_pianificazione("+id_progetto+","+anno+","+mese+")"
     console.log(queryc)
     var flag = false
     var flag2 = false

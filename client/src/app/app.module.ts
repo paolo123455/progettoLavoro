@@ -27,7 +27,9 @@ import { NuovaPracticeComponent } from './nuova-practice/nuova-practice.componen
 import { PracticeRisorsaComponent } from './practice-risorsa/practice-risorsa.component';
 import { PracticeResponsabileComponent } from './practice-responsabile/practice-responsabile.component';
 import { GestioneRendicontazioneComponent } from './gestione-rendicontazione/gestione-rendicontazione.component';
-import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/consolida-rendicontazione.component'
+import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/consolida-rendicontazione.component';
+import { InsClienteComponent } from './ins-cliente/ins-cliente.component';
+import { InsOdlComponent } from './ins-odl/ins-odl.component'
 
 //const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 
@@ -46,6 +48,8 @@ import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/c
     PracticeResponsabileComponent,
     GestioneRendicontazioneComponent,
     ConsolidaRendicontazioneComponent,
+    InsClienteComponent,
+    InsOdlComponent,
     
     
   ],
