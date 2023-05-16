@@ -11,72 +11,38 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
-
 @Component({
-  selector: 'app-nuova-practice',
-  templateUrl: './nuova-practice.component.html',
-  styleUrls: ['./nuova-practice.component.css']
+  selector: 'app-clienti',
+  templateUrl: './clienti.component.html',
+  styleUrls: ['./clienti.component.css']
 })
-export class NuovaPracticeComponent {
-  constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
+export class ClientiComponent {
+  constructor(
+    private fb:FormBuilder,
+    private http: HttpClient,
+    private insP : InsPService
+  ){ }
+  
+  // For accessing the Grid's API
+  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
+
   form!: FormGroup; 
   form2!: FormGroup; 
   myMap = new Map<string, string>();
   tipologie: any[] = []
   stati: any[] = []
   risorse: any[] = []
-  
-  
-  
+  showForm = false;
 
-  ngOnInit(): void {
-    
-    
+  public columnDefs : ColDef[] = [{
+    cellRenderer: (params : any) => {return '<div><button type="button" class="btn btn-sm"><i class="bi bi-trash-fill" style="color:red"></i></button></div>'},
+    maxWidth: 34,
+    filter: false,
+    suppressMovable: true,
+    lockPosition: 'left',
+    cellClass: 'button-cell'
+  }];
   
-
-    this.form = this.fb.group({
-      practice: new FormControl("",[ Validators.required,Validators.minLength(1)])
-    })
-  
-
-  this.form.valueChanges.subscribe((data)=>{
-    
-  
-    var practice = data.practice === undefined || data.practice== null ? "" : data.practice
-    console.log(practice)
-
-    console.log(this.dati)
-    var filteredData = this.dati.filter((item: {
-      descrizione_practice: string;
-     
-  
-        }) => (item.descrizione_practice+"").includes(practice)  
-     
-    );
-    this.agGrid.api.setRowData(filteredData)
-  })
-    this.select()
-    this.strucElaboration()
-   // this.setup1()
-   // this.setup2()
-
-    
-   
-  }
-    
-  
-    //email = new FormControl(null ,[Validators.required, Validators.maxLength(3)])
-    //nome = new FormControl(null ,[Validators.required, Validators.maxLength(4)])
-    //cognome = new FormControl(null ,[Validators.required, Validators.maxLength(5)])
-
-
-
-  public columnDefs : ColDef[] = [
-    {field: '' ,
-    cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
-   ];
-  
- 
   // DefaultColDef sets props common to all Columns
   public defaultColDef: ColDef = {
     sortable: true,
@@ -90,34 +56,71 @@ export class NuovaPracticeComponent {
   private id_touch : String = ""
   private datvalid_livello : String = "" 
   private datvalid_ruolo : String = "" 
+
+  ngOnInit(): void {
+    
+    
   
+
+    this.form = this.fb.group({
+      codice: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      descrizione: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      note: ''
+    })
   
-  // For accessing the Grid's API
-  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
-
-
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_practice;
-
+  this.form.valueChanges.subscribe((data)=>{
+    
   
- 
+    var descrizione = data.descrizione === undefined || data.descrizione === null ? "" : data.descrizione
+    var codice = data.codice === undefined || data.codice === null ? "" : data.codice
+    var  note = data.note === undefined || data.note === null ? "" : data.note
+    
 
+    console.log(this.dati)
+    var filteredData = this.dati.filter((item: {
+      codice_cliente: string;
+      descrizione_cliente: string;
+      note : string
+     
+  
+        }) => (
+          (item.descrizione_cliente+"").toLowerCase().includes(descrizione.toLowerCase())  
+          && (item.codice_cliente+"").toLowerCase().includes(codice.toLowerCase()) 
+          && (item.note+"").toLowerCase().includes(note.toLowerCase()) 
+     
+    ));
+    this.agGrid.api.setRowData(filteredData);
+    this.resizeColumnWidth();
+  })
+    this.select()
+    this.strucElaboration()
+   // this.setup1()
+   // this.setup2()
 
+    
+   
+  }
+    
+  resizeColumnWidth(){
+    // ridimensiona le colonne (larghezza) basandosi sul contenuto
+    // il parametro della funzione è skipHeader (considera o meno la lunghezza dell'header)
+    this.agGrid.columnApi.autoSizeAllColumns(false);
+  }
 
+  getRowId: GetRowIdFunc<any>  = params => params.data.id_cliente;
 
-   // Example load data from sever
-   onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
     //this.agGrid.getRowId   =  params =>{return params.data.id_risorsa}
     this.rowData$ = new Observable<any[]>
   }
  
-  // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
     
 
     console.log('cellClicked', e);
-    this.id_touch =  e.data.id_practice
+    this.id_touch =  e.data.id_cliente
 
      
     console.log(this.id_touch) 
@@ -125,9 +128,8 @@ export class NuovaPracticeComponent {
     console.log(numeroC)
     var left = e.column.getLeft()
     console.log(left)
-    if (left === 0)
-    {
-      this.delete("delete from  new_rilatt.practice where id_practice = " + this.id_touch)
+    if (left === 0 && confirm('Eliminare definitivamente?')) {
+      this.delete("delete from  new_rilatt.clienti where id_cliente = " + this.id_touch)
     }
   }
 
@@ -139,14 +141,14 @@ export class NuovaPracticeComponent {
     this.datiV = JSON.parse(JSON.stringify(e.node.data))
     console.log(this.datiV)
     }
-onCellValueChanged( e: CellValueChangedEvent): void {
+  onCellValueChanged( e: CellValueChangedEvent): void {
  console.log(e);
   var datiC = e.data
   console.log(datiC)
   var colonna =  e.colDef.field
   console.log(colonna , (colonna+"") === 'practice')
   var valore = e.value
-  var query = "update new_rilatt.practice set " +  colonna + " = '" + valore +"' where id_practice = "+datiC.id_practice
+  var query = "update new_rilatt.clienti set " +  colonna + " = '" + valore +"' where id_cliente = "+datiC.id_cliente
   console.log(valore)  
   console.log(query)
   this.update(query)
@@ -168,11 +170,14 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
   testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
  
-  select  = ()  => {var query = "select *, descrizione_practice from new_rilatt.practice "
-      
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
-
-}
+  select  = ()  => {var query = "select * from new_rilatt.clienti "
+    this.insP.select(query).subscribe(response =>{
+      console.log(response);
+      this.dati = JSON.parse(JSON.stringify(response)).rows;
+      this.agGrid.api.setRowData(this.dati);
+      this.resizeColumnWidth();
+    })
+  }
  
   update = (query : String)   => this.insP.select(query).subscribe(response =>{
     console.log(response)
@@ -196,25 +201,24 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   
   })
 
-
-
-  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'practice'  order by importanza"  ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'cliente'  order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
  
     var responsej = JSON.parse(JSON.stringify(response))
     for( let element of  responsej.rows) {
       console.log(element)
-     this.columnDefs.push({"field" : element.column_name, editable : element.editable, hide : !element.visible}) 
+     this.columnDefs.push({
+      "field" : element.column_name,
+      editable : element.editable,
+      hide : !element.visible,
+      resizable: true,
+    }) 
      };
     console.log(this.myMap)
-    this.agGrid.api.setColumnDefs(this.columnDefs)
-    
-
-  
+    this.agGrid.api.setColumnDefs(this.columnDefs);
+    this.resizeColumnWidth();
   })
-
-
 
   delete =  (query : String)   => this.insP.select(query).subscribe(response =>{
     console.log(response)
@@ -222,7 +226,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     if(risposata.upd === "ok")
     {
           console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_practice : this.id_touch}]});
+          this.agGrid.api.applyTransaction({remove:[{id_cliente : this.id_touch}]});
     }
     else 
     { console.log("errore")
@@ -239,22 +243,21 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   
   })
 
-
-
-
-
   inserisciRiga = () : void => {
 
     var insert1 =  JSON.parse(JSON.stringify(this.form.value))
    
     console.log(insert1)
-    var practice = insert1.practice
+    var descrizione = insert1.descrizione 
+    var codice = insert1.codice
+    var note = insert1.note 
+    note = note === undefined  || note === null? "" : note 
    
        
   
     
 
-    var query = "insert into new_rilatt.practice (descrizione_practice) values ('"+practice+"' )  RETURNING id_practice"
+    var query = "insert into new_rilatt.clienti (descrizione_cliente , codice_cliente , note ) values ('"+descrizione+"','"+codice+"','"+note+"' )  "
     console.log(query)
     this.insP.select(query).subscribe(response =>{
       console.log(response)
@@ -264,7 +267,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
              Swal.fire({  
                  icon: 'success',  
                  title: 'successo',  
-                 text: 'inserimento practice  avvenuto con successo',  
+                 text: 'inserimento cliente  avvenuto con successo',  
                    
              }) 
            
@@ -282,13 +285,12 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         Swal.fire({  
           icon: 'error',  
           title: 'errore',  
-          text: 'inserimento practice andata in errore ',  
+          text: 'inserimento cliente andata in errore ',  
         
         })  
       }
     
     })
 
-  } 
-
+  }
 }

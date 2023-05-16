@@ -1,6 +1,6 @@
-<div style=" display: flex;">
-  <div style="flex: 1;padding: 1em;">
-<header >
+<!-- <div style=" display: flex;"> -->
+  <!-- <div style="flex: 1;padding: 1em;"> -->
+<!-- <header > -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,11 +11,14 @@
                   <li class="nav-item"><a class="nav-link" href="#" routerLink="/" aria-current="page" routerLinkActive="active">Home</a></li>
                   <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle" id="navbarDropdownPractice" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Practice
+                          Anagrafiche
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdownPractice">
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/practice" >Practice</a></li>
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspd"  >Responsabili practice</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/practice">Practice</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/clienti" >Clienti</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/commesse">Commesse</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/odl"     >OdL</a></li>
+                          <!-- <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspd"  >Responsabili practice</a></li> -->
                       </ul>
                   </li>
                   <li class="nav-item dropdown">
@@ -23,19 +26,18 @@
                           Risorse
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdownRisorse">
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/insp"   >Risorse</a></li>
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspl"  >Livelli risorsa</a></li>
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspr"  >Ruoli risorsa</a></li>
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/insprar">Risorse-Practice</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/risorse">Risorse</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/livelli">Livelli risorse</a></li>
+                          <!-- <li class="nav-item"><a class="nav-link" href="#" routerLink="/inspr"  >Ruoli risorsa</a></li> -->
+                          <!-- <li class="nav-item"><a class="nav-link" href="#" routerLink="/insprar">Risorse-Practice</a></li> -->
                       </ul>
                   </li>
                   <li class="nav-item dropdown">
                       <a class="nav-link dropdown-toggle" id="navbarDropdownCommesse" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          Commesse
+                          Progetti
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdownCommesse">
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/insc"   >Commesse</a></li>
-                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/inscr"  >Giornate</a></li>
+                          <li class="nav-item"><a class="nav-link" href="#" routerLink="/giornate">Giornate</a></li>
                       </ul>
                   </li>
                   <li class="nav-item dropdown">
@@ -43,7 +45,8 @@
                           Report
                       </a>
                       <ul class="dropdown-menu" aria-labelledby="navbarDropdownReport">
-                          <li class="nav-item"><a class="nav-link disabled" href="#">Visualizza grafico totale</a></li>
+                          <li class="nav-item"><a class="nav-link" routerLink="/prospetto-generale">Prospetto generale</a></li>
+                          <li class="nav-item"><a class="nav-link" routerLink="/rendicontazione"   >Rendicontazione</a></li>
                       </ul>
                   </li>
               </ul>
@@ -62,12 +65,49 @@
       </div>
     </div>
 
-</header>
+  <!-- Navbar
+  <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        aria-controls="fixedNavbarExample"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+      <div
+        mdbCollapse
+        class="collapse navbar-collapse"
+        id="fixedNavbarExample"
+      >
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item active">
+            <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" >Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" >Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" >About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+   Navbar -->
+<!-- </header>
 </div>
-</div>
-<div style=" display: flex;">   
-  <div style="flex: 2;padding: 1em;">
+</div> -->
+<!-- <div style=" display: flex;">    -->
+  <!-- <div style="flex: 2;padding: 1em;"> -->
+    <div class="p-2">
       <router-outlet ></router-outlet>
-  </div>
+    </div>
+  <!-- </div> -->
   
-</div> 
+<!-- </div>  -->
