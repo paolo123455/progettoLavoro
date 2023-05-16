@@ -1,9 +1,8 @@
-
 import { Component, OnInit } from '@angular/core';
 import { InsPService } from 'src/services/ins-p.service';
 import { AgGridAngular } from 'ag-grid-angular'
-import {  ViewChild } from '@angular/core';
-import {FormBuilder, FormArray,FormControl,FormGroup, Validators } from '@angular/forms'
+import { ViewChild } from '@angular/core';
+import { FormBuilder, FormArray,FormControl,FormGroup, Validators } from '@angular/forms'
 import { Observable } from 'rxjs';
 import { CellClickedEvent, CellEditingStartedEvent, CellValueChangedEvent, ColDef, GetRowIdFunc, GridReadyEvent } from 'ag-grid-community';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +16,14 @@ import Swal from 'sweetalert2';
   styleUrls: ['./commesse.component.css']
 })
 export class CommesseComponent {
-  constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
+  constructor(
+    private fb:FormBuilder,
+    private http: HttpClient,
+    private insP : InsPService
+  ){ }
+  
+  // For accessing the Grid's API
+  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
   form!: FormGroup; 
   form2!: FormGroup; 
   myMap = new Map<string, string>();
@@ -26,9 +32,30 @@ export class CommesseComponent {
   stati: any[] = []
   risorse: any[] = []
   disabilitato = false;
-  
-  
-  
+  showForm = false;
+
+  // Data that gets displayed in the grid
+  public rowData$!: Observable<any[]>;
+  private dati : any = null
+  private datiV : any 
+  private id_touch : String = ""
+  private datvalid_livello : String = "" 
+  private datvalid_ruolo : String = "" 
+
+	public columnDefs : ColDef[] = [{
+		cellRenderer: (params : any) => {return '<div><button type="button" class="btn btn-sm"><i class="bi bi-trash-fill" style="color:red"></i></button></div>'},
+		maxWidth: 34,
+		filter: false,
+		suppressMovable: true,
+		lockPosition: 'left',
+		cellClass: 'button-cell'
+	}];
+ 
+  // DefaultColDef sets props common to all Columns
+  public defaultColDef: ColDef = {
+    sortable: true,
+    filter: true,
+  };
 
   ngOnInit(): void {
     
@@ -120,71 +147,36 @@ export class CommesseComponent {
       descrizione_cliente : string
   
         }) =>
-      (item.flag_istituto+ "").includes(istituito+"") 
-      && (item.codice+"").includes(codice)  
-      && (item.descrizione_progetto+"").includes(descrizione) 
-      && (item.descrizione_cliente+ "").includes(cliente) 
+      (item.flag_istituto+ "").toLowerCase().includes((istituito+"").toLowerCase()) 
+      && (item.codice+"").toLowerCase().includes(codice.toLowerCase())  
+      && (item.descrizione_progetto+"").toLowerCase().includes(descrizione.toLowerCase()) 
+      && (item.descrizione_cliente+ "").toLowerCase().includes(cliente.toLowerCase()) 
     );
-    this.agGrid.api.setRowData(filteredData)
+    this.agGrid.api.setRowData(filteredData);
+    this.resizeColumnWidth();
   })
     this.select()
-  
     this.setup1()
    
 
     
    
   }
-    
-  
-    //email = new FormControl(null ,[Validators.required, Validators.maxLength(3)])
-    //nome = new FormControl(null ,[Validators.required, Validators.maxLength(4)])
-    //cognome = new FormControl(null ,[Validators.required, Validators.maxLength(5)])
 
-
-
-  public columnDefs : ColDef[] = [
-    {field: '' ,
-    cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
-   ];
-  
- 
-  // DefaultColDef sets props common to all Columns
-  public defaultColDef: ColDef = {
-    sortable: true,
-    filter: true,
-  };
-  
-  // Data that gets displayed in the grid
-  public rowData$!: Observable<any[]>;
-  private dati : any = null
-  private datiV : any 
-  private id_touch : String = ""
-  private datvalid_livello : String = "" 
-  private datvalid_ruolo : String = "" 
-  
-  
-  // For accessing the Grid's API
-  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
-
-
+  resizeColumnWidth(){
+    // ridimensiona le colonne (larghezza) basandosi sul contenuto
+    // il parametro della funzione è skipHeader (considera o meno la lunghezza dell'header)
+    this.agGrid?.columnApi.autoSizeAllColumns(false);
+  }
 
   getRowId: GetRowIdFunc<any>  = params => params.data.id_progetto;
 
-  
- 
-
-
-
-
-   // Example load data from sever
-   onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
     //this.agGrid.getRowId   =  params =>{return params.data.id_risorsa}
     this.rowData$ = new Observable<any[]>
   }
  
-  // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
     
 
@@ -197,9 +189,7 @@ export class CommesseComponent {
     console.log(numeroC)
     var left = e.column.getLeft()
     console.log(left)
-    if (left === 0)
-   
-    {
+    if (left === 0 && confirm('Eliminare definitivamente?')) {
       this.delete("delete from  new_rilatt.progetti where id_progetto = " + this.id_touch)
     }
   }
@@ -211,8 +201,9 @@ export class CommesseComponent {
     var colonna = e.colDef.field
     this.datiV = JSON.parse(JSON.stringify(e.node.data))
     console.log(this.datiV)
-    }
-onCellValueChanged( e: CellValueChangedEvent): void {
+  }
+
+  onCellValueChanged( e: CellValueChangedEvent): void {
  console.log(e);
   var datiC = e.data
   console.log(datiC)
@@ -225,7 +216,6 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   this.update(query)
 
   }
- 
 
   setup1= () => {
     var query = "select valore as descrizione2  from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='TIPOLOGIA' " 
@@ -248,8 +238,6 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     })
   }
 
-
- 
   select  = ()  => {var query = "select * from new_rilatt.progetti p left join new_rilatt.clienti c on c.id_cliente = p.id_cliente "
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows; 
@@ -260,8 +248,8 @@ onCellValueChanged( e: CellValueChangedEvent): void {
      (item.flag_istituto+ "").includes("false") 
 
   );
-  this.agGrid.api.setRowData(filteredData)})
-
+  this.agGrid.api.setRowData(filteredData)});
+  this.resizeColumnWidth();
 }
  
   update = (query : String)   => this.insP.select(query).subscribe(response =>{
@@ -286,8 +274,6 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   
   })
 
-
-
   strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'progetti' and table_name  = 'progetti' order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
@@ -295,18 +281,19 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var responsej = JSON.parse(JSON.stringify(response))
     for( let element of  responsej.rows) {
       console.log(element)
-     this.columnDefs.push({"field" :  element.column_name, editable : element.editable, hide : !element.visible}) 
+     this.columnDefs.push({
+      "field" :  element.column_name,
+      editable : element.editable,
+      hide : !element.visible,
+      resizable: true,
+    }) 
     
     };
 
-    this.agGrid.api.setColumnDefs(this.columnDefs)
-    this.agGrid.columnApi.autoSizeAllColumns()
-    
-
-  
+    this.agGrid.api.setColumnDefs(this.columnDefs);
+    this.agGrid.columnApi.autoSizeAllColumns();
+    this.resizeColumnWidth();
   })
-
-
 
   delete =  (query : String)   => this.insP.select(query).subscribe(response =>{
     console.log(response)
@@ -330,10 +317,6 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     }
   
   })
-
-
-
-
 
   inserisciRiga = () : void => {
 
