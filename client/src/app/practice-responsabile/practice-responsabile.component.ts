@@ -16,9 +16,15 @@ import Swal from 'sweetalert2';
   styleUrls: ['./practice-responsabile.component.css']
 })
 export class PracticeResponsabileComponent {
-  
+  constructor(
+    private fb:FormBuilder,
+    private http: HttpClient,
+    private insP : InsPService
+  ){ }
 
-  constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
+  // For accessing the Grid's API
+  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
+
   form!: FormGroup; 
   formRL!: FormGroup; 
   myMap = new Map<string, string>();
@@ -26,72 +32,12 @@ export class PracticeResponsabileComponent {
   ruoli: any[] = []
   risorse: any[] = []
   practices: any[] = []
-  
-  
-  
-
-  ngOnInit(): void {
-    
-    
-  
-
-    this.form = this.fb.group({
-      risorsa:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      practice :  new FormControl("",[ Validators.required,Validators.minLength(1)]), 
-      data :  new FormControl("",[ Validators.required,Validators.minLength(1)]), 
-     
-  
-    })
-    this.form.valueChanges.subscribe((data)=>{
-    
-    console.log(data)
-    var datis : String =  data.risorsa === undefined || data.risorsa === null  ? undefined :data.risorsa.descrizione2 === undefined ? "" : data.risorsa.descrizione2
-    var datil : String =  data.practice === undefined || data.practice === null ? undefined :data.practice.descrizione2  === undefined ? "" : data.practice.descrizione2
-    var datid : Date  = new Date(data.data);
-    console.log(datil)
-    if (datid.toString() === "Invalid Date") datid = new Date("1970-1-1") 
-    console.log(datid)
-    var date : String  = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()< 10 ? 0 +""+datid.getDate(): datid.getDate())
-    date = date === undefined ? "" : date
-    var risn =  datis === undefined ||  datis ===  "" ? "" : datis.split(":")[0].split("-")[1] ===  undefined ? "" : datis.split(":")[0].split("-")[1]
-    risn = risn === undefined ? "" : risn
-    var risc = datis === undefined ||  datis ===  "" ? "" : datis.split(":")[0].split("-")[0]  ===  undefined ? "" :  datis.split(":")[0].split("-")[0]
-    risc = risc === undefined ? "" : risc
-    var practice =  datil === undefined ? "" : datil.split(":")[0] ===  undefined ? "" :  datil.split(":")[0]
-    console.log(risn,risc,"-",date, "-",practice)
-    console.log(this.dati)
-    var filteredData = this.dati.filter((item: {
-      dtvalid_responsabile_practice: any;
-      descrizione_practice: String;
-      email: any;
-      cognome: String;
-      nome: String; id_risorsa: any; }) => 
-      item.nome.includes(risn) 
-       && item.descrizione_practice.includes(practice) 
-       && item.cognome.includes(risc)
-        && item.dtvalid_responsabile_practice.includes(date) 
-);
-    this.agGrid.api.setRowData(filteredData)
-  })
-  
-    this.select()
-    this.strucElaboration()
-    this.setup1()
-    this.setup2()
-
-    
-   
-  }
-    
-  
-
-
+  showForm = false;
 
   public columnDefs : ColDef[] = [
     {field: '' ,
     cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
-   ];
-  
+  ];
  
   // DefaultColDef sets props common to all Columns
   public defaultColDef: ColDef = {
@@ -106,22 +52,65 @@ export class PracticeResponsabileComponent {
   private id_touch : String = ""
   private datvalid_livello : String = "" 
   private datvalid_ruolo : String = "" 
-  
-  
-  // For accessing the Grid's API
-  @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
-
-
   private tabella =  "risorse"
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      risorsa:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      practice :  new FormControl("",[ Validators.required,Validators.minLength(1)]), 
+      data :  new FormControl("",[ Validators.required,Validators.minLength(1)]), 
+    });
+    this.form.valueChanges.subscribe((data)=>{
+      console.log(data);
+      var datis : String = data.risorsa === undefined || data.risorsa === null  ? undefined :data.risorsa.descrizione2 === undefined ? "" : data.risorsa.descrizione2;
+      var datil : String = data.practice === undefined || data.practice === null ? undefined :data.practice.descrizione2  === undefined ? "" : data.practice.descrizione2;
+      var datid : Date  = new Date(data.data);
+      console.log(datil);
+      if (datid.toString() === "Invalid Date") datid = new Date("1970-1-1");
+      console.log(datid);
+      var date : String = datid.getFullYear() === 1970
+        || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()< 10 ? 0 +""+datid.getDate(): datid.getDate());
+      date = date === undefined ? "" : date;
+      var risn =  datis === undefined
+        ||  datis ===  "" ? "" : datis.split(":")[0].split("-")[1] ===  undefined ? "" : datis.split(":")[0].split("-")[1];
+      risn = risn === undefined ? "" : risn;
+      var risc = datis === undefined
+        || datis ===  "" ? "" : datis.split(":")[0].split("-")[0]  ===  undefined ? "" :  datis.split(":")[0].split("-")[0];
+      risc = risc === undefined ? "" : risc;
+      var practice = datil === undefined ? "" : datil.split(":")[0] ===  undefined ? "" :  datil.split(":")[0];
+      console.log(risn,risc,"-",date, "-",practice);
+      console.log(this.dati);
+      var filteredData = this.dati.filter((
+        item: {
+          dtvalid_responsabile_practice: any;
+          descrizione_practice: String;
+          email: any;
+          cognome: String;
+          nome: String; id_risorsa: any;
+        }) => 
+        item.nome.includes(risn) 
+        && item.descrizione_practice.includes(practice) 
+        && item.cognome.includes(risc)
+        && item.dtvalid_responsabile_practice.includes(date) 
+      );
+      this.agGrid.api.setRowData(filteredData);
+      this.resizeColumnWidth();
+    })
+  
+    this.select();
+    this.strucElaboration();
+  }
+    
+  resizeColumnWidth(){
+    // ridimensiona le colonne (larghezza) basandosi sul contenuto
+    // il parametro della funzione è skipHeader (considera o meno la lunghezza dell'header)
+    this.agGrid.columnApi.autoSizeAllColumns(false);
+  }
+  
   getRowId: GetRowIdFunc<any>  = params => params.data.id_responsabile_practice;
 
-   
-
-
-
-
-   // Example load data from sever
-   onGridReady(params: GridReadyEvent) {
+  // Example load data from sever
+  onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
     //this.agGrid.getRowId   =  params =>{return params.data.id_risorsa}
     this.rowData$ = new Observable<any[]>
@@ -129,8 +118,6 @@ export class PracticeResponsabileComponent {
  
   // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
-    
-
     console.log('cellClicked', e);
     this.id_touch =  e.data.id_responsabile_practice
   
@@ -139,8 +126,7 @@ export class PracticeResponsabileComponent {
     console.log(numeroC)
     var left = e.column.getLeft()
     console.log(left)
-    if (left === 0)
-    {
+    if (left === 0) {
       this.delete("delete from  new_rilatt.responsabile_practice where id_responsabile_practice = " + this.id_touch)
     }
   }
@@ -152,38 +138,29 @@ export class PracticeResponsabileComponent {
     var colonna = e.colDef.field
     this.datiV = JSON.parse(JSON.stringify(e.node.data))
     console.log(this.datiV)
-    }
-onCellValueChanged( e: CellValueChangedEvent): void {
- console.log(e);
+  }
 
-
+  onCellValueChanged( e: CellValueChangedEvent): void {
+    console.log(e);
   }
  
-
-  setup1= () => {
-    var query = "select distinct  descrizione_practice || ':' || id_practice  as descrizione2 from new_rilatt.practice order by descrizione2 " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.practices = dati; console.log(this.practices)})
-
+  select = () => {
+    var query = "select r.* , rp. from new_rilatt.responsabile_practice rp "+ 
+                "inner join new_rilatt.risorse r on r.id_risorsa = rp.id_risorsa " + 
+                "inner join new_rilatt.practice p on p.id_practice  = rp.id_practice";
+    this.insP.select(query).subscribe(response =>{
+      console.log('Response');
+      console.log(response);
+      this.dati = JSON.parse(JSON.stringify(response)).rows;
+      this.agGrid.api.setRowData(this.dati);
+      this.resizeColumnWidth();
+    })
   }
-  setup2= () => {
-    var query = "select distinct   cognome ||   '-' || nome ||':'|| id_risorsa  as descrizione2 from new_rilatt.risorse order by descrizione2"
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
-  }
-
- 
-  select  = ()  => {var query = "select r.* , rp. from new_rilatt.responsabile_practice rp "+ 
-                                "inner join new_rilatt.risorse r on r.id_risorsa = rp.id_risorsa " + 
-                                "inner join new_rilatt.practice p on p.id_practice  = rp.id_practice"
-      
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
-
-}
  
   update = (query : String)   => this.insP.select(query).subscribe(response =>{
     console.log(response)
     var risposata = JSON.parse(JSON.stringify(response)) 
-    if(risposata.upd === "ok")
-    {
+    if(risposata.upd === "ok") {
           console.log("update andato a buon fine")
     }
     else 
@@ -201,10 +178,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   
   })
 
-
-
-  strucElaboration = () => this.insP.structUndestanding(" select * from new_rilatt.setting_colonne where maschera  = 'responsabile_practice' order by importanza  "
-  ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne where maschera='responsabile_practice' order by importanza").subscribe(response =>{
     console.log("ciao") ;  console.log(response)
     console.log(response)
     console.log("finito")
@@ -217,25 +191,17 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     console.log(this.myMap)
     this.agGrid.api.setColumnDefs(this.columnDefs)
     
-
-  
+    this.resizeColumnWidth();
   })
 
-
-
-  delete =  (query : String)   => this.insP.select(query).subscribe(response =>{
+  delete = (query : String) => this.insP.select(query).subscribe(response =>{
     console.log(response)
     var risposata = JSON.parse(JSON.stringify(response)) 
-    if(risposata.upd === "ok")
-    {
-          console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_responsabile_practice : this.id_touch}]});
-    }
-    else 
-    { console.log("errore")
-    
-       
-      
+    if(risposata.upd === "ok") {
+      console.log("delete  andato a buon fine "+ this.id_touch)
+      this.agGrid.api.applyTransaction({remove:[{id_responsabile_practice : this.id_touch}]});
+    } else {
+      console.log("errore")
       Swal.fire({  
         icon: 'error',  
         title: 'Oops...',  
@@ -243,18 +209,10 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         footer: '<a href>Why do I have this issue?</a>'  
       })  
     }
-  
   })
 
-
-
-
-
   inserisciRiga = () : void => {
-
     var insertD =  JSON.parse(JSON.stringify(this.form.value))
-   
-
     var data = insertD.data 
     var descrizioneU : String = insertD.practice.descrizione2      
     var id_practice = descrizioneU.split(":")[1]
@@ -267,36 +225,24 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     this.insP.select(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
-      if(risposta.upd === "ok")
-      {     
-             Swal.fire({  
-                 icon: 'success',  
-                 title: 'successo',  
-                 text: 'inserimento practice a responsabile avvenuto con successo',  
-                   
-             }) 
-           
-             
-            
-            this.form.reset()
-            this.select()
-      }
-      else 
-      { console.log("errore")
+      if(risposta.upd === "ok") {     
+        Swal.fire({
+          icon: 'success',  
+          title: 'successo',  
+          text: 'inserimento practice a responsabile avvenuto con successo',  
+        })
+        this.form.reset()
+        this.select()
+      } else {
+        console.log("errore")
         console.log(risposta)
-       console.log(this.datiV)
-         
-      
+        console.log(this.datiV)
         Swal.fire({  
           icon: 'error',  
           title: 'errore',  
-          text: 'inserimento responsabile a  utente errato!',  
-         
+          text: 'inserimento responsabile a  utente errato!',
         })  
       }
-    
     })
-
   } 
-
 }
