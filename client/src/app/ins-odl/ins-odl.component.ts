@@ -25,7 +25,10 @@ export class InsOdlComponent {
   progetti: any[] = []
   stati: any[] = []
   risorse: any[] = []
+  risorse2: any[] = []
+  practices: any [] = []
   disabilitato = false;
+  
   
   
   
@@ -38,70 +41,86 @@ export class InsOdlComponent {
     this.form = this.fb.group({
       codice: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       descrizione : new FormControl("",[ Validators.required,Validators.minLength(1)]), 
-      effortTot : '',
-      effortPreg :'',
       note : '', 
       budget : '',
       budgetPreg : '',
     })
     this.form2 = this.fb.group({
       stato: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      tipologia:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
       progetto:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
-     
+      pm: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      practice : "",
+      datei :  new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      datef :  new FormControl("",[ Validators.required,Validators.minLength(1)]),
   
     })
      var stato = ""
     var descrizionep =""
-     var tipologia = ""
+    var tipologia = ""
     var codice = ""
     var descrizione = ""
-    var effort_pregresso =""
-    var effort_totale =""
+    var pm = ""
+    var datei = ""
+    var datef = ""
     var note = ""
     var budget = ""
     var budget_pregresso = ""
-    var cliente = ""
+    var practice = ""
+    
 
     this.form2.valueChanges.subscribe((data)=>{
-      console.log(this.form,this.form2)
+     // console.log(this.form,this.form2)
       this.disabilitato = this.form.valid && this.form2.valid
     console.log(data)
     
     stato =  data.stato === undefined || data.stato === null  ? "" :data.stato.descrizione2  === undefined   || data.stato.descrizione2 === null ? "" :  data.stato.descrizione2
     stato = stato === undefined || stato === "undefined"  ? "" : stato
-    tipologia  =  data.tipologia === undefined || data.tipologia === null ? "" :data.tipologia.descrizione2 === undefined  || data.tipologia.descrizione2 === null ? "" :  data.tipologia.descrizione2
-    tipologia = tipologia === undefined || tipologia === "undefined"  ? "" : tipologia
   
     descrizionep  =  data.progetto === undefined || data.progetto === null  ? "" :data.progetto.descrizione2 === undefined  || data.progetto.descrizione2 === null ? "" :  data.progetto.descrizione2.split(":")[0].split("-")[0]
     descrizionep = descrizionep === undefined || descrizionep === "undefined"  ? "" : descrizionep
-
-
+    pm = data.pm === undefined || data.pm === null ? "" : data.pm.descrizione2 === undefined || data.pm.descrizione2 === null ? ""  :  data.pm.descrizione2.split(":")[1]
+    pm = pm === undefined ? "" : pm
+    var datid : Date  = new Date(data.datei);
+    if (datid.toString() === "Invalid Date") datid = new Date("1970-1-1") 
+    console.log(datid)
+    datei = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()+1< 10 ? 0 +""+datid.getDate(): datid.getDate())
+     datid   = new Date(data.datef);
+     if (datid.toString() === "Invalid Date") datid = new Date("1970-1-1") 
+     console.log(datid)
+    datef = datid.getFullYear() === 1970  || datid === undefined  ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()+1< 10 ? 0 +""+datid.getDate(): datid.getDate())
+    datei = datei === undefined ? "" : datei
+    datef = datef === undefined ? "" : datef
+    var datil : String =  data.practice === undefined || data.practice === null ? undefined :data.practice.descrizione2  === undefined ? "" : data.practice.descrizione2
+    practice =  datil === undefined ? "" : datil.split(":")[0] ===  undefined ? "" :  datil.split(":")[0]
+    console.log(datil , practice)
+    console.log(datei, datef)
+    console.log(this.dati)
     var filteredData = this.dati.filter((item: {
-
-      tipologia: String;
+      dtinzio_odl : string
+      dtfine_odl : string
+      id_risorsa : string
       flag_stato: String;
-      effort_pregresso: string;
-      effort_totale: string;
       note: string;
       budget: string;
       descrizione_progetto: string;
-      codice: String;
+      codice_odl: String;
       budget_pregresso : string
       descrizione_odl : string
+      descrizione_practice : string
 
   
         }) =>
         item.flag_stato.includes(stato)  
-      && (item.tipologia + "").includes(tipologia) 
-      && (item.codice+"").includes(codice)  
+      && (item.codice_odl+"").includes(codice)  
       && (item.descrizione_progetto+"").includes(descrizionep) 
       && (item.budget+"").includes(budget) 
       && (item.note+"").includes(note) 
-      && (item.effort_totale+ "").includes(effort_totale) 
-      && (item.effort_pregresso+ "").includes(effort_pregresso) 
       && (item.budget_pregresso+ "").includes(budget_pregresso) 
       && (item.descrizione_odl+ "").includes(descrizione) 
+      && (item.id_risorsa + "").includes(pm)
+      && (item.dtinzio_odl + "").includes(datei)
+      && (item.dtfine_odl +"").includes(datef)
+      && (item.descrizione_practice+"").includes(practice) 
     );
     this.agGrid.api.setRowData(filteredData)
   })
@@ -118,37 +137,37 @@ export class InsOdlComponent {
     budget = budget === undefined || budget === "undefined"  ? "" : budget
     note =  data.note === undefined || data.note === null ? "" :data.note
     note = note === undefined || note === "undefined"  ? "" : note
-    effort_totale = data.effortTot === undefined || data.effortTot == null ? "" : data.effortTot
-    effort_totale = effort_totale === undefined || effort_totale === "undefined"  ? "" : effort_totale
-    effort_pregresso = data.effortPreg === undefined || data.effortPreg == null ? "" : data.effortPreg
-    effort_pregresso = effort_pregresso === undefined || effort_pregresso === "undefined"  ? "" : effort_pregresso
     budget_pregresso = data.budgetPreg === undefined || data.budgetPreg == null ? "" : data.budgetPreg
     budget_pregresso = budget_pregresso === undefined || budget_pregresso === "undefined"  ? "" : budget_pregresso
     
 
     var filteredData = this.dati.filter((item: {
-      budget_pregresso: string;
-      tipologia: String;
+      dtinzio_odl : string
+      dtfine_odl : string
+      id_risorsa : string
       flag_stato: String;
-      effort_pregresso: string;
-      effort_totale: string;
       note: string;
       budget: string;
-      descrizione_odl: string;
-      codice_odl: string;
-      descrizione_progetto : string
+      descrizione_progetto: string;
+      codice_odl: String;
+      budget_pregresso : string
+      descrizione_odl : string
+      descrizione_practice : string
+
   
         }) =>
         item.flag_stato.includes(stato)  
-      && (item.tipologia + "").includes(tipologia) 
       && (item.codice_odl+"").includes(codice)  
-      && (item.descrizione_progetto+"").includes(descrizione) 
+      && (item.descrizione_progetto+"").includes(descrizionep) 
       && (item.budget+"").includes(budget) 
       && (item.note+"").includes(note) 
-      && (item.effort_totale+ "").includes(effort_totale) 
-      && (item.effort_pregresso+ "").includes(effort_pregresso) 
       && (item.budget_pregresso+ "").includes(budget_pregresso) 
-      && (item.descrizione_odl+ "").includes(descrizionep) 
+      && (item.descrizione_odl+ "").includes(descrizione) 
+      && (item.id_risorsa + "").includes(pm)
+      && (item.dtinzio_odl + "").includes(datei)
+      && (item.dtfine_odl +"").includes(datef)
+      && (item.descrizione_practice+"").includes(practice) 
+      
     );
     this.agGrid.api.setRowData(filteredData)
   })
@@ -157,6 +176,8 @@ export class InsOdlComponent {
     this.setup1()
     this.setup2()
     this.setup3()
+    this.setup4()
+    this.setup5()
     this.strucElaboration()
    
 
@@ -197,7 +218,7 @@ export class InsOdlComponent {
 
 
 
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_odl +"" + params.data.id_progetto ;
+  getRowId: GetRowIdFunc<any>  = params => params.data.id_odl
 
    // Example load data from sever
    onGridReady(params: GridReadyEvent) {
@@ -269,9 +290,38 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     })
   }
 
+  
+  setup4= () => {
+    var query = "select distinct   cognome || '-' || nome || ':' ||   r.id_risorsa as descrizione2 from new_rilatt.risorse r "
+              +" inner join new_rilatt.odl r2  on  r.id_risorsa = r2.id_risorsa order by descrizione2 " 
+    this.insP.select(query).subscribe(response =>{
+      console.log(response) ;
+      var dati = JSON.parse(JSON.stringify(response)).rows;  
+      this.risorse2=  [...new Map(dati.map((item: { [x: string]: any; }) =>
+      [item["descrizione2"], item])).values()];
+    
+    })}
 
+    setup5= () => {
+      var query = "select distinct  descrizione_practice || ':' || id_practice  as descrizione2 from new_rilatt.practice order by descrizione2 " 
+      this.insP.select(query).subscribe(response =>{
+        console.log(response) ;
+        var dati = JSON.parse(JSON.stringify(response)).rows; 
+         this.practices = dati; console.log(this.practices)
+        
+        }
+         
+         )}
+
+      
+      
  
-  select  = ()  => {var query = "select p.* ,c.descrizione_progetto from new_rilatt.odl p left join new_rilatt.progetti c on c.id_progetto = p.id_progetto "
+  select  = ()  => {var query = `
+  select p.* , p2.descrizione_practice ,c.descrizione_progetto from new_rilatt.odl p 
+  left join new_rilatt.progetti c on c.id_progetto = p.id_progetto 
+  left join new_rilatt.practice p2 on p.id_practice = p2.id_practice
+  
+  `
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows; 
 
@@ -357,10 +407,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     console.log(insert1,insert2)
     var codice = insert1.codice
     var descrizione = insert1.descrizione
-    var effort_totale = insert1.effortTot
-    effort_totale = effort_totale === undefined || effort_totale === "" ? 0 : effort_totale
-    var effort_pregresso = insert1.effortPreg
-    effort_pregresso = effort_pregresso === undefined || effort_pregresso === "" ? 0 : effort_pregresso
+   
     var  budget_pregresso = insert1.budgetPreg
     budget_pregresso = budget_pregresso === undefined || budget_pregresso === "" ? 0 : budget_pregresso
     var note = insert1.note
@@ -370,13 +417,23 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var budget = insert1.budget
     budget = budget === undefined || budget === "" ? 0 : budget
     var stato = insert2.stato.descrizione2
-    var tipologia = insert2.tipologia.descrizione2
-   
+
+    var  pm = insert2.pm === undefined  || insert2.pm === "" ? "" : insert2.pm.descrizione2
+    pm = pm === undefined || pm === "" ? null :  pm.split(":")[1]
+    var  practice = insert2.practice === undefined  || insert2.practice === "" ? "" : insert2.practice.descrizione2
+    practice = practice === undefined || practice === "" ? null :  practice.split(":")[1]
+    var dat1 = new Date(this.form2.value.datei)
+    dat1.setDate(dat1.getDate() +1)
+    var datei = dat1.toUTCString()
+    var dat2 = new Date(this.form2.value.datef)
+    dat2.setDate(dat2.getDate() +1)
+    var datef = dat2.toUTCString()
+       
        
   
     
 
-    var query = "insert into new_rilatt.odl (codice_odl, descrizione_odl, note ,effort_totale , effort_pregresso, budget  , flag_stato  , tipologia, budget_pregresso,id_progetto) values ('"+codice+"','"+descrizione+"','"+note+"','"+effort_totale+"','"+effort_pregresso+"','"+budget+"','"+stato+"','"+tipologia+"','"+budget_pregresso+"',"+progetto+" )  RETURNING id_odl"
+    var query = "insert into new_rilatt.odl (codice_odl, descrizione_odl, note , budget  , flag_stato  , budget_pregresso,id_progetto, id_risorsa , dtinzio_odl, dtfine_odl,id_practice) values ('"+codice+"','"+descrizione+"','"+note+"','"+budget+"','"+stato+"','"+budget_pregresso+"',"+progetto+","+pm+",'"+datei+"','"+datef+"',"+practice+" )  RETURNING id_odl"
     console.log(query)
     this.insP.select(query).subscribe(response =>{
       console.log(response)

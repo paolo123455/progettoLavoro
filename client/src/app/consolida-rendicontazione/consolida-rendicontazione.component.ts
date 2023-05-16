@@ -32,6 +32,7 @@ export class ConsolidaRendicontazioneComponent {
   anni: any[] =[] //[2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
   disabilitato = false;
   disabilitato2 = false;
+  supportf = false
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
   getRowId: GetRowIdFunc<any>  = params => params.data.id_attivita;
   enableBrowserTooltips = true
@@ -47,6 +48,7 @@ export class ConsolidaRendicontazioneComponent {
       commessa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       anno: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       mese: new FormControl("",[ Validators.required,Validators.minLength(1)])
+      
 
     })
       
@@ -89,7 +91,7 @@ export class ConsolidaRendicontazioneComponent {
 
 
 
-
+      
       console.log(datic,"--",datir,"--",anno,"--",mese)
       var filteredData = this.datiS.filter((item: {
        
@@ -107,13 +109,7 @@ export class ConsolidaRendicontazioneComponent {
          
     var colP: any[] = []
         console.log(filteredData)
-     /* this.commesse =   [...new Map(filteredData.map(item =>
-          [item["descrizione3"], item])).values()];
-         if(datir === "")
-         { console.log(this.listaColonne)
-           colP = this.listaColonne
-         
-         }*/
+    
          
            colP =   [...new Map(filteredData.map(item =>
             [item["descrizione3"], item["descrizione3"].split("--")[0].split(":")[0]])).values()];
@@ -218,7 +214,7 @@ export class ConsolidaRendicontazioneComponent {
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
-    var valore = e.column.getColId
+    var valore = e.column.getColId()
     var left = e.column.getLeft()
     console.log(left)
     if (left === 0)
@@ -236,13 +232,237 @@ export class ConsolidaRendicontazioneComponent {
     console.log(this.datiV)
     }
 onCellValueChanged( e: CellValueChangedEvent): void {
- /*console.log(e);
+if(this.supportf){
+this.supportf= false
+return
+
+}
+ if(e.newValue === undefined) return 
+ var valore = 0
+ if(e.newValue === '') valore = 0
+ else valore = e.newValue
   var datiC = e.data
   console.log(datiC)
   var colonna = e.colDef.field
-  console.log(colonna)
-  var valore = e.value
-  var query = "update new_rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
+
+  console.log(e.newValue)
+  var mese = datiC.mese
+  var anno = datiC.anno
+  var nome = datiC.nome_risorsa
+  var cognome = datiC.cognome_risorsa
+  var id_risorsa = datiC.id_risorsa
+  var commessa = e.column.getColId() 
+  console.log(commessa)
+
+
+  var flag_errore = false 
+  this.insP.select("select * from new_rilatt.progetti p  right join new_rilatt.odl pp on pp.id_progetto = p.id_progetto where descrizione_progetto = '"+ commessa +"'").subscribe(Response=>{
+    console.log(Response)
+    var risposta = JSON.parse(JSON.stringify(Response))
+    
+    if(risposta.rowCount != 1)
+    {
+      Swal.fire({  
+            icon: 'error',  
+            title: 'errore',  
+            text: "erroe di inserimento nuova attività",  
+            
+          }) 
+          e.node.setDataValue(colonna +"", e.oldValue)
+          this.supportf= true
+    }
+    else 
+    { 
+      var id_progetto = risposta.rows[0].id_progetto
+      var id_odl = risposta.rows[0].id_odl
+      console.log(id_progetto)
+      if(e.oldValue === undefined)
+      {
+         
+        var queryc = "SELECT new_rilatt.fnc_controllo_rendicontazione("+id_progetto+", "+id_risorsa+","+anno+","+mese+","+e.newValue+","+id_odl+");"
+        console.log(queryc)
+        this.insP.select(queryc).subscribe(response =>{
+          
+          console.log(response)
+          var risposta = JSON.parse(JSON.stringify(response)) 
+          if (risposta.upd === "nok")
+          {   
+            Swal.fire({  
+              icon: 'error',  
+              title: 'errore',  
+              text: "erroe di formato dati",  
+              
+            }) 
+            e.node.setDataValue(colonna +"", e.oldValue)
+            this.supportf= true
+            return 
+          }
+          console.log(risposta.rows)
+          var messaggio = risposta.rows[0].fnc_controllo_rendicontazione
+          console.log(messaggio)
+          var tipoMessaggio : String= messaggio.split("=")[0]
+          console.log(tipoMessaggio)
+          var msg =  messaggio.split("=")[1]
+          console.log(msg)
+          if(tipoMessaggio === "OK" ||  tipoMessaggio === "WR" )
+          {    
+            console.log("insert")
+            var query = "insert into new_rilatt.attivita_risorsa  (flag_budget , flag_attivita,giornate, id_progetto , id_risorsa , anno , mese ,id_odl)  values (false , false,"+valore+","+id_progetto+","+id_risorsa+",'"+anno+"','"+mese+"','"+id_odl+"')"
+           // this.update(query)
+           this.insP.select(query).subscribe(Response=>{
+            var risposta = JSON.parse(JSON.stringify(Response))
+            if(risposta.upd === "ok" )
+            { 
+               if(tipoMessaggio === "OK")
+               {console.log("ok")
+              Swal.fire({  
+                icon: 'success',  
+                title: 'successo',  
+                text:  'inserimento commessa  avvenuto con successo',   
+                
+              }) 
+            }
+            else 
+            { console.log("warn")
+              Swal.fire({  
+                icon: 'warning',  
+                title: 'warning',  
+                text:  msg +', il record è stato inserito ugualmente',   
+                
+              }) 
+            }
+    
+            }
+            else{
+              console.log("err1")
+              Swal.fire({  
+                icon: 'error',  
+                title: 'errore',  
+                text: "erroe nell'inserimento di una nuova attività",  
+                
+              }) 
+              e.node.setDataValue(colonna +"", e.oldValue)
+              this.supportf= true
+    
+            }
+              
+    
+           })
+          }
+          else 
+          {
+            
+              if(tipoMessaggio  === "KO" )
+                 {    
+                      Swal.fire({  
+                        icon: 'error',  
+                        title: 'errore',  
+                        text: msg + ", il record non verrà inserito",  
+                          
+                    }) 
+                   }  
+                   e.node.setDataValue(colonna +"", e.oldValue)   
+                   this.supportf= true
+                 }
+       })
+      }
+      else 
+      {  var queryc = "SELECT new_rilatt.fnc_controllo_rendicontazione("+id_progetto+", "+id_risorsa+","+anno+","+mese+","+e.newValue+","+id_odl+");"
+      console.log(queryc)
+      this.insP.select(queryc).subscribe(response =>{
+        console.log(response)
+        var risposta = JSON.parse(JSON.stringify(response)) 
+        if (risposta.upd === "nok")
+        {   
+          Swal.fire({  
+            icon: 'error',  
+            title: 'errore',  
+            text: "erroe di formato dati",  
+            
+          }) 
+          e.node.setDataValue(colonna +"", e.oldValue)
+          this.supportf= true
+          return 
+        }
+        console.log(risposta.rows)
+        var messaggio = risposta.rows[0].fnc_controllo_rendicontazione
+        console.log(messaggio)
+        var tipoMessaggio : String= messaggio.split("=")[0]
+        console.log(tipoMessaggio)
+        var msg =  messaggio.split("=")[1]
+        console.log(msg)
+        if(tipoMessaggio === "OK" ||  tipoMessaggio === "WR" )
+        {    
+          console.log("insert")
+          console.log(anno, mese , nome,cognome,commessa)
+        var query = "update new_rilatt.attivita_risorsa set giornate = "+valore +" where id_progetto = "+ id_progetto +" and id_risorsa = " + id_risorsa +" and anno = "+anno +" and mese = " + mese
+        
+         
+         this.insP.select(query).subscribe(Response=>{
+          var risposta = JSON.parse(JSON.stringify(Response))
+          if(risposta.upd === "ok" )
+          { 
+             if(tipoMessaggio === "OK")
+             {
+            Swal.fire({  
+              icon: 'success',  
+              title: 'successo',  
+              text:  'update commessa  avvenuto con successo',   
+            
+              
+            }) 
+          }
+          else 
+          {
+            Swal.fire({  
+              icon: 'warning',  
+              title: 'warning',  
+              text:  msg +', il record è stato modificato ugualmente',   
+
+              
+            }) 
+          }
+  
+          }
+          else{
+  
+            Swal.fire({  
+              icon: 'error',  
+              title: 'errore',  
+              text: "erroe nella modifica di una nuova attività",  
+              
+            }) 
+            e.node.setDataValue(colonna +"", e.oldValue)
+            this.supportf= true
+  
+          }
+            
+  
+         })
+        }
+          
+            if(tipoMessaggio  === "KO" )
+               {    
+                    Swal.fire({  
+                      icon: 'error',  
+                      title: 'errore',  
+                      text: msg + ", il record non verrà modificato",  
+                      
+                        
+                  }) 
+                  e.node.setDataValue(colonna +"", e.oldValue)
+                  this.supportf= true
+                 }     
+     })
+        
+      }
+    }
+    
+
+  })
+ 
+ /* var valore = e.value
+  var query = "update new_rilatt.attivita_risorsa set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
   console.log(valore)  
   console.log(query)
   this.update(query)*/
@@ -261,7 +481,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
   setup3= () => {
     var query = "select distinct   cognome || '-' || nome || ':' ||   r.id_risorsa as descrizione2 from new_rilatt.risorse r "
-              +" inner join new_rilatt.progetti_pm r2  on  r.id_risorsa = r2.id_risorsa order by descrizione2 " 
+              +" inner join new_rilatt.odl r2  on  r.id_risorsa = r2.id_risorsa order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;
       var dati = JSON.parse(JSON.stringify(response)).rows;  
       this.risorse=  [...new Map(dati.map((item: { [x: string]: any; }) =>
@@ -271,23 +491,30 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     
   }
 
-
+  
+   compare = ( a : any, b : any )  => {
+    if ( a.descrizione3 < b.descrizione3 ){
+      return -1;
+    }
+    if ( a.descrizione3 > b.descrizione3 ){
+      return 1;
+    }
+    return 0;
+  }
   setup1= () => {
     var query = `select distinct    cognome || '-' || nome ||  ':'  ||   
     r2.id_risorsa as descrizione2, REPLACE(descrizione_progetto, '.', '-') || '--' ||  codice   || ':' || p.id_progetto as descrizione3 
     , anno,mese from new_rilatt.attivita_risorsa ar 
      inner join new_rilatt.progetti p  on p.id_progetto  = ar.id_progetto
-     left join new_rilatt.progetti_pm pm on pm.id_progetti =  p.id_progetto
-     left join new_rilatt.risorse r2 on r2.id_risorsa  = pm.id_risorsa`
+     left join new_rilatt.odl p2 on p2.id_progetto = p.id_progetto
+     left join new_rilatt.risorse r2 on r2.id_risorsa  = p2.id_risorsa  order by descrizione2 `
 
-   "  " + 
-   " order by descrizione2 " 
     this.insP.select(query).subscribe(response =>{
      
       console.log(response) ;
       var dati = JSON.parse(JSON.stringify(response)).rows;
       this.commesse =  [...new Map(dati.map((item: { [x: string]: any; }) =>
-      [item["descrizione3"], item])).values()];
+      [item["descrizione3"], item])).values()].sort(this.compare);
       this.datiS = dati
      
      // this.commesse = dati
@@ -336,17 +563,18 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
         text: 'errore di update, codice : '+ risposata.code
         
       })  
+    
     }
   
   })
 
 
   strucElaboration = () =>{
-  var query = "select   id_attivita , p.id_progetto ,REPLACE(p.descrizione_progetto, '.' , '-') as descrizione_progetto ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
-  + "r2.nome as nome_risorsa,r2.cognome as cognome_risorsa,ar.anno ,ar.mese,ar.giornate ,ar.flag_attivita from"
+  var query = "select   pp.id_odl,id_attivita , p.id_progetto ,REPLACE(p.descrizione_progetto, '.' , '-') as descrizione_progetto ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
+  + "r2.nome as nome_risorsa,r2.id_risorsa,r2.cognome as cognome_risorsa,ar.anno ,ar.mese,ar.giornate ,ar.flag_attivita from"
   + " new_rilatt.progetti p"
-  + " left join new_rilatt.progetti_pm pp"
-  + " on pp.id_progetti =p.id_progetto"
+  + " left join new_rilatt.odl pp"
+  + " on pp.id_progetto =p.id_progetto"
   + " left join new_rilatt.risorse r"
   + " on r.id_risorsa =pp.id_risorsa"
   + " join new_rilatt.attivita_risorsa ar"
@@ -366,8 +594,9 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
   elaborazioneStruttura  = (json : Object) =>{
     var listaR = JSON.parse(JSON.stringify(json)).rows
     console.log(listaR)
+    this.columnDefs.push({"field" : "id_risorsa"  , editable : true , hide : true }) 
     this.columnDefs.push({"field" : "id_attivita"  , editable : true , hide : true }) 
-    this.columnDefs.push({"field" : "nome_risorsa"  , editable : true , hide : false}) 
+    this.columnDefs.push({"field" : "nome_risorsa"  , editable : false , hide : false}) 
     this.columnDefs.push({"field" : "cognome_risorsa"  , editable : true , hide : false}) 
     this.columnDefs.push({"field" : "anno"  , editable : false , hide : false}) 
     this.columnDefs.push({"field" : "mese"  , editable : false , hide : false}) 
@@ -383,9 +612,11 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
       if (found2 === -1)
       { 
         
-        var t : any = {"id_attivita" : element.id_attivita, "contatore" : contatore, "nome_risorsa" : element.nome_risorsa , "cognome_risorsa" : element.cognome_risorsa , "anno" : element.anno , "mese" : element.mese } 
+        var t : any = {  "id_risorsa":element.id_risorsa,"id_attivita" : element.id_attivita, "contatore" : contatore, "nome_risorsa" : element.nome_risorsa , "cognome_risorsa" : element.cognome_risorsa , "anno" : element.anno , "mese" : element.mese } 
         var descrizione  =(element.descrizione_progetto+"")
         t[descrizione] = element.giornate
+        t["flag_" + descrizione] = element.flag_attivita
+        t["odl_" + descrizione] = element.id_odl
         listaD2.push(t)
       
         
@@ -399,6 +630,8 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
              var it = listaD2[found2]
             // console.log(it)
              it[descrizione] = valore
+             it["flag_" + descrizione] = element.flag_attivita
+             it["odl_" + descrizione] = element.id_odl
          
              listaD2[found2] = it
       }
@@ -414,17 +647,26 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
       //  console.log("non trovato")
        // console.log(element)
         this.listaColonne.push(element.descrizione_progetto)
-        this.columnDefs.push({"field" : element.descrizione_progetto,  headerTooltip: element.codice, editable : !element.flag_attivita, hide : false}) 
+        this.columnDefs.push({"headerName" : element.descrizione_progetto + element.id_odl,"field" : element.descrizione_progetto,  headerTooltip: element.codice,   cellStyle: params => {
+          if (params.data["flag_"+element.descrizione_progetto]) {
+              //mark police cells as red
+              
+              return {color: 'black', backgroundColor: '#FFCCCB'};
+          }
+          return null;
+      } ,editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : false ,  resizable: true}) 
+        this.columnDefs.push({"headerName" : "ciao","field" : "odl_"+element.descrizione_progetto,  headerTooltip: element.codice,   editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : true}) 
         
         listaD.push(element.descrizione_progetto)
       }
       else 
       {
-    
+     
       }
     
    
     };
+    console.log(listaD2)
     this.dati = listaD2
    
     this.agGrid.api.setRowData(this.dati)
@@ -483,6 +725,17 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
     this.insP.select(queryc).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
+      if (risposta.upd === "nok")
+      {   
+        Swal.fire({  
+          icon: 'error',  
+          title: 'errore',  
+          text: "erroe generico con la funzione : new_rilatt.fnc_consolida_pianificazione()",  
+          
+        }) 
+        
+        return 
+      }
       console.log(risposta.rows)
       var messaggio = risposta.rows[0].fnc_consolida_pianificazione
       console.log(messaggio)

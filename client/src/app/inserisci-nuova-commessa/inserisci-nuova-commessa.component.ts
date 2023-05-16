@@ -38,16 +38,11 @@ export class InserisciNuovaCommessaComponent {
     this.form = this.fb.group({
       codice: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       descrizione : new FormControl("",[ Validators.required,Validators.minLength(1)]), 
-      effortTot : new FormControl(""),
-      effortPreg :new FormControl(""),
       note : '', 
-      budget : new FormControl(""),
-      budgetPreg : new FormControl(""),
+    
     })
     this.form2 = this.fb.group({
-      stato: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       istituito : new FormControl(""),
-      tipologia:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
       cliente:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
      
   
@@ -69,40 +64,31 @@ export class InserisciNuovaCommessaComponent {
       this.disabilitato = this.form.valid && this.form2.valid
     console.log(data)
     
-    stato =  data.stato === undefined || data.stato === null  ? "" :data.stato.descrizione2  === undefined   || data.stato.descrizione2 === null ? "" :  data.stato.descrizione2
+   /* stato =  data.stato === undefined || data.stato === null  ? "" :data.stato.descrizione2  === undefined   || data.stato.descrizione2 === null ? "" :  data.stato.descrizione2
     stato = stato === undefined || stato === "undefined"  ? "" : stato
     tipologia  =  data.tipologia === undefined || data.tipologia === null ? "" :data.tipologia.descrizione2 === undefined  || data.tipologia.descrizione2 === null ? "" :  data.tipologia.descrizione2
     tipologia = tipologia === undefined || tipologia === "undefined"  ? "" : tipologia
-    cliente  =  data.cliente === undefined || data.cliente === null ? "" :data.cliente.descrizione2 === undefined  || data.cliente.descrizione2 === null ? "" :  data.cliente.descrizione2.split(":")[0].split("-")[0]
-    cliente = cliente === undefined || cliente === "undefined"  ? "" : cliente
+     
+    */
     istituito = data.istituito === undefined || data.istituito == null ? false : data.istituito
     istituito = istituito === undefined   ? false : istituito
+    cliente  =  data.cliente === undefined || data.cliente === null ? "" :data.cliente.descrizione2 === undefined  || data.cliente.descrizione2 === null ? "" :  data.cliente.descrizione2.split(":")[0].split("-")[0]
+    cliente = cliente === undefined || cliente === "undefined"  ? "" : cliente
+   
 
     var filteredData = this.dati.filter((item: {
       flag_istituto: String;
-      tipologia: String;
-      flag_stato: String;
-      effort_pregresso: string;
-      effort_totale: string;
       note: string;
-      budget: string;
       descrizione_codice: string;
       codice: String;
-      budget_pregresso : string
       descrizione_cliente : string
 
   
         }) =>
-        item.flag_stato.includes(stato)  
-      && (item.tipologia + "").includes(tipologia) 
-      && (item.flag_istituto+ "").includes(istituito+"") 
+       (item.flag_istituto+ "").includes(istituito+"") 
       && (item.codice+"").includes(codice)  
       && (item.descrizione_codice+"").includes(descrizione) 
-      && (item.budget+"").includes(budget) 
       && (item.note+"").includes(note) 
-      && (item.effort_totale+ "").includes(effort_totale) 
-      && (item.effort_pregresso+ "").includes(effort_pregresso) 
-      && (item.budget_pregresso+ "").includes(budget_pregresso) 
       && (item.descrizione_cliente+ "").includes(cliente) 
     );
     this.agGrid.api.setRowData(filteredData)
@@ -115,42 +101,28 @@ export class InserisciNuovaCommessaComponent {
     codice = codice === undefined || codice === "undefined"  ? "" : codice
     descrizione  =  data.descrizione === undefined || data.descrizione === null  ? "" :data.descrizione
     descrizione = descrizione === undefined || descrizione === "undefined"  ? "" : descrizione
-    budget  =  data.budget === undefined || data.budget === null  ? "" :data.budget
-    budget = budget === undefined || budget === "undefined"  ? "" : budget
     note =  data.note === undefined || data.note === null ? "" :data.note
     note = note === undefined || note === "undefined"  ? "" : note
-    effort_totale = data.effortTot === undefined || data.effortTot == null ? "" : data.effortTot
+  /*  effort_totale = data.effortTot === undefined || data.effortTot == null ? "" : data.effortTot
     effort_totale = effort_totale === undefined || effort_totale === "undefined"  ? "" : effort_totale
     effort_pregresso = data.effortPreg === undefined || data.effortPreg == null ? "" : data.effortPreg
     effort_pregresso = effort_pregresso === undefined || effort_pregresso === "undefined"  ? "" : effort_pregresso
     budget_pregresso = data.budgetPreg === undefined || data.budgetPreg == null ? "" : data.budgetPreg
     budget_pregresso = budget_pregresso === undefined || budget_pregresso === "undefined"  ? "" : budget_pregresso
-    
+    budget  =  data.budget === undefined || data.budget === null  ? "" :data.budget
+    budget = budget === undefined || budget === "undefined"  ? "" : budget
+    */
 
     var filteredData = this.dati.filter((item: {
-      budget_pregresso: string;
       flag_istituto: String;
-      tipologia: String;
-      flag_stato: String;
-      effort_pregresso: string;
-      effort_totale: string;
-      note: string;
-      budget: string;
       descrizione_progetto: string;
       codice: string;
       descrizione_cliente : string
   
         }) =>
-        item.flag_stato.includes(stato)  
-      && (item.tipologia + "").includes(tipologia) 
-      && (item.flag_istituto+ "").includes(istituito+"") 
+      (item.flag_istituto+ "").includes(istituito+"") 
       && (item.codice+"").includes(codice)  
       && (item.descrizione_progetto+"").includes(descrizione) 
-      && (item.budget+"").includes(budget) 
-      && (item.note+"").includes(note) 
-      && (item.effort_totale+ "").includes(effort_totale) 
-      && (item.effort_pregresso+ "").includes(effort_pregresso) 
-      && (item.budget_pregresso+ "").includes(budget_pregresso) 
       && (item.descrizione_cliente+ "").includes(cliente) 
     );
     this.agGrid.api.setRowData(filteredData)
@@ -370,26 +342,26 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     console.log(insert1,insert2)
     var codice = insert1.codice
     var descrizione = insert1.descrizione
-    var effort_totale = insert1.effortTot
-    effort_totale = effort_totale === undefined || effort_totale === "" ? 0 : effort_totale
-    var effort_pregresso = insert1.effortPreg
-    effort_pregresso = effort_pregresso === undefined || effort_pregresso === "" ? 0 : effort_pregresso
-    var  budget_pregresso = insert1.budgetPreg
-    budget_pregresso = budget_pregresso === undefined || budget_pregresso === "" ? 0 : budget_pregresso
+   // var effort_totale = insert1.effortTot
+   // effort_totale = effort_totale === undefined || effort_totale === "" ? 0 : effort_totale
+   // var effort_pregresso = insert1.effortPreg
+   // effort_pregresso = effort_pregresso === undefined || effort_pregresso === "" ? 0 : effort_pregresso
+   // var  budget_pregresso = insert1.budgetPreg
+   // budget_pregresso = budget_pregresso === undefined || budget_pregresso === "" ? 0 : budget_pregresso
     var note = insert1.note
     var  cliente = insert2.cliente === undefined  || insert2.cliente === "" ? "" : insert2.cliente.descrizione2
     console.log(cliente)
     cliente = cliente === undefined || cliente === "" ? null :  cliente.split(":")[1]
-    var budget = insert1.budget
-    budget = budget === undefined || budget === "" ? 0 : budget
-    var stato = insert2.stato.descrizione2
-    var tipologia = insert2.tipologia.descrizione2
+    //var budget = insert1.budget
+    //budget = budget === undefined || budget === "" ? 0 : budget
+   // var stato = insert2.stato.descrizione2
+   // var tipologia = insert2.tipologia.descrizione2
     var istituito = insert2.istituito === "" || insert2.istituito === undefined ? false :  insert2.istituito 
        
   
     
 
-    var query = "insert into new_rilatt.progetti (codice, descrizione_progetto, note ,effort_totale , effort_pregresso, budget  , flag_stato , flag_istituto , tipologia, budget_pregresso,id_cliente) values ('"+codice+"','"+descrizione+"','"+note+"','"+effort_totale+"','"+effort_pregresso+"','"+budget+"','"+stato+"',"+istituito+",'"+tipologia+"','"+budget_pregresso+"',"+cliente+" )  RETURNING id_progetto"
+    var query = "insert into new_rilatt.progetti (codice, descrizione_progetto, note,  flag_istituto ,id_cliente) values ('"+codice+"','"+descrizione+"','"+note+"',"+istituito+","+cliente+" )  RETURNING id_progetto"
     console.log(query)
     this.insP.select(query).subscribe(response =>{
       console.log(response)
