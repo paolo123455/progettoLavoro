@@ -23,6 +23,7 @@ export class InserisciRuoloComponent {
   livelli: any[] = []
   ruoli: any[] = []
   risorse: any[] = []
+  showForm = false;
   
   
   

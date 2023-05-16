@@ -16,19 +16,19 @@ import { InsClienteComponent } from './ins-cliente/ins-cliente.component';
 import { InsOdlComponent } from './ins-odl/ins-odl.component';
 
 const routes: Routes = [  
-  {path : 'inserisci/rendicontazione', component : GestioneRendicontazioneComponent},
-  {path : 'grafico/totale' , component : ConsolidaRendicontazioneComponent},
+  {path : 'rendicontazione', component : GestioneRendicontazioneComponent},
+  {path : 'prospetto-generale' , component : ConsolidaRendicontazioneComponent},
   {path : 'practice', component : NuovaPracticeComponent},
-  {path : 'insprar', component : PracticeRisorsaComponent},
-  {path : '', component : HomeComponent},
-  {path : 'insp', component : InserisciRisorsaComponent},
-  {path : 'insc', component : InserisciNuovaCommessaComponent},
-  {path : 'inspl', component : InserisciLivelloComponent},
-  {path : 'inspr', component : InserisciRuoloComponent},
+  // {path : 'insprar', component : PracticeRisorsaComponent},
+  {path : 'risorse', component : InserisciRisorsaComponent},
+  {path : 'commesse', component : InserisciNuovaCommessaComponent},
+  {path : 'livelli', component : InserisciLivelloComponent},
+  // {path : 'inspr', component : InserisciRuoloComponent},
   //{path : 'inspd', component : PracticeResponsabileComponent},
-  {path : 'inscr', component : InserisciCommessaRisorsaComponent},
-  {path : 'inserisci/cliente', component : InsClienteComponent},
-  {path : 'inserisci/odl', component : InsOdlComponent},
+  {path : 'giornate', component : InserisciCommessaRisorsaComponent},
+  {path : 'clienti', component : InsClienteComponent},
+  {path : 'odl', component : InsOdlComponent},
+  {path : '', component : HomeComponent},
   {path : '**', component : ErrorComponentComponent}
 ];
 
