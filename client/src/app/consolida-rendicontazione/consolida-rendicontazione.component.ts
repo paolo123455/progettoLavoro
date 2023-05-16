@@ -5,7 +5,7 @@ import { AgGridAngular } from 'ag-grid-angular'
 import {  ViewChild } from '@angular/core';
 import {FormBuilder, FormArray,FormControl,FormGroup, Validators } from '@angular/forms'
 import { Observable } from 'rxjs';
-import { CellClickedEvent, CellEditingStartedEvent, CellValueChangedEvent, ColDef, GetRowIdFunc, GridReadyEvent } from 'ag-grid-community';
+import { CellClickedEvent, CellEditingStartedEvent, CellValueChangedEvent, ColDef, Column, GetRowIdFunc, GridReadyEvent } from 'ag-grid-community';
 import { HttpClient } from '@angular/common/http';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -29,6 +29,7 @@ export class ConsolidaRendicontazioneComponent {
   damesi : number[] =[1,2,3,4,5,6,7,8,9,10,11,12]
   amesi : number[] =[1,2,3,4,5,6,7,8,9,10,11,12]
   mesi : any[] = []
+  odls : any[] = []
   anni: any[] =[] //[2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
   disabilitato = false;
   disabilitato2 = false;
@@ -47,7 +48,8 @@ export class ConsolidaRendicontazioneComponent {
       risorsa2: '',
       commessa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       anno: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      mese: new FormControl("",[ Validators.required,Validators.minLength(1)])
+      mese: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      odl: ''
       
 
     })
@@ -86,6 +88,11 @@ export class ConsolidaRendicontazioneComponent {
       var risc2 = datir2 === undefined ? "" : datir2.split(":")[0].split("-")[0] 
       risc2 = risc2 === undefined ? "" : risc2
       console.log(risn2,risc2)
+      var odl = data.odl === undefined || data.odl === null ? "" :  data.odl.descrizione2
+
+      odl = odl === undefined || odl.split(":")[1] === undefined ? "" :  odl.split(":")[1]
+      console.log(odl)
+  
      
 
 
@@ -93,6 +100,7 @@ export class ConsolidaRendicontazioneComponent {
 
       
       console.log(datic,"--",datir,"--",anno,"--",mese)
+      console.log(this.datiS)
       var filteredData = this.datiS.filter((item: {
        
         descrizione2: string;
@@ -127,11 +135,24 @@ export class ConsolidaRendicontazioneComponent {
               mese:string
               }) =>   {
                 var flag = false || datir === ""
-              
+                
                 for(let t of colP )
                    {
-             
-                    flag = (t in item  || flag  && (descrizione in item  || descrizione === "")  )
+                    var includes1 = false
+                    var includes2 = false
+                    for (var key in item)
+                    {  
+                       var key2 = key.split("---")[0]
+                       var key3 = key.split("---")[1]
+
+                      
+                       includes1 = ((t === key2 ) && (odl === '' || odl === key3))  || includes1
+                     
+                       
+                    }
+                  
+                   
+                    flag = (includes1 || flag  && (descrizione in item  || descrizione === "")  )
                     
                    }
                  
@@ -141,13 +162,62 @@ export class ConsolidaRendicontazioneComponent {
              
             )
             console.log(filteredData)
+            console.log(filteredData2)
             
             console.log(this.listaColonne)
+            
             console.log(colP)
-            this.agGrid.columnApi.setColumnsVisible(this.listaColonne, false)
-            this.agGrid.columnApi.setColumnsVisible(colP,true)
+            
+            console.log(this.agGrid.columnDefs)
             console.log(filteredData2,this.dati)
             this.agGrid.api.setRowData(filteredData2)
+            var colonneData : string[]  = []
+            for (var element in filteredData2)
+            { 
+             Object.keys(filteredData2[element]).forEach(key => {
+              if (colonneData.includes(key))
+              {
+
+              }
+              else 
+              {
+                colonneData.push(key)
+              }
+
+
+             }) 
+
+            }
+             
+            console.log(colonneData)
+             colonneData = colonneData.filter((item => {
+                  var flag = false 
+              colP.forEach(it => {
+                if (item.includes(it) && !item.includes("odl_") && !item.includes("flag_")) 
+                  {flag = true  
+                  
+                  }
+                
+
+              })
+              if(flag)
+              {
+                 return true 
+              }
+              else 
+              {
+                return false 
+              }
+              
+
+            }))
+            
+              console.log(colP,this.commesse)
+              console.log(colonneData)
+            this.agGrid.columnApi.setColumnsVisible(this.listaColonne, false)
+            this.agGrid.columnApi.setColumnsVisible(colonneData,true)
+           
+            
     })
   
    
@@ -156,6 +226,7 @@ export class ConsolidaRendicontazioneComponent {
     this.setup1()
     this.setup3()
     this.setup2()
+    this.setup4()
    
   }
     
@@ -490,6 +561,15 @@ return
     })
     
   }
+  setup4= () => {
+    var query = "select distinct   descrizione_odl || '-' || codice_odl || ':' ||  id_odl as  descrizione2 from new_rilatt.odl r " 
+    this.insP.select(query).subscribe(response =>{console.log(response) ;
+      var dati = JSON.parse(JSON.stringify(response)).rows;  
+      this.odls= dati
+    
+    })
+    
+  }
 
   
    compare = ( a : any, b : any )  => {
@@ -570,17 +650,17 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
 
 
   strucElaboration = () =>{
-  var query = "select   pp.id_odl,id_attivita , p.id_progetto ,REPLACE(p.descrizione_progetto, '.' , '-') as descrizione_progetto ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
+  var query = "select   pp.id_odl,id_attivita , p.id_progetto  ,REPLACE(p.descrizione_progetto, '.' , '-') ||  (case when pp.id_odl is null then '' else  '---' ||pp.id_odl  end) as descrizione_progetto ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
   + "r2.nome as nome_risorsa,r2.id_risorsa,r2.cognome as cognome_risorsa,ar.anno ,ar.mese,ar.giornate ,ar.flag_attivita from"
   + " new_rilatt.progetti p"
-  + " left join new_rilatt.odl pp"
-  + " on pp.id_progetto =p.id_progetto"
-  + " left join new_rilatt.risorse r"
-  + " on r.id_risorsa =pp.id_risorsa"
   + " join new_rilatt.attivita_risorsa ar"
   + "  on ar.id_progetto =p.id_progetto"
+  + " left join new_rilatt.odl pp"
+  + " on pp.id_odl =ar.id_odl"
+  + " left join new_rilatt.risorse r"
+  + " on r.id_risorsa =pp.id_risorsa"
   + " join new_rilatt.risorse r2"
-  + " on r2.id_risorsa =ar.id_risorsa"
+  + " on r2.id_risorsa =ar.id_risorsa order by id_odl"
  
     this.insP.structUndestanding(query ).subscribe(response =>{
     console.log(response)
@@ -607,12 +687,13 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
     for( let element of listaR ) {
      // console.log(element)
      // console.log(listaD2)
-      let found2 = listaD2.findIndex((item: any)  => { return  item.nome_risorsa === element.nome_risorsa && item.cognome_risorsa === element.cognome_risorsa && item.anno === element.anno && item.mese === element.mese } );
+      let found2 = listaD2.findIndex((item: any)  => { return  item["odl_"+element.descrizione_progetto] === element.id_odl && item.nome_risorsa === element.nome_risorsa && item.cognome_risorsa === element.cognome_risorsa && item.anno === element.anno && item.mese === element.mese } );
      // console.log(found2)
+
       if (found2 === -1)
       { 
         
-        var t : any = {  "id_risorsa":element.id_risorsa,"id_attivita" : element.id_attivita, "contatore" : contatore, "nome_risorsa" : element.nome_risorsa , "cognome_risorsa" : element.cognome_risorsa , "anno" : element.anno , "mese" : element.mese } 
+        var t : any = {  "id_odl" : element.id_odl, "id_risorsa":element.id_risorsa,"id_attivita" : element.id_attivita, "contatore" : contatore, "nome_risorsa" : element.nome_risorsa , "cognome_risorsa" : element.cognome_risorsa , "anno" : element.anno , "mese" : element.mese } 
         var descrizione  =(element.descrizione_progetto+"")
         t[descrizione] = element.giornate
         t["flag_" + descrizione] = element.flag_attivita
@@ -644,18 +725,19 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
       
       //console.log(found)
       if (found === undefined){
+        
       //  console.log("non trovato")
        // console.log(element)
         this.listaColonne.push(element.descrizione_progetto)
-        this.columnDefs.push({"headerName" : element.descrizione_progetto + element.id_odl,"field" : element.descrizione_progetto,  headerTooltip: element.codice,   cellStyle: params => {
+        this.columnDefs.push({"field" : element.descrizione_progetto  ,  headerTooltip: element.codice,   cellStyle: params => {
           if (params.data["flag_"+element.descrizione_progetto]) {
               //mark police cells as red
               
               return {color: 'black', backgroundColor: '#FFCCCB'};
           }
-          return null;
+          return {color: 'black', backgroundColor: '#FFFFFF'};
       } ,editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : false ,  resizable: true}) 
-        this.columnDefs.push({"headerName" : "ciao","field" : "odl_"+element.descrizione_progetto,  headerTooltip: element.codice,   editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : true}) 
+        this.columnDefs.push({"field" : "odl_"+element.descrizione_progetto,  headerTooltip: element.codice,   editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : true}) 
         
         listaD.push(element.descrizione_progetto)
       }

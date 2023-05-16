@@ -11,7 +11,7 @@
               <mat-option></mat-option>
               <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa.descrizione3}}</mat-option>
             </mat-select>
-          </mat-form-field><br>
+          </mat-form-field>
           <mat-form-field>
             <mat-label>PM</mat-label>
             <mat-select formControlName="risorsa" placeholder="PM">
@@ -25,7 +25,7 @@
               <mat-option></mat-option>
               <mat-option *ngFor="let risorsa of risorse2" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
             </mat-select>
-          </mat-form-field><br>
+          </mat-form-field>
           <mat-form-field>
             <mat-label>Anno</mat-label>
             <mat-select formControlName="anno" placeholder="anno">
@@ -38,6 +38,13 @@
             <mat-select formControlName="mese" placeholder="mese">
               <mat-option></mat-option>
               <mat-option *ngFor="let mese of mesi" [value]="mese">{{mese.mese}}</mat-option>
+            </mat-select>
+          </mat-form-field><br>
+          <mat-form-field>
+            <mat-label>Odl</mat-label>
+            <mat-select formControlName="odl" placeholder="odl">
+              <mat-option></mat-option>
+              <mat-option *ngFor="let odl of odls" [value]="odl">{{odl.descrizione2}}</mat-option>
             </mat-select>
           </mat-form-field><br>
       
