@@ -28,16 +28,20 @@ export class PracticeResponsabileComponent {
   form!: FormGroup; 
   formRL!: FormGroup; 
   myMap = new Map<string, string>();
-  livelli: any[] = []
-  ruoli: any[] = []
-  risorse: any[] = []
-  practices: any[] = []
+  livelli: any[] = [];
+  ruoli: any[] = [];
+  risorse: any[] = [];
+  practices: any[] = [];
   showForm = false;
 
-  public columnDefs : ColDef[] = [
-    {field: '' ,
-    cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
-  ];
+  public columnDefs : ColDef[] = [{
+    cellRenderer: (params : any) => {return '<div><button type="button" class="btn btn-sm"><i class="bi bi-trash-fill" style="color:red"></i></button></div>'},
+    maxWidth: 34,
+    filter: false,
+    suppressMovable: true,
+    lockPosition: 'left',
+    cellClass: 'button-cell'
+  }];
  
   // DefaultColDef sets props common to all Columns
   public defaultColDef: ColDef = {
@@ -126,7 +130,7 @@ export class PracticeResponsabileComponent {
     console.log(numeroC)
     var left = e.column.getLeft()
     console.log(left)
-    if (left === 0) {
+    if (left === 0 && confirm('Eliminare definitivamente?')) {
       this.delete("delete from  new_rilatt.responsabile_practice where id_responsabile_practice = " + this.id_touch)
     }
   }
@@ -145,7 +149,7 @@ export class PracticeResponsabileComponent {
   }
  
   select = () => {
-    var query = "select r.* , rp. from new_rilatt.responsabile_practice rp "+ 
+    var query = "select r.* , rp.* from new_rilatt.responsabile_practice rp "+ 
                 "inner join new_rilatt.risorse r on r.id_risorsa = rp.id_risorsa " + 
                 "inner join new_rilatt.practice p on p.id_practice  = rp.id_practice";
     this.insP.select(query).subscribe(response =>{
@@ -169,11 +173,10 @@ export class PracticeResponsabileComponent {
        
       this.agGrid.api.applyTransaction({update:[this.datiV]});
       Swal.fire({  
-        icon: 'error',  
+        icon:  'error',  
         title: 'errore',  
-        text: 'errore in update',  
-        footer: '<a href>Why do I have this issue?</a>'  
-      })  
+        text:  'Si è verificato un errore. ',  
+      })
     }
   
   })
@@ -203,11 +206,10 @@ export class PracticeResponsabileComponent {
     } else {
       console.log("errore")
       Swal.fire({  
-        icon: 'error',  
-        title: 'Oops...',  
-        text: 'errore delete',  
-        footer: '<a href>Why do I have this issue?</a>'  
-      })  
+        icon:  'error',  
+        title: 'errore',  
+        text:  'Si è verificato un errore. ',  
+      })
     }
   })
 
@@ -238,10 +240,10 @@ export class PracticeResponsabileComponent {
         console.log(risposta)
         console.log(this.datiV)
         Swal.fire({  
-          icon: 'error',  
+          icon:  'error',  
           title: 'errore',  
-          text: 'inserimento responsabile a  utente errato!',
-        })  
+          text:  'Si è verificato un errore. ',  
+        })
       }
     })
   } 

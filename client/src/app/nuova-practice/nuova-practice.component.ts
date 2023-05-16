@@ -34,16 +34,14 @@ export class NuovaPracticeComponent {
 
   // Prima colonna con il pulsante "Elimina"
   // Deve essere necessariamente la prima colonna
-  public columnDefs : ColDef[] = [
-    {
+  public columnDefs : ColDef[] = [{
       cellRenderer: (params : any) => {return '<div><button type="button" class="btn btn-sm"><i class="bi bi-trash-fill" style="color:red"></i></button></div>'},
       maxWidth: 34,
       filter: false,
       suppressMovable: true,
       lockPosition: 'left',
       cellClass: 'button-cell'
-    }
-  ];
+    }];
 
   // DefaultColDef sets props common to all Columns
   public defaultColDef: ColDef = {
