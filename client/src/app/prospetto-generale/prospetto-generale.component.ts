@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { InsPService } from 'src/services/ins-p.service';
 import { AgGridAngular } from 'ag-grid-angular'
@@ -12,11 +11,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-consolida-rendicontazione',
-  templateUrl: './consolida-rendicontazione.component.html',
-  styleUrls: ['./consolida-rendicontazione.component.css']
+  selector: 'app-prospetto-generale',
+  templateUrl: './prospetto-generale.component.html',
+  styleUrls: ['./prospetto-generale.component.css']
 })
-export class ConsolidaRendicontazioneComponent {
+export class ProspettoGeneraleComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
   form2!: FormGroup; 
@@ -39,7 +38,7 @@ export class ConsolidaRendicontazioneComponent {
   enableBrowserTooltips = true
   datiS : any[] = []
   listaColonne : string[] = []
-
+  showForm = false;
 
   ngOnInit(): void {
     
@@ -216,7 +215,7 @@ export class ConsolidaRendicontazioneComponent {
               console.log(colonneData)
             this.agGrid.columnApi.setColumnsVisible(this.listaColonne, false)
             this.agGrid.columnApi.setColumnsVisible(colonneData,true)
-           
+            this.resizeColumnWidth();
             
     })
   
@@ -230,17 +229,21 @@ export class ConsolidaRendicontazioneComponent {
    
   }
     
-  
-    //email = new FormControl(null ,[Validators.required, Validators.maxLength(3)])
-    //nome = new FormControl(null ,[Validators.required, Validators.maxLength(4)])
-    //cognome = new FormControl(null ,[Validators.required, Validators.maxLength(5)])
+  resizeColumnWidth(){
+    // ridimensiona le colonne (larghezza) basandosi sul contenuto
+    // il parametro della funzione è skipHeader (considera o meno la lunghezza dell'header)
+    this.agGrid?.columnApi.autoSizeAllColumns(false);
+  }
 
 
-
-  public columnDefs : ColDef[] = [
-    {field: '' ,
-    cellRenderer: (params : any) => {return '<div> <button ><i class="bi bi-trash-fill" style = "color:red"></i></button></div>'}},
-   ];
+	public columnDefs : ColDef[] = [{
+		cellRenderer: (params : any) => {return '<div><button type="button" class="btn btn-sm"><i class="bi bi-trash-fill" style="color:red"></i></button></div>'},
+		maxWidth: 34,
+		filter: false,
+		suppressMovable: true,
+		lockPosition: 'left',
+		cellClass: 'button-cell'
+	}];
   
  
   // DefaultColDef sets props common to all Columns
@@ -288,7 +291,7 @@ export class ConsolidaRendicontazioneComponent {
     var valore = e.column.getColId()
     var left = e.column.getLeft()
     console.log(left)
-    if (left === 0)
+    if (left === 0 && confirm('Eliminare definitivamente?'))
     {
       this.delete("delete from  new_rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
     }
@@ -621,7 +624,10 @@ select = ()  => {var query = "select *, p.descrizione_progetto as progetti from 
 "inner join new_rilatt.progetti  p on p.id_progetto = ar.id_progetto "
 
 this.insP.select(query).subscribe(response =>{console.log(response) ;
-  this.dati = JSON.parse(JSON.stringify(response)).rows; console.log(this.dati); this.agGrid.api.setRowData(this.dati)})
+  this.dati = JSON.parse(JSON.stringify(response)).rows; console.log(this.dati);
+  this.agGrid.api.setRowData(this.dati)
+  this.resizeColumnWidth();
+})
 
 }
  
@@ -667,8 +673,8 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
     console.log(response)
  
     var responsej = JSON.parse(JSON.stringify(response))
-    this.elaborazioneStruttura(response)
-   
+    this.elaborazioneStruttura(response);
+    this.resizeColumnWidth();
   })}
 
   elaborazioneStruttura  = (json : Object) =>{
@@ -737,7 +743,13 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
           }
           return {color: 'black', backgroundColor: '#FFFFFF'};
       } ,editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : false ,  resizable: true}) 
-        this.columnDefs.push({"field" : "odl_"+element.descrizione_progetto,  headerTooltip: element.codice,   editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : true}) 
+        this.columnDefs.push({
+          "field" : "odl_"+element.descrizione_progetto,
+          headerTooltip: element.codice,
+          editable: (params) => !params.data["flag_"+element.descrizione_progetto],
+          hide : true,
+          resizable: true,
+        }) 
         
         listaD.push(element.descrizione_progetto)
       }

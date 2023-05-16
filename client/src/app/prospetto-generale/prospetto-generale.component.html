@@ -1,5 +1,8 @@
-
-<div style=" display: flex; height: 100%;">
+<button mat-button (click)="showForm=!showForm">
+	<span *ngIf="showForm">Nascondi form</span>
+	<span *ngIf="!showForm">Mostra form</span>
+</button>
+<div style="display: flex; margin-bottom: 12px;" *ngIf="showForm">
     <div style="flex: 1;padding: 1em;border: solid;">
      <form [formGroup] = "form">
     
@@ -66,7 +69,6 @@
     
   </div>
   <ag-grid-angular
-     style="width: 100%; height: 100%"
      class="ag-theme-alpine"
      [getRowId]="getRowId"
      [enableBrowserTooltips] = "enableBrowserTooltips"
@@ -78,6 +80,7 @@
      (cellClicked)="onCellClicked($event)"
      (cellEditingStarted)="onCellEditingStarted($event)"
      (cellValueChanged)="onCellValueChanged($event)"
+     domLayout='autoHeight'
    ></ag-grid-angular>
   
   

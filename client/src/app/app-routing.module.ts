@@ -11,13 +11,13 @@ import { PracticeComponent } from './practice/practice.component';
 //import { PracticeResponsabileComponent } from './practice-responsabile/practice-responsabile.component';
 // import { PracticeRisorsaComponent } from './__practice-risorsa/practice-risorsa.component';
 import { GestioneRendicontazioneComponent } from './gestione-rendicontazione/gestione-rendicontazione.component';
-import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/consolida-rendicontazione.component';
+import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-generale.component';
 import { ClientiComponent } from './clienti/clienti.component';
 import { OdlComponent } from './odl/odl.component';
 
 const routes: Routes = [  
   {path : 'rendicontazione', component : GestioneRendicontazioneComponent},
-  {path : 'prospetto-generale' , component : ConsolidaRendicontazioneComponent},
+  {path : 'prospetto-generale' , component : ProspettoGeneraleComponent},
   {path : 'practice', component : PracticeComponent},
   // {path : 'insprar', component : PracticeRisorsaComponent},
   {path : 'risorse', component : RisorseComponent},

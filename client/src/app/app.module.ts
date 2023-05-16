@@ -27,7 +27,7 @@ import { PracticeComponent } from './practice/practice.component';
 // import { PracticeRisorsaComponent } from './__practice-risorsa/practice-risorsa.component';
 // import { PracticeResponsabileComponent } from './practice-responsabile/practice-responsabile.component';
 import { GestioneRendicontazioneComponent } from './gestione-rendicontazione/gestione-rendicontazione.component';
-import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/consolida-rendicontazione.component';
+import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-generale.component';
 import { ClientiComponent } from './clienti/clienti.component';
 import { OdlComponent } from './odl/odl.component'
 
@@ -47,7 +47,7 @@ import { OdlComponent } from './odl/odl.component'
     // PracticeRisorsaComponent,
     // PracticeResponsabileComponent,
     GestioneRendicontazioneComponent,
-    ConsolidaRendicontazioneComponent,
+    ProspettoGeneraleComponent,
     ClientiComponent,
     OdlComponent,
     
