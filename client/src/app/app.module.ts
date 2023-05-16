@@ -8,7 +8,7 @@ import { ColDef } from 'ag-grid-community';
 import { AgGridModule } from 'ag-grid-angular';
 import { Routes } from '@angular/router';
 import { ErrorComponentComponent } from './error-component/error-component.component';
-import { InserisciRisorsaComponent } from './inserisci-risorsa/inserisci-risorsa.component';
+import { RisorseComponent } from './risorse/risorse.component';
 import {HttpClientModule} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import {ReactiveFormsModule} from '@angular/forms'
@@ -19,17 +19,17 @@ import {MatCheckboxModule} from '@angular/material/checkbox'
 import {MatChipsModule} from '@angular/material/chips'
 import {MatDatepickerModule} from '@angular/material/datepicker'
 import {MatNativeDateModule} from '@angular/material/core';
-import { InserisciRuoloComponent } from './inserisci-ruolo/inserisci-ruolo.component';
-import { InserisciLivelloComponent } from './inserisci-livello/inserisci-livello.component';
-import { InserisciNuovaCommessaComponent } from './inserisci-nuova-commessa/inserisci-nuova-commessa.component';
-import { InserisciCommessaRisorsaComponent } from './inserisci-commessa-risorsa/inserisci-commessa-risorsa.component';
-import { NuovaPracticeComponent } from './nuova-practice/nuova-practice.component';
-import { PracticeRisorsaComponent } from './practice-risorsa/practice-risorsa.component';
-import { PracticeResponsabileComponent } from './practice-responsabile/practice-responsabile.component';
+// import { RuoliComponent } from './ruoli/ruoli.component';
+import { LivelliComponent } from './livelli/livelli.component';
+import { CommesseComponent } from './commesse/commesse.component';
+import { CommesseRisorseComponent } from './commesse-risorse/commesse-risorse.component';
+import { PracticeComponent } from './practice/practice.component';
+// import { PracticeRisorsaComponent } from './__practice-risorsa/practice-risorsa.component';
+// import { PracticeResponsabileComponent } from './practice-responsabile/practice-responsabile.component';
 import { GestioneRendicontazioneComponent } from './gestione-rendicontazione/gestione-rendicontazione.component';
 import { ConsolidaRendicontazioneComponent } from './consolida-rendicontazione/consolida-rendicontazione.component';
-import { InsClienteComponent } from './ins-cliente/ins-cliente.component';
-import { InsOdlComponent } from './ins-odl/ins-odl.component'
+import { ClientiComponent } from './clienti/clienti.component';
+import { OdlComponent } from './odl/odl.component'
 
 //const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 
@@ -38,18 +38,18 @@ import { InsOdlComponent } from './ins-odl/ins-odl.component'
     AppComponent,
     HomeComponent,
     ErrorComponentComponent,
-    InserisciRisorsaComponent,
-    InserisciRuoloComponent,
-    InserisciLivelloComponent,
-    InserisciNuovaCommessaComponent,
-    InserisciCommessaRisorsaComponent,
-    NuovaPracticeComponent,
-    PracticeRisorsaComponent,
-    PracticeResponsabileComponent,
+    RisorseComponent,
+    // RuoliComponent,
+    LivelliComponent,
+    CommesseComponent,
+    CommesseRisorseComponent,
+    PracticeComponent,
+    // PracticeRisorsaComponent,
+    // PracticeResponsabileComponent,
     GestioneRendicontazioneComponent,
     ConsolidaRendicontazioneComponent,
-    InsClienteComponent,
-    InsOdlComponent,
+    ClientiComponent,
+    OdlComponent,
     
     
   ],

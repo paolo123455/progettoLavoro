@@ -11,12 +11,12 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-inserisci-risorsa',
-  templateUrl: './inserisci-risorsa.component.html',
-  styleUrls: ['./inserisci-risorsa-component.css']
+  selector: 'app-risorse',
+  templateUrl: './risorse.component.html',
+  styleUrls: ['./risorse-component.css']
 })
 
-export class InserisciRisorsaComponent implements OnInit {
+export class RisorseComponent implements OnInit {
   constructor(
     private fb:FormBuilder,
     private http: HttpClient,

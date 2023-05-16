@@ -12,11 +12,11 @@ import Swal from 'sweetalert2';
 import { Data } from '@angular/router';
 
 @Component({
-  selector: 'app-inserisci-livello',
-  templateUrl: './inserisci-livello.component.html',
-  styleUrls: ['./inserisci-livello.component.css']
+  selector: 'app-livelli',
+  templateUrl: './livelli.component.html',
+  styleUrls: ['./livelli.component.css']
 })
-export class InserisciLivelloComponent {
+export class LivelliComponent {
   constructor(
     private fb:FormBuilder,
     private http: HttpClient,

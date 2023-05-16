@@ -13,11 +13,11 @@ import Swal from 'sweetalert2';
 
 
 @Component({
-  selector: 'app-nuova-practice',
-  templateUrl: './nuova-practice.component.html',
-  styleUrls: ['./nuova-practice.component.css']
+  selector: 'app-practice',
+  templateUrl: './practice.component.html',
+  styleUrls: ['./practice.component.css']
 })
-export class NuovaPracticeComponent {
+export class PracticeComponent {
   constructor(
     private fb:FormBuilder,
     private http: HttpClient,

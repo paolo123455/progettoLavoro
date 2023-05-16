@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { InsPService } from 'src/services/ins-p.service';
 import { AgGridAngular } from 'ag-grid-angular'
@@ -11,19 +12,18 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-inserisci-ruolo',
-  templateUrl: './inserisci-ruolo.component.html',
-  styleUrls: ['./inserisci-ruolo.component.css']
+  selector: 'app-clienti',
+  templateUrl: './clienti.component.html',
+  styleUrls: ['./clienti.component.css']
 })
-export class InserisciRuoloComponent {
+export class ClientiComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
-  formRL!: FormGroup; 
+  form2!: FormGroup; 
   myMap = new Map<string, string>();
-  livelli: any[] = []
-  ruoli: any[] = []
+  tipologie: any[] = []
+  stati: any[] = []
   risorse: any[] = []
-  showForm = false;
   
   
   
@@ -34,48 +34,39 @@ export class InserisciRuoloComponent {
   
 
     this.form = this.fb.group({
-      risorsa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      ruolo : new FormControl("",[ Validators.required,Validators.minLength(1)]), 
-      data : new FormControl("",[ Validators.required,Validators.minLength(1)]), 
+      codice: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      descrizione: new FormControl("",[ Validators.required,Validators.minLength(1)]),
+      note: ''
+    })
+  
+
+  this.form.valueChanges.subscribe((data)=>{
+    
+  
+    var descrizione = data.descrizione === undefined || data.descrizione === null ? "" : data.descrizione
+    var codice = data.codice === undefined || data.codice === null ? "" : data.codice
+    var  note = data.note === undefined || data.note === null ? "" : data.note
+    
+
+    console.log(this.dati)
+    var filteredData = this.dati.filter((item: {
+      codice_cliente: string;
+      descrizione_cliente: string;
+      note : string
      
   
-    })
-    this.form.valueChanges.subscribe((data)=>{
-    
-    console.log(data)
-    var datis : String =  data.risorsa === undefined || data.risorsa === null  ? undefined :data.risorsa.descrizione2
-    var datil : String =  data.ruolo === undefined || data.ruolo === null ? undefined :data.ruolo.descrizione2
-    var datid : Date  = new Date(data.data);
-    console.log(datil)
-    if (datid.toString() === "Invalid Date") datid = new Date("1970-1-1") 
-    console.log(datid)
-    var date : String  = datid.getFullYear() === 1970  || datid === undefined ? "" : datid.getFullYear() + "-" + ( datid.getMonth()+1 < 10 ? 0 +""+(datid.getMonth()+1): datid.getMonth()+1) + "-" + (datid.getDate()< 10 ? 0 +""+datid.getDate(): datid.getDate())
-    data = data === undefined ? "" : data
-    var risn =  datis === undefined ? "" : datis.split(":")[0].split("-")[1]
-    risn = risn === undefined ? "" : risn
-    var risc = datis === undefined ? "" : datis.split(":")[0].split("-")[0] 
-    risc = risc === undefined ? "" : risc
-   
-    var ruolo =  datil === undefined ? "" : datil.split(":")[0]
-    ruolo = ruolo === undefined ? "" : ruolo
-    console.log(risn,risc,"-",date, "-",ruolo)
-    var filteredData = this.dati.filter((item: {
-      dtvalid_ruolo: any;
-       ruoli: any;
-      email: any;
-      cognome: String;
-      nome: String; id_risorsa: any; }) => item.nome.includes(risn)  
-      && item.ruoli.includes(ruolo) 
-      && item.cognome.includes(risc) 
-      && item.dtvalid_ruolo.includes(date )
-      );
+        }) => (
+          (item.descrizione_cliente+"").includes(descrizione)  
+          && (item.codice_cliente+"").includes(codice) 
+          && (item.note+"").includes(note) 
+     
+    ));
     this.agGrid.api.setRowData(filteredData)
   })
-    
     this.select()
     this.strucElaboration()
-    this.setup1()
-    this.setup2()
+   // this.setup1()
+   // this.setup2()
 
     
    
@@ -113,8 +104,8 @@ export class InserisciRuoloComponent {
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 
 
-  private tabella =  "risorse"
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_risorsa_ruolo;
+
+  getRowId: GetRowIdFunc<any>  = params => params.data.id_cliente;
 
   
  
@@ -134,9 +125,9 @@ export class InserisciRuoloComponent {
     
 
     console.log('cellClicked', e);
-    this.id_touch =  e.data.id_risorsa_ruolo
+    this.id_touch =  e.data.id_cliente
 
-     this.datvalid_ruolo  = ""+e.data.dtvalid_ruolo
+     
     console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
@@ -144,7 +135,7 @@ export class InserisciRuoloComponent {
     console.log(left)
     if (left === 0)
     {
-      this.delete("delete from  new_rilatt.risorse_ruoli where id_risorsa_ruolo = " + this.id_touch)
+      this.delete("delete from  new_rilatt.clienti where id_cliente = " + this.id_touch)
     }
   }
 
@@ -158,36 +149,34 @@ export class InserisciRuoloComponent {
     }
 onCellValueChanged( e: CellValueChangedEvent): void {
  console.log(e);
- /*  var datiC = e.data
+  var datiC = e.data
   console.log(datiC)
-  var colonna = e.colDef.field
-  console.log(colonna)
+  var colonna =  e.colDef.field
+  console.log(colonna , (colonna+"") === 'practice')
   var valore = e.value
-  var query = "update new_rilatt.risorse set " + colonna + " = '" + valore +"' where id_risorsa = "+datiC.id_risorsa
+  var query = "update new_rilatt.clienti set " +  colonna + " = '" + valore +"' where id_cliente = "+datiC.id_cliente
   console.log(valore)  
   console.log(query)
-  this.update(query)*/
+  this.update(query)
 
   }
  
 
   setup1= () => {
-    var query = "select distinct descrizione || ':' || id_ruolo  as descrizione2 from new_rilatt.ruoli order by descrizione2 " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.ruoli= dati; console.log(this.livelli)})
+    var query = "select valore as descrizione2  from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='TIPOLOGIA' " 
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.tipologie= dati; console.log(this.tipologie)})
 
   }
   setup2= () => {
-    var query = "select distinct  cognome   || '-' || nome || ':'|| id_risorsa  as descrizione2 from new_rilatt.risorse order by descrizione2"
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse = dati})
+    var query = "select valore as descrizione2 from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='FLAG_STATO'"
+    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.stati = dati})
   }
 
   test = () : void => this.insP.test()
 
   testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
  
-  select  = ()  => {var query = "Select r.*, rl.id_ruolo, rl.id_risorsa_ruolo,  to_char( dtvalid_ruolo, 'YYYY-MM-DD') as dtvalid_ruolo , l.descrizione as ruoli from new_rilatt.risorse r " 
-       +"inner join new_rilatt.risorse_ruoli  rl  on  r.id_risorsa  = rl.id_risorsa " 
-       +"inner  join  new_rilatt.ruoli l  on l.id_ruolo  = rl.id_ruolo "
+  select  = ()  => {var query = "select * from new_rilatt.clienti "
       
  this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
 
@@ -208,8 +197,8 @@ onCellValueChanged( e: CellValueChangedEvent): void {
       Swal.fire({  
         icon: 'error',  
         title: 'errore',  
-        text: 'errore in update',  
-         
+        text: 'update fallito ',  
+    
       })  
     }
   
@@ -217,16 +206,15 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
 
 
-  strucElaboration = () => this.insP.structUndestanding("select  * from new_rilatt.setting_colonne   sc where  table_schema ='new_rilatt' and maschera  = 'risorse_ruoli' order by importanza"  ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'cliente'  order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
  
     var responsej = JSON.parse(JSON.stringify(response))
     for( let element of  responsej.rows) {
       console.log(element)
-     this.columnDefs.push({"field" : element.column_name === "descrizione" ? element.table_name : element.column_name, editable : element.editable, hide : !element.visible}) 
-     this.myMap.set(element.column_name === "descrizione" ? element.table_name : element.column_name, element.table_name)
-    };
+     this.columnDefs.push({"field" : element.column_name, editable : element.editable, hide : !element.visible}) 
+     };
     console.log(this.myMap)
     this.agGrid.api.setColumnDefs(this.columnDefs)
     
@@ -242,7 +230,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     if(risposata.upd === "ok")
     {
           console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_risorsa_ruolo : this.id_touch}]});
+          this.agGrid.api.applyTransaction({remove:[{id_cliente : this.id_touch}]});
     }
     else 
     { console.log("errore")
@@ -253,7 +241,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         icon: 'error',  
         title: 'errore',  
         text: 'errore delete',  
-        
+       
       })  
     }
   
@@ -265,18 +253,20 @@ onCellValueChanged( e: CellValueChangedEvent): void {
 
   inserisciRiga = () : void => {
 
-    var insertD =  JSON.parse(JSON.stringify(this.form.value))
+    var insert1 =  JSON.parse(JSON.stringify(this.form.value))
    
+    console.log(insert1)
+    var descrizione = insert1.descrizione 
+    var codice = insert1.codice
+    var note = insert1.note 
+    note = note === undefined  || note === null? "" : note 
+   
+       
+  
+    
 
-    var data = insertD.data 
-    var descrizioneU : String = insertD.ruolo.descrizione2      
-    var id_ruolo = descrizioneU.split(":")[1]
-    console.log(id_ruolo)
-    var descrizioneR : String = insertD.risorsa.descrizione2      
-    var id_risorsa = descrizioneR.split(":")[1]
-    console.log(id_risorsa)
-
-    var query = "insert into new_rilatt.risorse_ruoli (id_risorsa, id_ruolo, dtvalid_ruolo) values ('"+id_risorsa+"','"+id_ruolo+"','"+data+"' )  RETURNING id_ruolo"
+    var query = "insert into new_rilatt.clienti (descrizione_cliente , codice_cliente , note ) values ('"+descrizione+"','"+codice+"','"+note+"' )  "
+    console.log(query)
     this.insP.select(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
@@ -285,7 +275,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
              Swal.fire({  
                  icon: 'success',  
                  title: 'successo',  
-                 text: 'inserimento ruolo ad utente avvenuto con successo',  
+                 text: 'inserimento cliente  avvenuto con successo',  
                    
              }) 
            
@@ -303,8 +293,8 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         Swal.fire({  
           icon: 'error',  
           title: 'errore',  
-          text: 'inserimento ruolo ad  utente errato!',  
-          footer: '<a>controlla i dati inseriti</a>'  
+          text: 'inserimento cliente andata in errore ',  
+        
         })  
       }
     

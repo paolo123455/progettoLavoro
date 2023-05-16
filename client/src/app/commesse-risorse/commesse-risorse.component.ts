@@ -11,11 +11,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 @Component({
-  selector: 'app-inserisci-commessa-risorsa',
-  templateUrl: './inserisci-commessa-risorsa.component.html',
-  styleUrls: ['./inserisci-commessa-risorsa.component.css']
+  selector: 'app-commesse-risorse',
+  templateUrl: './commesse-risorse.component.html',
+  styleUrls: ['./commesse-risorse.component.css']
 })
-export class InserisciCommessaRisorsaComponent {
+export class CommesseRisorseComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
   form2!: FormGroup; 

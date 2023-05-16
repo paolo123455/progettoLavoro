@@ -12,11 +12,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-ins-odl',
-  templateUrl: './ins-odl.component.html',
-  styleUrls: ['./ins-odl.component.css']
+  selector: 'app-odl',
+  templateUrl: './odl.component.html',
+  styleUrls: ['./odl.component.css']
 })
-export class InsOdlComponent {
+export class OdlComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
   form2!: FormGroup; 
