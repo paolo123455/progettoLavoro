@@ -26,7 +26,7 @@ import { CommesseRisorseComponent } from './commesse-risorse/commesse-risorse.co
 import { PracticeComponent } from './practice/practice.component';
 // import { PracticeRisorsaComponent } from './__practice-risorsa/practice-risorsa.component';
 // import { PracticeResponsabileComponent } from './practice-responsabile/practice-responsabile.component';
-import { GestioneRendicontazioneComponent } from './gestione-rendicontazione/gestione-rendicontazione.component';
+import { RendicontazioneComponent } from './rendicontazione/rendicontazione.component';
 import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-generale.component';
 import { ClientiComponent } from './clienti/clienti.component';
 import { OdlComponent } from './odl/odl.component'
@@ -46,7 +46,7 @@ import { OdlComponent } from './odl/odl.component'
     PracticeComponent,
     // PracticeRisorsaComponent,
     // PracticeResponsabileComponent,
-    GestioneRendicontazioneComponent,
+    RendicontazioneComponent,
     ProspettoGeneraleComponent,
     ClientiComponent,
     OdlComponent,

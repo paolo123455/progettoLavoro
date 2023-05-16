@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { InsPService } from 'src/services/ins-p.service';
 import { AgGridAngular } from 'ag-grid-angular'
@@ -12,11 +11,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-gestione-rendicontazione',
-  templateUrl: './gestione-rendicontazione.component.html',
-  styleUrls: ['./gestione-rendicontazione.component.css']
+  selector: 'app-rendicontazione',
+  templateUrl: './rendicontazione.component.html',
+  styleUrls: ['./rendicontazione.component.css']
 })
-export class GestioneRendicontazioneComponent { constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
+export class RendicontazioneComponent { constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
 form!: FormGroup; 
 form2!: FormGroup; 
 myMap = new Map<string, string>();
@@ -33,7 +32,7 @@ disabilitato2 = false;
 @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
 getRowId: GetRowIdFunc<any>  = params => params.data.id_attivita;
 datiS : any[] = []
-
+showForm = false;
 
 
 ngOnInit(): void {
