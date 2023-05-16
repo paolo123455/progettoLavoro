@@ -171,11 +171,14 @@ onCellValueChanged( e: CellValueChangedEvent): void {
   }
 
  
-  select  = ()  => {var query = "select r.* , rp. from new_rilatt.responsabile_practice rp "+ 
+  select  = ()  => {var query = "select rp.id_risorsa , * from new_rilatt.responsabile_practice rp "+ 
                                 "inner join new_rilatt.risorse r on r.id_risorsa = rp.id_risorsa " + 
                                 "inner join new_rilatt.practice p on p.id_practice  = rp.id_practice"
       
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;  this.agGrid.api.setRowData(this.dati)})
+ this.insP.select(query).subscribe(response =>{
+  console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows;
+  this.agGrid.api.setRowData(this.dati)
+})
 
 }
  

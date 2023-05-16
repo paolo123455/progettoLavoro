@@ -314,6 +314,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     console.log(this.form.value)
     var dat2 = new Date(this.form.value.data)
     console.log(dat2)
+    
     var insertD =  JSON.parse(JSON.stringify(this.form.value))
    
     console.log(insertD)
@@ -323,6 +324,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     var data = dat2.toUTCString()
  
    console.log(data)
+   var  datap = dat2.getFullYear() + "-" + ( dat2.getMonth()+1 < 10 ? 0 +""+(dat2.getMonth()+1): dat2.getMonth()+1) + "-" + (dat2.getDate()+1< 10 ? 0 +""+dat2.getDate(): dat2.getDate())
     var descrizioneU : String = insertD.livello.descrizione2      
     var id_livello = descrizioneU.split(":")[1]
     console.log(id_livello)
@@ -331,41 +333,25 @@ onCellValueChanged( e: CellValueChangedEvent): void {
     console.log(id_risorsa)
     console.log(insertD)
     console.log(this.olDate)
-    var query2 = "update new_rilatt.risorse_livello  set attivo = false , dtfine_livello  = '" +this.olDate+"' where attivo is true and id_risorsa =  " +id_risorsa
-    
-    this.insP.select(query2).subscribe(response =>{
-      console.log(response)
-      var risposta = JSON.parse(JSON.stringify(response)) 
-      if(risposta.upd === "ok")
-      {     
-             Swal.fire({ 
-                 icon: 'success',  
-                 title: 'successo',  
-                 text: 'inserimento livello ad utente avvenuto con successo',  
-                   
-             }) 
-           
-             
-            
-            this.form.reset()
-            this.select()
-      }
-      else 
-      { console.log("errore")
-        console.log(risposta)
-       console.log(this.datiV)
-         
+    var query3 = "SELECT new_rilatt.fnc_check_livello("+id_risorsa+", '"+data+"') as risultato;"
+    this.insP.select(query3).subscribe(response =>{
       
-        Swal.fire({  
+      console.log(response)
+      var risposta = JSON.parse(JSON.stringify(response))
+      if(risposta.rows[0].risultato.includes("KO"))
+      {
+        Swal.fire({ 
           icon: 'error',  
           title: 'errore',  
-          text: 'update vecchio livello andato in errore!',  
-         
-        })  
+          text: 'data errata per inserimento livello',  
+            
+      }) 
       }
-      var query = "insert into new_rilatt.risorse_livello (id_risorsa, id_livello, dtinizio_livello, attivo) values ('"+id_risorsa+"','"+id_livello+"','"+ data+"', true )  RETURNING id_risorsa"
-   
-      this.insP.select(query).subscribe(response =>{
+      else 
+      {
+      var query2 = "update new_rilatt.risorse_livello  set attivo = false , dtfine_livello  = '" +this.olDate+"' where attivo is true and id_risorsa =  " +id_risorsa
+    
+      this.insP.select(query2).subscribe(response =>{
         console.log(response)
         var risposta = JSON.parse(JSON.stringify(response)) 
         if(risposta.upd === "ok")
@@ -391,15 +377,50 @@ onCellValueChanged( e: CellValueChangedEvent): void {
           Swal.fire({  
             icon: 'error',  
             title: 'errore',  
-            text: 'inserimento livello ad  utente errato!',  
-          
+            text: 'update vecchio livello andato in errore!',  
+           
           })  
         }
+        var query = "insert into new_rilatt.risorse_livello (id_risorsa, id_livello, dtinizio_livello, attivo) values ('"+id_risorsa+"','"+id_livello+"','"+ data+"', true )  RETURNING id_risorsa"
+     
+        this.insP.select(query).subscribe(response =>{
+          console.log(response)
+          var risposta = JSON.parse(JSON.stringify(response)) 
+          if(risposta.upd === "ok")
+          {     
+                 Swal.fire({ 
+                     icon: 'success',  
+                     title: 'successo',  
+                     text: 'inserimento livello ad utente avvenuto con successo',  
+                       
+                 }) 
+               
+                 
+                
+                this.form.reset()
+                this.select()
+          }
+          else 
+          { console.log("errore")
+            console.log(risposta)
+           console.log(this.datiV)
+             
+          
+            Swal.fire({  
+              icon: 'error',  
+              title: 'errore',  
+              text: 'inserimento livello ad  utente errato!',  
+            
+            })  
+          }
+        
+        })
       
-      })
-    
+      })}
+      
+
     })
-    
+   
     
   
 

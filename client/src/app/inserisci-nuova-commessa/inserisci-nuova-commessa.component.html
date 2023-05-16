@@ -3,7 +3,7 @@
     <div style="flex: 1;padding: 1em;border: solid;">
      <form [formGroup] = "form">
       <mat-form-field>
-            <mat-label>Codice</mat-label>
+            <mat-label>Commessa</mat-label>
             <input matInput formControlName="codice" placeholder="Codice">
            
       </mat-form-field> 
@@ -12,23 +12,7 @@
         <mat-label>Descrizione</mat-label>
         <input matInput formControlName="descrizione" placeholder="Descrizione">
         </mat-form-field>
-        <mat-form-field>
-          <mat-label>Budget</mat-label>
-          <input matInput formControlName="budget" placeholder="Budget">
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Budget Pregresso</mat-label>
-        <input matInput formControlName="budgetPreg" placeholder="Budget Pregresso">
-    </mat-form-field>
-        <mat-form-field>
-            <mat-label>Effort Totale</mat-label>
-            <input matInput formControlName="effortTot" placeholder="Effort Totale">
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Effort Pregresso</mat-label>
-            <input matInput formControlName="effortPreg" placeholder="Effort Pregresso">
-        </mat-form-field>
+     
         <mat-form-field>
             <mat-label>Note </mat-label>
             <input matInput formControlName="note" placeholder="Note">
@@ -47,24 +31,9 @@
     <div style="flex: 2;padding: 1em;border: solid;">
         <form [formGroup] = "form2">
      
-            <mat-form-field>
-              <mat-label>Stato</mat-label>
-              <mat-select formControlName="stato" placeholder="Stato">
-                <mat-option></mat-option>
-                <mat-option *ngFor="let stato of stati" [value]="stato">{{stato.descrizione2}}</mat-option>
-      
-      
-              </mat-select>
-      
-            </mat-form-field><br>
+          
             
-            <mat-form-field>
-             <mat-label>Tipologia</mat-label>
-             <mat-select formControlName="tipologia" placeholder="Tipologia">
-             <mat-option></mat-option>
-                <mat-option *ngFor="let tipologia of tipologie" [value]="tipologia">{{tipologia.descrizione2}}</mat-option>
-              </mat-select>
-             </mat-form-field><br>
+        
 
              <mat-form-field>
               <mat-label>Cliente</mat-label>
@@ -75,7 +44,7 @@
               </mat-form-field><br>
              
                 <mat-checkbox id="amateur" class="amateur" color="primary"
-                formControlName="istituito">istituito</mat-checkbox>
+                formControlName="istituito">istituto</mat-checkbox>
                 
               
        

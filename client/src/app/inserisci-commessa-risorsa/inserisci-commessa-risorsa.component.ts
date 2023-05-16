@@ -39,7 +39,7 @@ export class InserisciCommessaRisorsaComponent {
     this.form = this.fb.group({
       risorsa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       commessa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      odl: new FormControl("",[ Validators.required,Validators.minLength(1)])
+      odl: ''
 
     })
     this.form2 = this.fb.group({
@@ -100,7 +100,7 @@ export class InserisciCommessaRisorsaComponent {
         &&item.nome.includes(nome)
         && item.cognome.includes(cognome)
         && item.codice.includes(codice)
-        && item.descrizione_odl.includes(odl)
+        && (item.descrizione_odl+"").includes(odl)
         && item.descrizione_progetto.includes(descrizione)
 
           );
@@ -157,7 +157,7 @@ export class InserisciCommessaRisorsaComponent {
         &&item.nome.includes(nome)
         && item.cognome.includes(cognome)
         && item.codice.includes(codice)
-        && item.descrizione_odl.includes(odl)
+        && (item.descrizione_odl+"").includes(odl)
         && item.descrizione_progetto.includes(descrizione))
  
     this.agGrid.api.setRowData(filteredData)
@@ -201,12 +201,6 @@ export class InserisciCommessaRisorsaComponent {
   
   
   // For accessing the Grid's API
-
-
-  
- 
-
-
 
 
    // Example load data from sever
@@ -317,6 +311,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
         text: 'errore di update, codice : '+ risposata.code
         
       })  
+      this.select()
     }
   
   })
@@ -436,7 +431,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                else {
            
                
-               var query = "insert into new_rilatt.attivita_risorsa ( id_risorsa, id_progetto ,giornate  ,flag_attivita, flag_budget  , anno , mese , id_odl) values ('"+id_risorsa+"','"+id_progetto+"','"+giornate+"',"+flag_attivita+","+flag_budget+",'"+anno+"','"+mese+"','"+id_odl+"' )  RETURNING id_progetto"
+               var query = "insert into new_rilatt.attivita_risorsa ( id_risorsa, id_progetto ,giornate  ,flag_attivita, flag_budget  , anno , mese , id_odl) values ('"+id_risorsa+"','"+id_progetto+"','"+giornate+"',"+flag_attivita+","+flag_budget+",'"+anno+"','"+mese+"',"+id_odl+" )  RETURNING id_progetto"
                console.log(query)
                this.insP.select(query).subscribe(response =>{
                  console.log(response)
@@ -448,7 +443,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                              Swal.fire({  
                             icon: 'success',  
                             title: 'successo',  
-                            text: 'inserimento commessa  avvenuto con successo',  
+                            text: 'inserimento commessa a risorsa  avvenuto con successo',  
                               
                              }) 
                         }
@@ -478,7 +473,7 @@ onCellValueChanged( e: CellValueChangedEvent): void {
                      icon: 'error',  
                      title: 'errore',  
                      text: 'inserimento commessa a utente andata in errore, codice : ' + risposta.code,  
-                     footer: '<a>controlla i dati inseriti</a>'  
+                
                    })  
                  }
                

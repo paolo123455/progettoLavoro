@@ -9,12 +9,8 @@ import { InsPService } from 'src/services/ins-p.service';
 export class HomeComponent implements OnInit{
   constructor(private insP : InsPService){}
   ngOnInit(): void {
-    this.test()
+    
    
   }
-
-  test = () : void => this.insP.test()
-
-
 
 }

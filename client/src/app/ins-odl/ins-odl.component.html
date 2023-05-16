@@ -3,13 +3,13 @@
     <div style="flex: 1;padding: 1em;border: solid;">
      <form [formGroup] = "form">
       <mat-form-field>
-            <mat-label>Codice</mat-label>
+            <mat-label>Codice_Odl</mat-label>
             <input matInput formControlName="codice" placeholder="Codice">
            
       </mat-form-field> 
        
        <mat-form-field>
-        <mat-label>Descrizione</mat-label>
+        <mat-label>Descrizione_Odl</mat-label>
         <input matInput formControlName="descrizione" placeholder="Descrizione">
         </mat-form-field>
         <mat-form-field>
@@ -20,15 +20,7 @@
         <mat-label>Budget Pregresso</mat-label>
         <input matInput formControlName="budgetPreg" placeholder="Budget Pregresso">
     </mat-form-field>
-        <mat-form-field>
-            <mat-label>Effort Totale</mat-label>
-            <input matInput formControlName="effortTot" placeholder="Effort Totale">
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Effort Pregresso</mat-label>
-            <input matInput formControlName="effortPreg" placeholder="Effort Pregresso">
-        </mat-form-field>
+      
         <mat-form-field>
             <mat-label>Note </mat-label>
             <input matInput formControlName="note" placeholder="Note">
@@ -58,21 +50,47 @@
       
             </mat-form-field><br>
             
-            <mat-form-field>
-             <mat-label>Tipologia</mat-label>
-             <mat-select formControlName="tipologia" placeholder="Tipologia">
-             <mat-option></mat-option>
-                <mat-option *ngFor="let tipologia of tipologie" [value]="tipologia">{{tipologia.descrizione2}}</mat-option>
-              </mat-select>
-             </mat-form-field><br>
+    
 
              <mat-form-field>
-              <mat-label>Progetto</mat-label>
+              <mat-label>Commessa</mat-label>
               <mat-select formControlName="progetto" placeholder="Progetto">
               <mat-option></mat-option>
                  <mat-option *ngFor="let progetto of progetti" [value]="progetto">{{progetto.descrizione2}}</mat-option>
                </mat-select>
               </mat-form-field><br>
+              <mat-form-field>
+                <mat-label>Practice</mat-label>
+                <mat-select formControlName="practice" placeholder="Practice">
+                <mat-option></mat-option>
+                   <mat-option *ngFor="let practice of practices" [value]="practice">{{practice.descrizione2}}</mat-option>
+                 </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>PM</mat-label>
+                <mat-select formControlName="pm" placeholder="PM">
+                <mat-option></mat-option>
+                   <mat-option *ngFor="let pm of risorse2" [value]="pm">{{pm.descrizione2}}</mat-option>
+                 </mat-select>
+            </mat-form-field><br>
+            <mat-form-field>
+              <input matInput formControlName="datei" [matDatepicker]="releasedAtPicker">
+              <mat-label>Inizio Commessa</mat-label>
+              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-datepicker-toggle matSuffix [for]="releasedAtPicker">
+              </mat-datepicker-toggle>
+              <mat-datepicker #releasedAtPicker>
+              </mat-datepicker>
+           </mat-form-field>
+           <mat-form-field>
+            <mat-label>Fine Commessa</mat-label>
+            <input matInput formControlName="datef" [matDatepicker]="releasedAtPicker2">
+            <mat-hint>MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matSuffix [for]="releasedAtPicker2">
+            </mat-datepicker-toggle>
+            <mat-datepicker #releasedAtPicker2>
+            </mat-datepicker>
+         </mat-form-field><br>
             
                 
               
