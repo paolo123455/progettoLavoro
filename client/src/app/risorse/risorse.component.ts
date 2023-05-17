@@ -107,12 +107,12 @@ export class RisorseComponent implements OnInit {
         email: any;
         cognome: String;
         nome: String; id_risorsa: any; }) => 
-        item.nome.includes(nome) 
-        && item.cognome.includes(cognome) 
-        && item.email.includes(email)
-        && (item.ruoli +"").includes(ruolo)
-        && (item.livello+"").includes(livello)
-        && (item.practice+"").includes(practice));
+        item.nome.includes((nome+"")) 
+        && item.cognome.includes((cognome+"")) 
+        && item.email.includes((email+""))
+        && (item.ruoli +"").includes((ruolo+""))
+        && (item.livello+"").includes((livello+""))
+        && (item.practice+"").includes((practice+"")));
       this.agGrid.api.setRowData(filteredData)
     });
 
@@ -132,12 +132,12 @@ export class RisorseComponent implements OnInit {
         email: any;
         cognome: String;
         nome: String; id_risorsa: any; }) => 
-        item.nome.toLowerCase().includes(nome.toLowerCase()) 
-        && item.cognome.toLowerCase().includes(cognome.toLowerCase()) 
-        && item.email.toLowerCase().includes(email.toLowerCase())
-        && (item.ruoli +"").toLowerCase().includes(ruolo.toLowerCase())
-        && (item.livello+"").toLowerCase().includes(livello.toLowerCase())
-        && (item.practice+"").toLowerCase().includes(practice.toLowerCase()));
+        item.nome.toLowerCase().includes((nome+"").toLowerCase()) 
+        && item.cognome.toLowerCase().includes((cognome+"").toLowerCase()) 
+        && item.email.toLowerCase().includes((email+"").toLowerCase())
+        && (item.ruoli +"").toLowerCase().includes((ruolo+"").toLowerCase())
+        && (item.livello+"").toLowerCase().includes((livello+"").toLowerCase())
+        && (item.practice+"").toLowerCase().includes((practice+"").toLowerCase()));
       this.agGrid.api.setRowData(filteredData)
       this.resizeColumnWidth();
     });

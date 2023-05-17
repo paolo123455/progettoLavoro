@@ -29,7 +29,8 @@ import { PracticeComponent } from './practice/practice.component';
 import { RendicontazioneComponent } from './rendicontazione/rendicontazione.component';
 import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-generale.component';
 import { ClientiComponent } from './clienti/clienti.component';
-import { OdlComponent } from './odl/odl.component'
+import { OdlComponent } from './odl/odl.component';
+import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.component'
 
 //const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 
@@ -50,6 +51,7 @@ import { OdlComponent } from './odl/odl.component'
     ProspettoGeneraleComponent,
     ClientiComponent,
     OdlComponent,
+    ProspettoMeseComponent,
     
     
   ],

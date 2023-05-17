@@ -109,28 +109,28 @@ export class CommesseRisorseComponent {
      console.log(this.dati)
   
       var filteredData = this.dati.filter((item: {
-        mese: String;
-        flag_budget : String;
-        giornate : String;
-        anno: String;
+        mese: string;
+        flag_budget : string;
+        giornate : string;
+        anno: string;
         descrizione_progetto: any;
         descrizione_odl: any;
         codice: any;
         dtvalid_ruolo: any;
          ruoli: any;
-        cognome: String;
-        nome: String; id_risorsa: any;
+        cognome: string;
+        nome: string; id_risorsa: any;
 
         }) => 
-        (item.anno+"").toLowerCase().includes(anno.toLowerCase())
-        && (item.mese+"").toLowerCase().includes(mese.toLowerCase())
+        (item.anno+"").toLowerCase().includes((anno +"").toLowerCase())
+        && (item.mese+"").toLowerCase().includes((mese+"").toLowerCase())
         && (item.flag_budget+"".toLowerCase()).includes((budget+"").toLowerCase())
-        && (item.giornate+"").toLowerCase().includes(giornate.toLowerCase())
+        && (item.giornate+"").toLowerCase().includes((giornate+"").toLowerCase())
         &&item.nome.toLowerCase().includes(nome.toLowerCase())
-        && item.cognome.toLowerCase().includes(cognome.toLowerCase())
-        && item.codice.toLowerCase().includes(codice.toLowerCase())
-        && (item.descrizione_odl+"").toLowerCase().includes(odl.toLowerCase())
-        && item.descrizione_progetto.toLowerCase().includes(descrizione.toLowerCase())
+        && item.cognome.toLowerCase().includes((cognome+"").toLowerCase())
+        && item.codice.toLowerCase().includes((codice+"").toLowerCase())
+        && (item.descrizione_odl+"").toLowerCase().includes((odl+"").toLowerCase())
+        && item.descrizione_progetto.toLowerCase().includes((descrizione+"").toLowerCase())
 
           );
       this.agGrid.api.setRowData(filteredData);
@@ -180,15 +180,15 @@ export class CommesseRisorseComponent {
        ruoli: any;
       cognome: String;
       nome: String; id_risorsa: any; }) => 
-      (item.anno+"").includes(anno)
-        && (item.mese+"").includes(mese)
-        && (item.flag_budget+"").includes(budget+"")
-        && (item.giornate+"").includes(giornate)
-        &&item.nome.includes(nome)
-        && item.cognome.includes(cognome)
-        && item.codice.includes(codice)
-        && (item.descrizione_odl+"").includes(odl)
-        && item.descrizione_progetto.includes(descrizione))
+      (item.anno+"").toLowerCase().includes((anno +"").toLowerCase())
+      && (item.mese+"").toLowerCase().includes((mese+"").toLowerCase())
+      && (item.flag_budget+"".toLowerCase()).includes((budget+"").toLowerCase())
+      && (item.giornate+"").toLowerCase().includes((giornate+"").toLowerCase())
+      &&item.nome.toLowerCase().includes(nome.toLowerCase())
+      && item.cognome.toLowerCase().includes((cognome+"").toLowerCase())
+      && item.codice.toLowerCase().includes((codice+"").toLowerCase())
+      && (item.descrizione_odl+"").toLowerCase().includes((odl+"").toLowerCase())
+      && item.descrizione_progetto.toLowerCase().includes((descrizione+"").toLowerCase()))
  
     this.agGrid.api.setRowData(filteredData)
   })
@@ -418,16 +418,10 @@ export class CommesseRisorseComponent {
                       
                 }) 
                } 
-
-
-
                if (!flag)
-               {
-                     
+               {    
                }
                else {
-           
-               
                var query = "insert into new_rilatt.attivita_risorsa ( id_risorsa, id_progetto ,giornate  ,flag_attivita, flag_budget  , anno , mese , id_odl) values ('"+id_risorsa+"','"+id_progetto+"','"+giornate+"',"+flag_attivita+","+flag_budget+",'"+anno+"','"+mese+"',"+id_odl+" )  RETURNING id_progetto"
                console.log(query)
                this.insP.select(query).subscribe(response =>{
@@ -456,8 +450,8 @@ export class CommesseRisorseComponent {
                         
                         
                        
-                       this.form.reset()
-                       this.form2.reset()
+                       //this.form.reset()
+                     //  this.form2.reset()
                        this.select()
                  }
                  else 

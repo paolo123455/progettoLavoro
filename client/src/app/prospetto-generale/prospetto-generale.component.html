@@ -68,7 +68,7 @@
     
     
   </div>
-  <ag-grid-angular
+  <ag-grid-angular style="height: 80vh;"
      class="ag-theme-alpine"
      [getRowId]="getRowId"
      [enableBrowserTooltips] = "enableBrowserTooltips"
@@ -80,7 +80,8 @@
      (cellClicked)="onCellClicked($event)"
      (cellEditingStarted)="onCellEditingStarted($event)"
      (cellValueChanged)="onCellValueChanged($event)"
-     domLayout='autoHeight'
+     
+   
    ></ag-grid-angular>
   
   

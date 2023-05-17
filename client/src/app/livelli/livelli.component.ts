@@ -99,10 +99,10 @@ export class LivelliComponent {
         cognome: String;
         nome: String; id_risorsa: any;
       }) =>
-        item.nome.toLowerCase().includes(risn.toLowerCase())
-        && item.livello.toLowerCase().includes(livello.toLowerCase())
-        && item.cognome.toLowerCase().includes(risc.toLowerCase())
-        && item.dtinizio_livello.toLowerCase().includes(date.toLowerCase())
+        item.nome.toLowerCase().includes((risn+"").toLowerCase())
+        && item.livello.toLowerCase().includes((livello+"").toLowerCase())
+        && item.cognome.toLowerCase().includes((risc+"").toLowerCase())
+        && item.dtinizio_livello.toLowerCase().includes((date+"").toLowerCase())
       );
       this.agGrid.api.setRowData(filteredData);
       this.resizeColumnWidth();

@@ -137,17 +137,17 @@ export class OdlComponent {
 
   
         }) =>
-        item.flag_stato.toLowerCase().includes(stato.toLowerCase())  
-      && (item.codice_odl+"").toLowerCase().includes(codice.toLowerCase())  
-      && (item.descrizione_progetto+"").toLowerCase().includes(descrizionep.toLowerCase()) 
-      && (item.budget+"").toLowerCase().includes(budget.toLowerCase()) 
-      && (item.note+"").toLowerCase().includes(note.toLowerCase()) 
-      && (item.budget_pregresso+ "").toLowerCase().includes(budget_pregresso.toLowerCase()) 
-      && (item.descrizione_odl+ "").toLowerCase().includes(descrizione.toLowerCase()) 
-      && (item.id_risorsa + "").toLowerCase().includes(pm.toLowerCase())
-      && (item.dtinzio_odl + "").toLowerCase().includes(datei.toLowerCase())
-      && (item.dtfine_odl +"").toLowerCase().includes(datef.toLowerCase())
-      && (item.descrizione_practice+"").toLowerCase().includes(practice.toLowerCase()) 
+        item.flag_stato.toLowerCase().includes((stato+"").toLowerCase())  
+      && (item.codice_odl+"").toLowerCase().includes((codice+"").toLowerCase())  
+      && (item.descrizione_progetto+"").toLowerCase().includes((descrizionep+"").toLowerCase()) 
+      && (item.budget+"").toLowerCase().includes((budget+"").toLowerCase()) 
+      && (item.note+"").toLowerCase().includes((note+"").toLowerCase()) 
+      && (item.budget_pregresso+ "").toLowerCase().includes((budget_pregresso+"").toLowerCase()) 
+      && (item.descrizione_odl+ "").toLowerCase().includes((descrizione+"").toLowerCase()) 
+      && (item.id_risorsa + "").toLowerCase().includes((pm+"").toLowerCase())
+      && (item.dtinzio_odl + "").toLowerCase().includes((datei+"").toLowerCase())
+      && (item.dtfine_odl +"").toLowerCase().includes((datef+"").toLowerCase())
+      && (item.descrizione_practice+"").toLowerCase().includes((practice+"").toLowerCase()) 
     );
     this.agGrid.api.setRowData(filteredData);
     this.resizeColumnWidth();
@@ -184,17 +184,17 @@ export class OdlComponent {
 
   
         }) =>
-        item.flag_stato.includes(stato)  
-      && (item.codice_odl+"").includes(codice)  
-      && (item.descrizione_progetto+"").includes(descrizionep) 
-      && (item.budget+"").includes(budget) 
-      && (item.note+"").includes(note) 
-      && (item.budget_pregresso+ "").includes(budget_pregresso) 
-      && (item.descrizione_odl+ "").includes(descrizione) 
-      && (item.id_risorsa + "").includes(pm)
-      && (item.dtinzio_odl + "").includes(datei)
-      && (item.dtfine_odl +"").includes(datef)
-      && (item.descrizione_practice+"").includes(practice) 
+        item.flag_stato.toLowerCase().includes((stato+"").toLowerCase())  
+        && (item.codice_odl+"").toLowerCase().includes((codice+"").toLowerCase())  
+        && (item.descrizione_progetto+"").toLowerCase().includes((descrizionep+"").toLowerCase()) 
+        && (item.budget+"").toLowerCase().includes((budget+"").toLowerCase()) 
+        && (item.note+"").toLowerCase().includes((note+"").toLowerCase()) 
+        && (item.budget_pregresso+ "").toLowerCase().includes((budget_pregresso+"").toLowerCase()) 
+        && (item.descrizione_odl+ "").toLowerCase().includes((descrizione+"").toLowerCase()) 
+        && (item.id_risorsa + "").toLowerCase().includes((pm+"").toLowerCase())
+        && (item.dtinzio_odl + "").toLowerCase().includes((datei+"").toLowerCase())
+        && (item.dtfine_odl +"").toLowerCase().includes((datef+"").toLowerCase())
+        && (item.descrizione_practice+"").toLowerCase().includes((practice+"").toLowerCase()) 
       
     );
     this.agGrid.api.setRowData(filteredData)

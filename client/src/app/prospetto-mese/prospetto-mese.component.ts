@@ -11,11 +11,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-prospetto-generale',
-  templateUrl: './prospetto-generale.component.html',
-  styleUrls: ['./prospetto-generale.component.css']
+  selector: 'app-prospetto-mese',
+  templateUrl: './prospetto-mese.component.html',
+  styleUrls: ['./prospetto-mese.component.css']
 })
-export class ProspettoGeneraleComponent {
+export class ProspettoMeseComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
   form2!: FormGroup; 
