@@ -1,1 +1,84 @@
-<p>prospetto-mese works!</p>
+
+<button mat-button (click)="showForm=!showForm">
+	<span *ngIf="showForm">Nascondi form</span>
+	<span *ngIf="!showForm">Mostra form</span>
+</button>
+<div style="display: flex; margin-bottom: 12px;" *ngIf="showForm">
+    <div style="flex: 1;padding: 1em;border: solid;">
+     <form [formGroup] = "form">
+    
+       
+           
+        <mat-form-field>
+            <mat-label>Commessa</mat-label>
+            <mat-select formControlName="commessa" placeholder="commessa" multiple>
+              <mat-option>
+                <ngx-mat-select-search 
+                [formControl]="commessac" 
+                placeholderLabel="cerca commesa..."
+                noEntriesFoundLabel="'commessa non trovata'">
+              </ngx-mat-select-search>
+              </mat-option>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa.descrizione2}}</mat-option>
+            </mat-select>
+        </mat-form-field> <br>
+        
+       
+          <mat-form-field>
+             
+            <mat-label>Anno</mat-label>
+            <mat-select formControlName="anno" placeholder="anno"  multiple>
+              <mat-option>
+                <ngx-mat-select-search 
+                [formControl]="annoc" 
+                placeholderLabel="cerca anno..."
+                noEntriesFoundLabel="'anno non trovato'">
+              </ngx-mat-select-search>
+              </mat-option>
+             <mat-option></mat-option>
+              <mat-option *ngFor="let anno of anni" [value]="anno">{{anno}}</mat-option>
+            </mat-select>
+          </mat-form-field><br>
+          
+          <mat-form-field>
+            <mat-label>Odl</mat-label>
+           
+             
+              <mat-select formControlName="odl" placeholder="odl"  multiple>
+                <mat-option>
+              <ngx-mat-select-search 
+              [formControl]="odlc" 
+              placeholderLabel="cerca odl..."
+              noEntriesFoundLabel="'odl non trovato'">
+            </ngx-mat-select-search>
+           </mat-option>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let odl of odls" [value]="odl">{{odl.descrizione2}}</mat-option>
+            </mat-select>
+          </mat-form-field><br>        
+     </form>
+    </div>
+  </div>
+   
+    
+    
+  
+  <ag-grid-angular style="height: 80vh;"
+     class="ag-theme-alpine"
+     [getRowId]="getRowId"
+     [enableBrowserTooltips] = "enableBrowserTooltips"
+     [columnDefs]="columnDefs"
+     [defaultColDef]="defaultColDef"
+     [rowData]="rowData$ | async"
+     [rowSelection]="'multiple'"
+     (gridReady)="onGridReady($event)"
+     (cellClicked)="onCellClicked($event)"
+     (cellEditingStarted)="onCellEditingStarted($event)"
+     (cellValueChanged)="onCellValueChanged($event)"
+     
+   ></ag-grid-angular>
+  
+  
+
+  

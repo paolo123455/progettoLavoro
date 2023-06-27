@@ -83,6 +83,7 @@ export class RisorseComponent implements OnInit {
     var livello = "";
     var data = "";
     var practice = "";
+   
   
     this.formRL.valueChanges.subscribe((data)=>{
       this.disabilitato = this.form.valid

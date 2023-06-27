@@ -3,12 +3,14 @@ import { InsPService } from 'src/services/ins-p.service';
 import { AgGridAngular } from 'ag-grid-angular'
 import {  ViewChild } from '@angular/core';
 import {FormBuilder, FormArray,FormControl,FormGroup, Validators } from '@angular/forms'
-import { Observable } from 'rxjs';
+import { Observable, filter } from 'rxjs';
 import { CellClickedEvent, CellEditingStartedEvent, CellValueChangedEvent, ColDef, Column, GetRowIdFunc, GridReadyEvent } from 'ag-grid-community';
 import { HttpClient } from '@angular/common/http';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import Swal from 'sweetalert2';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+
 
 @Component({
   selector: 'app-prospetto-mese',
@@ -19,215 +21,176 @@ export class ProspettoMeseComponent {
   constructor(private fb:FormBuilder, private http: HttpClient, private insP : InsPService){ }
   form!: FormGroup; 
   form2!: FormGroup; 
+
   myMap = new Map<string, string>();
-  risorse: any[] = []
-  risorse2: any[] = []
+  public bankMultiFilterCtrl: FormControl = new FormControl();
   commesse: any[] = []
-  aanni : number[] =[2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
-  daanni : number[] =[2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
-  damesi : number[] =[1,2,3,4,5,6,7,8,9,10,11,12]
-  amesi : number[] =[1,2,3,4,5,6,7,8,9,10,11,12]
+  commesse2: any[] = []
+  mappaMeseNUmero : any  = {
+    "gennaio" : 1, 
+    "febbraio" : 2,
+    "marzo" : 3,
+    "aprile" : 4, 
+    "maggio" : 5,
+    "giugno " : 6,
+    "luglio" : 7, 
+    "agosto" : 8,
+    "settembre" : 9,
+    "ottobre" : 10, 
+    "novembre" : 11,
+    "dicembre" : 12
+  }
+  anni : number[] =[2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
+  anni2 :  number[] = this.anni
   mesi : any[] = []
   odls : any[] = []
-  anni: any[] =[] //[2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055]
-  disabilitato = false;
-  disabilitato2 = false;
+  odls2 : any[] = []
+  annoc = new FormControl() 
+  odlc = new FormControl() 
+  commessac = new FormControl()
+
+ 
+  
+ 
   supportf = false
   @ViewChild(AgGridAngular) agGrid!: AgGridAngular;
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_attivita;
+  getRowId: GetRowIdFunc<any>  = params =>params.data.nome+""+ params.data.cognome +"" +params.data.id_odl + "" + params.data.id_progetto +  params.data.anno;
   enableBrowserTooltips = true
   datiS : any[] = []
   listaColonne : string[] = []
   showForm = false;
 
   ngOnInit(): void {
+   
+    // parte di codice necessaria per il search dell'anno nel filtro 
+    this.annoc.valueChanges.subscribe(data => {
+      var appoggio  = this.anni2.filter(( item: {
+        }) =>   {
+            return (item +"") .includes((""+data))
+        })
     
+     this.anni = appoggio
+
+    })
+
+    // parte di codice necessaria per il search dell'odl nel filtro 
+    this.odlc.valueChanges.subscribe(data => {
+      
+      var appoggio  = this.odls2.filter(( item: {
+         descrizione2 : string
+        }) =>   {
+            return (item.descrizione2 +"").toLowerCase().includes((""+data).toLowerCase())
+        })
+    
+     this.odls = appoggio
+
+    })
+    
+    // parte di codice necessaria per il search della commessa nel filtro 
+    this.commessac.valueChanges.subscribe(data => {
+     
+      var appoggio  = this.commesse2.filter(( item: {
+         descrizione2 : string
+        }) =>   {
+            return (item.descrizione2.toLowerCase() +"") .includes((data +"" ).toLowerCase())
+        })
+    
+     this.commesse = appoggio
+
+    })
     this.form = this.fb.group({
-      risorsa: '',
-      risorsa2: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      commessa: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      anno: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      mese: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      odl: ''
-      
 
+      commessa: '',
+      odl: '' ,
+      anno: ''
     })
-      
-   
     
-  
-    this.form.valueChanges.subscribe((data)=>{
-      
-      this.disabilitato = this.form.valid 
-      
-      var colonne = [{field : ""}]
-     
-      var datir: string =  data.risorsa === undefined || data.risorsa === null || data.risorsa === ""  ? "" :data.risorsa.descrizione2
-      var datir2: string =  data.risorsa2 === undefined || data.risorsa2 === null || data.risorsa2 === ""  ? "" :data.risorsa2.descrizione2
-      
-      var datic: string =  data.commessa === undefined || data.commessa === null || data.commessa === ""  ? "" :data.commessa.descrizione3
+    //parte di codice che intercetta le modifiche  dei form ed effettua i filtri sui dati
+    this.form.valueChanges.subscribe(data => {
+       console.log(data)
+       console.log(this.dati)
+       // prendo i dati utili per il filtro nei form
 
-      var anno: string =  data.anno === undefined || data.anno === null  ? "" :data.anno.anno  
-      var mese: string =  data.mese === undefined || data.mese === null  ? "" :data.mese.mese
-      datic = datic === undefined ? "" : datic
-      datir = datir === undefined ? "" : datir
-      anno = anno === undefined ?  "" : anno
-      mese = mese === undefined ? "" : mese
- 
-      data = data === undefined ? "" : data
-      var risn =  datir === undefined ? "" : datir.split(":")[0].split("-")[0]
-      risn = risn === undefined ? "" : risn
-      var risc = datir === undefined ? "" : datir.split(":")[0].split("-")[1] 
-      risc = risc === undefined ? "" : risc
-      var descrizione = datic.split(":")[0].split("--")[0] 
-      descrizione = descrizione === undefined ? "" : descrizione 
-    
-      var risn2 =  datir2 === undefined ? "" : datir2.split(":")[0].split("-")[1]
-      risn2 = risn2 === undefined ? "" : risn2
-      var risc2 = datir2 === undefined ? "" : datir2.split(":")[0].split("-")[0] 
-      risc2 = risc2 === undefined ? "" : risc2
-  
-      var odl = data.odl === undefined || data.odl === null ? "" :  data.odl.descrizione2
+       // normalizzo i dati a lista in caso il record nel form non fosse inserito
+       // poicheè in caso di record non inserito il form prende '' e sarebbe difficile da gestire con un programma 
+       // che si aspetta delle liste (form a selezione multipla)
+       var  odl = data.odl === '' || data.odl === null || data.odl === undefined ? [] : data.odl
+       var  commessa = data.commessa  === '' || data.commessa === null || data.commessa === undefined ? [] : data.commessa
+       var  anno = data.anno === '' || data.anno === null || data.anno === undefined ? [] : data.anno
+       console.log (odl.length , commessa.length , anno.length )
 
-      odl = odl === undefined || odl.split(":")[1] === undefined ? "" :  odl.split(":")[1]
+       var nuoviDati = this.dati.filter
+        (( item: {
+                    id_odl : string
+                    id_progetto : string
+                    anno : string
+                 }) =>  
+                    {
+                      { 
+                        var flag = false 
+                        var flag2 = odl.length === 0 
+                        var flag3 = commessa.length ===  0   
+                        var flag4 = anno.length === 0 
 
-  
-     
-
-
+                        for (var i in odl)
+                          { 
+                            if (odl[i] === undefined)
+                            {
+                              flag2 = true
+                              break 
+                            }
+                            var id_odl = odl[i].descrizione2.split(":")[1]
+                            
+                            flag2  = flag2 || item.id_odl +"" === id_odl +""
+                           
 
 
-      console.log(this.datiS)
-      var filteredData = this.datiS.filter((item: {
-        id_odl: string;
-       
-        descrizione2: string;
-        descrizione3: string;
-        anno: string
-        mese:string
-        }) => 
-        
-        // item.descrizione3.includes(datic)
-         item.descrizione3.includes(datic)
-         && (item.descrizione2+ "").includes(datir)
-         &&  (item.anno === anno || anno === "")
-         &&  (item.mese === mese || mese === ""))
-        // &&  (item.id_odl+ "").includes(odl))
-         
-    var colP: any[] = []
-    console.log(filteredData)
-      
-    
-         
-           colP =   [...new Map(filteredData.map(item =>
-            [item["descrizione3"], item["descrizione3"].split("--")[0].split(":")[0]])).values()];
-         
-    
-            var filteredData2 = this.dati.filter((item: {
-              id_odl : string
-              cognome_risorsa: string;
-              nome_risorsa: string;
-              descrizione_progetto: string;
-              nome: string;
-              cognome: string;
-              anno: string;
-              mese:string
-              }) =>   {
-                var flag = false || datir === ""
-                
-                for(let t of colP )
-                   {
-                    var includes1 = false
-                    var includes2 = false
-                    for (var key in item)
-                    {  
-                       var key2 = key.split("---")[0]
-                       var key3 = key.split("---")[1]
-                     //  console.log(key)
-                      // if ((t === key2 ) && (odl === '' || odl === key3)) {console.log((t === key2 ) && (odl === '' || odl === key3));console.log(includes1);console.log(key2, t , "--",odl, "--",key3)}
-                       includes1 = ((t === key2 ))  || includes1
-                     
+                          } 
+                         
+                        flag = flag2
+                        for (var i in commessa)
+                          { 
+                            if (commessa[i] === undefined )
+                            {
+                              flag3 = true
+                              break 
+                            }
+                            var id_progetto = commessa[i].descrizione2.split(":")[1]
+                            flag3 = flag3 || item.id_progetto +"" === id_progetto +""
+                          } 
+                        flag = flag3  && flag  
+                        for (var i in anno)
+                          {    
+                              if (anno[i]  === undefined) 
+                               {
+                                 flag4 = true
+                                 break 
+                                 
+                               }
+                               flag4 = flag4 || item.anno +"" === anno[i] +""
+                               
+                          } 
+                        flag = flag4 && flag
                        
-                    }
-                  
-                  
-                    flag = (includes1 || flag  && (descrizione in item  || descrizione === "")  )
-                    
-                   }
-                 console.log(item.id_odl, odl)
-                return flag && (item.anno === anno ||  anno === "") && (item.id_odl +'' === odl || odl === "" ) && (item.mese === mese  ||  mese === "") && item.cognome_risorsa.includes(risc2)
-              }
-              // item.descrizione3.includes(datic)
-             
-            )
-            
-            this.agGrid.api.setRowData(filteredData2)
-            var colonneData : string[]  = []
-            for (var element in filteredData2)
-            { 
-             Object.keys(filteredData2[element]).forEach(key => {
-              if (colonneData.includes(key))
-              {
+                        return flag
+                      } 
+                    })
+          console.log(nuoviDati)
+          this.agGrid.api.setRowData(nuoviDati)
+       })
 
-              }
-              else 
-              {
-                colonneData.push(key)
-              }
-
-
-             }) 
-
-            }
-             
-           
-             colonneData = colonneData.filter((item => {
-                  var flag = false 
-              colP.forEach(it => {
-                if (item.includes(it) && item.includes(odl) && !item.includes("odl_") && !item.includes("flag_")) 
-                  {flag = true  
-                  
-                  }
-                
-
-              })
-              if(flag)
-              {
-                 return true 
-              }
-              else 
-              {
-                return false 
-              }
-              
-
-            }))
-            
-      
-            this.agGrid.columnApi.setColumnsVisible(this.listaColonne, false)
-            this.agGrid.columnApi.setColumnsVisible(colonneData,true)
-            this.resizeColumnWidth();
-            
-    })
-  
-   
-  
-   // this.select()
+    // i setup servono a popolare le select delle form con i dati presi dal db 
     this.setup1()
-    this.setup3()
     this.setup2()
-    this.setup4()
-   
-  }
-    
-  resizeColumnWidth(){
-    // ridimensiona le colonne (larghezza) basandosi sul contenuto
-    // il parametro della funzione è skipHeader (considera o meno la lunghezza dell'header)
-    this.agGrid?.columnApi.autoSizeAllColumns(false);
+
+    // prende i dati dalla tabella 'settingcolonne' del db creare lo schema della tabella
+    this.strucElaboration()
+
+    // prende i dati inerenti alla struttura elaborata da structElaboration
+    this.select()
   }
 
-
-	public columnDefs : ColDef[] = [{
+  public columnDefs : ColDef[] = [{
 		cellRenderer: (params : any) => {return '<div><button type="button" class="btn btn-sm"><i class="bi bi-trash-fill" style="color:red"></i></button></div>'},
 		maxWidth: 34,
 		filter: false,
@@ -235,6 +198,16 @@ export class ProspettoMeseComponent {
 		lockPosition: 'left',
 		cellClass: 'button-cell'
 	}];
+    
+  resizeColumnWidth(){
+
+    // ridimensiona le colonne (larghezza) basandosi sul contenuto
+    // il parametro della funzione è skipHeader (considera o meno la lunghezza dell'header)
+    this.agGrid?.columnApi.autoSizeAllColumns(false);
+  }
+
+
+	
   
  
   // DefaultColDef sets props common to all Columns
@@ -248,95 +221,87 @@ export class ProspettoMeseComponent {
   public rowData$!: Observable<any[]>;
   private dati : any = null
   private datiV : any 
-  private id_touch : String = ""
+
   private datvalid_livello : String = "" 
   private datvalid_ruolo : String = "" 
   
-  
-  // For accessing the Grid's API
 
-
-  
- 
-
-
-
-
-   // Example load data from sever
-   onGridReady(params: GridReadyEvent) {
+  onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
-    //this.agGrid.getRowId   =  params =>{return params.data.id_tutto}
     this.rowData$ = new Observable<any[]>
   }
- 
-  // Example of consuming Grid Event
   onCellClicked( e: CellClickedEvent): void {
-    
 
-    console.log('cellClicked', e);
-    this.id_touch =  e.data.id_attivita
-
-     
-    console.log(this.id_touch) 
     var numeroC = e.column.getInstanceId()
     console.log(numeroC)
     var valore = e.column.getColId()
     var left = e.column.getLeft()
     console.log(left)
-    if (left === 0 && confirm('Eliminare definitivamente?'))
-    {
-      this.delete("delete from  new_rilatt.attivita_risorsa where id_attivita = " + this.id_touch)
-    }
+   
   }
 
-  onCellEditingStarted( e: CellEditingStartedEvent): void { 
+
+  /*
+    funzione che inizializza l'evento della modifica di una cella sulla tabella
+  */
+  onCellEditingStarted( e: CellEditingStartedEvent): void 
+  { 
     var vecchioV = e.value; // save this value by attaching it to button or some variable
     console.log('cellEditingStarted');
     console.log(e);
     var colonna = e.colDef.field
     this.datiV = JSON.parse(JSON.stringify(e.node.data))
     console.log(this.datiV)
-    }
-onCellValueChanged( e: CellValueChangedEvent): void {
-if(this.supportf){
-this.supportf= false
-return
-
-}
- if(e.newValue === undefined) return 
- var valore = 0
- if(e.newValue === '') {
-  valore = 0;
-  valore2 = 0 
   }
- else
- { 
-  valore = e.newValue
-  console.log("prova" , e.newValue, e.oldValue)
-  var valore2 = 0
-  if (e.oldValue === '' ||  e.oldValue === undefined ) {}
-  else 
-  {     console.log(e.oldValue)
-        valore2 = valore - e.oldValue
-        console.log(valore2)
-  } 
- }
-  var datiC = e.data
-  console.log(datiC)
-  var colonna = e.colDef.field
+    
+  /* 
+  funzione che gestisce l'effettiva modifica delle cella 
+  verifica con una funzione se i dati inseriti siano validi e poi procede
+  ad eseguire un update nel caso la cella fosse già popolata o 
+  un insert in caso la cella non sia popolata
+  */
+  onCellValueChanged( e: CellValueChangedEvent): void {
+    if(this.supportf){
+         this.supportf= false
+         return
+       }
 
-  console.log(e.newValue)
-  var mese = datiC.mese
-  var anno = datiC.anno
-  var nome = datiC.nome_risorsa
-  var cognome = datiC.cognome_risorsa
-  var id_risorsa = datiC.id_risorsa
-  var commessa = e.column.getColId().split("---")[0]
-  console.log(commessa)
+    if(e.newValue === undefined) return 
+    var valore = 0
+    if(e.newValue === '') {
+      valore = 0;
+      valore2 = 0 
+      }
+    else
+     { 
+        valore = e.newValue
+        console.log("prova" , e.newValue, e.oldValue)
+        var valore2 = 0
+        if (e.oldValue === '' ||  e.oldValue === undefined ) {}
+        else 
+        {     
+          console.log(e.oldValue)
+          valore2 = valore - e.oldValue
+          console.log(valore2)
+         } 
+      }
+    var datiC = e.data
+    console.log(datiC)
+    var colonna = e.colDef.field
 
+    console.log(e.newValue)
+    var mese =  this.mappaMeseNUmero[colonna + ""]
+    var anno = datiC.anno
+    
 
-  var flag_errore = false 
-  this.insP.select("select * from new_rilatt.progetti p  right join new_rilatt.odl pp on pp.id_progetto = p.id_progetto where descrizione_progetto = '"+ commessa +"'").subscribe(Response=>{
+    var nome = datiC.nome_risorsa
+    var cognome = datiC.cognome_risorsa
+    var id_risorsa = datiC.id_risorsa
+    var commessa = datiC.descrizione_progetto
+    console.log(e.oldValue , e.newValue)
+    console.log(commessa)
+    var flag_errore = false 
+    this.insP.select("select * , pp.id as id2, p.id as id3  from cost_model.commesse p  left join cost_model.cost_model pp on pp.id_commessa = p.id where p.descrizione = '"+ commessa +"'").subscribe(Response=>{
     console.log(Response)
     var risposta = JSON.parse(JSON.stringify(Response))
     
@@ -353,10 +318,10 @@ return
     }
     else 
     { 
-      var id_progetto = risposta.rows[0].id_progetto
-      var id_odl = risposta.rows[0].id_odl
+      var id_progetto = risposta.rows[0].id3
+      var id_odl = risposta.rows[0].id2
       console.log(id_progetto)
-      if(e.oldValue === undefined)
+      if(e.oldValue === undefined || e.oldValue === null)
       {
          
         var queryc = "SELECT new_rilatt.fnc_controllo_rendicontazione("+id_progetto+", "+id_risorsa+","+anno+","+mese+","+e.newValue+","+id_odl+");"
@@ -477,9 +442,11 @@ return
           console.log(anno, mese , nome,cognome,commessa)
         var query = "update new_rilatt.attivita_risorsa set giornate = "+(e.newValue === '' ? 0 : e.newValue) +" where id_progetto = "+ id_progetto +" and id_risorsa = " + id_risorsa +" and anno = "+anno +" and mese = " + mese
         
-         
+         console.log(query)
+
          this.insP.select(query).subscribe(Response=>{
           var risposta = JSON.parse(JSON.stringify(Response))
+          console.log(risposta)
           if(risposta.upd === "ok" )
           { 
              if(tipoMessaggio === "OK")
@@ -540,47 +507,31 @@ return
     
 
   })
- 
- /* var valore = e.value
-  var query = "update new_rilatt.attivita_risorsa set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
-  console.log(valore)  
-  console.log(query)
-  this.update(query)*/
-
   }
    
-
-
-  setup2= () => {
-    var query = "select distinct   cognome || '-' || nome ||  ':' ||   id_risorsa as descrizione2 from new_rilatt.risorse order by descrizione2 " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.risorse2= dati; 
-    
-    })
-
-  }
-
-  setup3= () => {
-    var query = "select distinct   cognome || '-' || nome || ':' ||   r.id_risorsa as descrizione2 from new_rilatt.risorse r "
-              +" inner join new_rilatt.odl r2  on  r.id_risorsa = r2.id_risorsa order by descrizione2 " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;
-      var dati = JSON.parse(JSON.stringify(response)).rows;  
-      this.risorse=  [...new Map(dati.map((item: { [x: string]: any; }) =>
-      [item["descrizione2"], item])).values()];
-    
-    })
-    
-  }
-  setup4= () => {
-    var query = "select distinct   descrizione_odl || '-' || codice_odl || ':' ||  id_odl as  descrizione2 from new_rilatt.odl r " 
+  // le funzioni di setup servono a settare le form select.
+  setup1= () => {
+    var query = "select distinct   descrizione || '-' || odl || ':' ||  id as  descrizione2 from cost_model.cost_model r " 
     this.insP.select(query).subscribe(response =>{console.log(response) ;
       var dati = JSON.parse(JSON.stringify(response)).rows;  
       this.odls= dati
+      this.odls2 = dati 
     
     })
     
   }
+ 
+  setup2= () => {
+    var query = "select distinct   descrizione || '-' || codice ||  ':' ||   id as descrizione2 from cost_model.commesse order by descrizione2 " 
+    this.insP.select(query).subscribe(response =>{
+        console.log(response) ;
+        var dati = JSON.parse(JSON.stringify(response)).rows;
+        this.commesse = dati; 
+        this.commesse2 = dati
+       })
+     }
 
-  
+
    compare = ( a : any, b : any )  => {
     if ( a.descrizione3 < b.descrizione3 ){
       return -1;
@@ -590,32 +541,7 @@ return
     }
     return 0;
   }
-  setup1= () => {
-    var query = `select distinct  p2.id_odl,    cognome || '-' || nome ||  ':'  ||   
-    r2.id_risorsa as descrizione2, REPLACE(descrizione_progetto, '.', '-') || '--' ||  codice   || ':' || p.id_progetto as descrizione3 
-    , anno,mese from new_rilatt.attivita_risorsa ar 
-     inner join new_rilatt.progetti p  on p.id_progetto  = ar.id_progetto
-     left join new_rilatt.odl p2 on p2.id_progetto = p.id_progetto
-     left join new_rilatt.risorse r2 on r2.id_risorsa  = p2.id_risorsa  order by descrizione2 `
-
-    this.insP.select(query).subscribe(response =>{
-     
-      console.log(response) ;
-      var dati = JSON.parse(JSON.stringify(response)).rows;
-      this.commesse =  [...new Map(dati.map((item: { [x: string]: any; }) =>
-      [item["descrizione3"], item])).values()].sort(this.compare);
-      this.datiS = dati
-     
-     // this.commesse = dati
   
-     this.mesi =    [...new Map(dati.map((item: { [x: string]: any; }) =>
-     [item["mese"], item])).values()];
-  
-     this.anni =    [...new Map(dati.map((item: { [x: string]: any; }) =>
-      [item["anno"], item])).values()];
-    this.strucElaboration()
-       })
-      }
 
 
  
@@ -626,13 +552,13 @@ return
 
  
 
-select = ()  => {var query = "select *, p.descrizione_progetto as progetti from new_rilatt.attivita_risorsa ar inner join new_rilatt.risorse r on r.id_risorsa = ar.id_risorsa " +
-"inner join new_rilatt.progetti  p on p.id_progetto = ar.id_progetto "
-
-this.insP.select(query).subscribe(response =>{console.log(response) ;
-  this.dati = JSON.parse(JSON.stringify(response)).rows; console.log(this.dati);
-  this.agGrid.api.setRowData(this.dati)
-  this.resizeColumnWidth();
+select = ()  => {
+  var query = "select * from new_rilatt.select_prospetto_mese()"
+  this.insP.select(query).subscribe(response =>{
+    console.log(response) ;
+    this.dati = JSON.parse(JSON.stringify(response)).rows; console.log(this.dati);
+    this.agGrid.api.setRowData(this.dati)
+    this.resizeColumnWidth();
 })
 
 }
@@ -661,149 +587,36 @@ this.insP.select(query).subscribe(response =>{console.log(response) ;
   })
 
 
-  strucElaboration = () =>{
-  var query = "select   pp.id_odl,id_attivita , p.id_progetto  ,REPLACE(p.descrizione_progetto, '.' , '-') ||  (case when pp.id_odl is null then '' else  '---' ||pp.id_odl  end) as descrizione_progetto ,p.codice, r.id_risorsa as id_pm,r.nome as nome_pm,r.cognome as cognome_pm ,"
-  + "r2.nome as nome_risorsa,r2.id_risorsa,r2.cognome as cognome_risorsa,ar.anno ,ar.mese,ar.giornate ,ar.flag_attivita from"
-  + " new_rilatt.progetti p"
-  + " join new_rilatt.attivita_risorsa ar"
-  + "  on ar.id_progetto =p.id_progetto"
-  + " left join new_rilatt.odl pp"
-  + " on pp.id_odl =ar.id_odl"
-  + " left join new_rilatt.risorse r"
-  + " on r.id_risorsa =pp.id_risorsa"
-  + " join new_rilatt.risorse r2"
-  + " on r2.id_risorsa =ar.id_risorsa order by id_odl"
- 
-    this.insP.structUndestanding(query ).subscribe(response =>{
+  strucElaboration = () => this.insP.structUndestanding("select * from new_rilatt.setting_colonne sc where maschera  = 'prospetto_mese'  order by importanza"  ).subscribe(response =>{
     console.log(response)
     console.log(response)
  
     var responsej = JSON.parse(JSON.stringify(response))
-    this.elaborazioneStruttura(response);
-    this.resizeColumnWidth();
-  })}
-
-  elaborazioneStruttura  = (json : Object) =>{
-    var listaR = JSON.parse(JSON.stringify(json)).rows
-    console.log(listaR)
-    this.columnDefs.push({"field" : "id_risorsa"  , editable : true , hide : true }) 
-    this.columnDefs.push({"field" : "id_attivita"  , editable : true , hide : true }) 
-    this.columnDefs.push({"field" : "nome_risorsa"  , editable : false , hide : false}) 
-    this.columnDefs.push({"field" : "cognome_risorsa"  , editable : true , hide : false}) 
-    this.columnDefs.push({"field" : "anno"  , editable : false , hide : false}) 
-    this.columnDefs.push({"field" : "mese"  , editable : false , hide : false}) 
-    var listaD:any = [{}]
-    var listaD2:any = []
-    var nuoviDati = {}
-    var contatore = 0
-    for( let element of listaR ) {
-     // console.log(element)
-     // console.log(listaD2)
-      let found2 = listaD2.findIndex((item: any)  => { 
-        return  item.nome_risorsa === element.nome_risorsa
-        && item.cognome_risorsa === element.cognome_risorsa 
-        && item.anno === element.anno 
-        && item.mese === element.mese } );
-     // console.log(found2)
-
-      if (found2 === -1)
-      { 
-        
-        var t : any = {  "id_odl" : element.id_odl, "id_risorsa":element.id_risorsa,"id_attivita" : element.id_attivita, "contatore" : contatore, "nome_risorsa" : element.nome_risorsa , "cognome_risorsa" : element.cognome_risorsa , "anno" : element.anno , "mese" : element.mese } 
-        var descrizione  =(element.descrizione_progetto+"")
-        t[descrizione] = element.giornate
-        t["flag_" + descrizione] = element.flag_attivita
-        t["odl_" + descrizione] = element.id_odl
-        listaD2.push(t)
-      
-        
-      }
-      else 
-      {      //console.log("presente")
-             
-            
-             var descrizione = (element.descrizione_progetto+"")
-             var valore = (element.giornate+"")
-             var it = listaD2[found2]
-            // console.log(it)
-             it[descrizione] = valore
-             it["flag_" + descrizione] = element.flag_attivita
-             it["odl_" + descrizione] = element.id_odl
-         
-             listaD2[found2] = it
-      }
+    for( let element of  responsej.rows) {
+      console.log(element)
+     this.columnDefs.push({
+      "field" :  element.column_name,
+      editable : element.editable,
+      hide : !element.visible,
+      resizable: true,
+    }) 
     
-      contatore = contatore +1 
-     
-     
-     // console.log(listaD2)
-      let found = listaD.find((item: any)  => { return item === element.descrizione_progetto  } );
-      
-      //console.log(found)
-      if (found === undefined){
-        
-      //  console.log("non trovato")
-       // console.log(element)
-        this.listaColonne.push(element.descrizione_progetto)
-        this.columnDefs.push({"field" : element.descrizione_progetto  ,  headerTooltip: element.codice,   cellStyle: params => {
-          if (params.data["flag_"+element.descrizione_progetto]) {
-              //mark police cells as red
-              
-              return {color: 'black', backgroundColor: '#FFCCCB'};
-          }
-          return {color: 'black', backgroundColor: '#FFFFFF'};
-      } ,editable: (params) => !params.data["flag_"+element.descrizione_progetto], hide : false ,  resizable: true}) 
-        this.columnDefs.push({
-          "field" : "odl_"+element.descrizione_progetto,
-          headerTooltip: element.codice,
-          editable: (params) => !params.data["flag_"+element.descrizione_progetto],
-          hide : true,
-          resizable: true,
-        }) 
-        
-        listaD.push(element.descrizione_progetto)
-      }
-      else 
-      {
-     
-      }
-    
-   
     };
-    console.log(listaD2)
-    this.dati = listaD2
-   
-    this.agGrid.api.setRowData(this.dati)
-    
+
     this.agGrid.api.setColumnDefs(this.columnDefs)
-    this.agGrid.columnApi.setColumnsVisible([], false)
+    this.agGrid.columnApi.autoSizeAllColumns();
+    this.resizeColumnWidth();
 
+  
+  })
 
-  }
+ 
 
 
   delete =  (query : String)   => this.insP.select(query ).subscribe(response =>{
-    /*console.log(response)
-    var risposata = JSON.parse(JSON.stringify(response)) 
-    if(risposata.upd === "ok")
-    {
-          console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_attivita : this.id_touch}]});
-    }
-    else 
-    { console.log("errore")
     
-       
-      
-      Swal.fire({  
-        icon: 'error',  
-        title: 'errore',  
-        text: 'errore in delete, codice : ' + risposata.code
-      
-      })  
-    }*/
-  
   })
+  
 
 
 

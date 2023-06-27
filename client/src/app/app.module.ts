@@ -30,7 +30,12 @@ import { RendicontazioneComponent } from './rendicontazione/rendicontazione.comp
 import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-generale.component';
 import { ClientiComponent } from './clienti/clienti.component';
 import { OdlComponent } from './odl/odl.component';
-import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.component'
+import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.component';
+import { CostModelComponent } from './cost-model/cost-model.component'
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { ProspettoCommessaComponent } from './prospetto-commessa/prospetto-commessa.component';
+import { NrisoreComponent } from './nrisore/nrisore.component';
+import { NlivelliComponent } from './nlivelli/nlivelli.component';
 
 //const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 
@@ -52,6 +57,10 @@ import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.componen
     ClientiComponent,
     OdlComponent,
     ProspettoMeseComponent,
+    CostModelComponent,
+    ProspettoCommessaComponent,
+    NrisoreComponent,
+    NlivelliComponent,
     
     
   ],
@@ -69,7 +78,8 @@ import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.componen
     ReactiveFormsModule,
     HttpClientModule,
    // SocketIoModule.forRoot(config),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgxMatSelectSearchModule
   ],
   providers: [],
   bootstrap: [AppComponent]

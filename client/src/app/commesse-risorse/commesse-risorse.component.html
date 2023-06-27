@@ -3,11 +3,19 @@
   <span *ngIf="!showForm">Mostra form</span>
 </button>
 <div style="display: flex; margin-bottom: 12px;" *ngIf="showForm">
-  <div style="flex: 1;padding: 1em;border: solid;">
+  <div style="flex: 1;padding: 1em;border: solid;" fxLayoutGap="10px">
     <form [formGroup] = "form">
       <mat-form-field>
+        
         <mat-label>Commessa</mat-label>
         <mat-select formControlName="commessa" placeholder="Commessa">
+          <mat-option>
+            <ngx-mat-select-search 
+            [formControl]="commessar" 
+            placeholderLabel="cerca commessa..."
+            noEntriesFoundLabel="commessa non trovata">
+        </ngx-mat-select-search>
+         </mat-option>
           <mat-option></mat-option>
           <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa.descrizione2}}</mat-option>
         </mat-select>
@@ -15,7 +23,15 @@
       <br>
       <mat-form-field>
         <mat-label>Risorsa</mat-label>
+        
         <mat-select formControlName="risorsa" placeholder="Risorsa">
+          <mat-option>
+            <ngx-mat-select-search 
+            [formControl]="risorsar" 
+            placeholderLabel="cerca risorsa..."
+            noEntriesFoundLabel="risorsa non trovata">
+          </ngx-mat-select-search>
+         </mat-option>
           <mat-option></mat-option>
           <mat-option *ngFor="let risorsa of risorse" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
         </mat-select>
@@ -24,6 +40,13 @@
       <mat-form-field>
         <mat-label>Odl</mat-label>
         <mat-select formControlName="odl" placeholder="Odl">
+          <mat-option>
+            <ngx-mat-select-search 
+            [formControl]="odlr" 
+            placeholderLabel="cerca odl..."
+            noEntriesFoundLabel="odl non trovato">
+          </ngx-mat-select-search>
+         </mat-option>
           <mat-option></mat-option>
           <mat-option *ngFor="let odl of odls" [value]="odl">{{odl.descrizione2}}</mat-option>
         </mat-select>
@@ -32,7 +55,7 @@
       <button mat-raised-button color="primary" [disabled]= "!disabilitato" (click)="inserisciRiga()">inserisci dati</button>
     </form>
   </div>
-  <div style="flex: 2;padding: 1em;border: solid;">
+  <div style="flex: 2;padding: 1em;border: solid;" fxLayoutGap="10px">
     <form [formGroup] = "form2">
       <mat-form-field>
         <mat-label>Anno</mat-label>
@@ -41,6 +64,7 @@
           <mat-option *ngFor="let anno of anni" [value]="anno">{{anno}}</mat-option>
         </mat-select>
       </mat-form-field>
+      
       <br>
       <mat-form-field>
         <mat-label>Mese</mat-label>
@@ -49,14 +73,54 @@
           <mat-option *ngFor="let mese of mesi" [value]="mese">{{mese}}</mat-option>
         </mat-select>
       </mat-form-field>
+      
+     
+    
+     
       <br>
       <mat-form-field>
         <mat-label>Giornate</mat-label>
         <input matInput formControlName="giornate" placeholder="Giornate">
       </mat-form-field>
+     
+      
       <br>
-      <mat-checkbox id="amateur" class="amateur" color="primary" formControlName="budget">budget</mat-checkbox>
+      <mat-checkbox   id="amateur" class="amateur" color="primary"  formControlName="budget">budget</mat-checkbox>
     </form>
+    
+  </div>
+  <div style="flex: 3;padding: 1em;border: solid;" fxLayoutGap="10px">
+    <form [formGroup] = "form3">
+      
+      <mat-form-field>
+        <mat-label>budget totale</mat-label>
+        <input matInput readonly upperCaseInput formControlName="budTot">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>budget mensile </mat-label>
+      <input matInput readonly upperCaseInput  formControlName="budMens">
+    </mat-form-field>
+      <br>
+      
+      <mat-form-field>
+        <mat-label>rendicontato totale</mat-label>
+        <input matInput readonly upperCaseInput formControlName="rendTot">
+     </mat-form-field>
+     
+    <mat-form-field>
+      <mat-label>rendicontato mensile </mat-label>
+      <input matInput readonly upperCaseInput formControlName="rendMens">
+    </mat-form-field>
+      <br>
+      
+      <mat-form-field>
+        <mat-label>rendicontato fittizio </mat-label>
+        <input matInput readonly upperCaseInput  formControlName="rendFitt">
+      </mat-form-field>
+      
+      
+    </form>
+    
   </div>
 </div>
   

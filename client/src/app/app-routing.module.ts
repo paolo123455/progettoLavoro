@@ -14,8 +14,13 @@ import { RendicontazioneComponent } from './rendicontazione/rendicontazione.comp
 import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-generale.component';
 import { ClientiComponent } from './clienti/clienti.component';
 import { OdlComponent } from './odl/odl.component';
+import { CostModelComponent } from './cost-model/cost-model.component';
+import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.component';
+import { ProspettoCommessaComponent } from './prospetto-commessa/prospetto-commessa.component';
+import { NrisoreComponent } from './nrisore/nrisore.component';
 
 const routes: Routes = [  
+  {path : "costmodel" , component : CostModelComponent},
   {path : 'rendicontazione', component : RendicontazioneComponent},
   {path : 'prospetto-generale' , component : ProspettoGeneraleComponent},
   {path : 'practice', component : PracticeComponent},
@@ -29,7 +34,11 @@ const routes: Routes = [
   {path : 'clienti', component : ClientiComponent},
   {path : 'odl', component : OdlComponent},
   {path : '', component : HomeComponent},
+  {path : "prospetto-mese" , component : ProspettoMeseComponent},
+  {path : "prospetto-commessa" , component : ProspettoCommessaComponent},
+  {path : 'nrisorse', component : NrisoreComponent},
   {path : '**', component : ErrorComponentComponent}
+
 ];
 
 @NgModule({

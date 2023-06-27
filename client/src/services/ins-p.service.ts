@@ -33,6 +33,12 @@ export class InsPService {
     return  this.client.post('/esegui/query/dizionario' , {"query" :tabella})
   }
 
+  get_cost_model(id: string ): Observable<Object> {
+ 
+    return  this.client.post('/esegui/query/get/cost/model' , {"id_odl" : id})
+  }
+
+
   // select(query: String): Observable<any[]> {
   //   return this.client.post<any[]>('http://node:8080/esegui/query/selezione', { "query": query })
   // }

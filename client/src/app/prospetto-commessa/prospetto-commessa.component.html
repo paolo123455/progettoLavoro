@@ -9,52 +9,33 @@
        
            
         <mat-form-field>
-        
             <mat-label>Commessa</mat-label>
             <mat-select formControlName="commessa" placeholder="commessa">
-              <mat-option>
-                <ngx-mat-select-search 
-                [formControl]="commessar" 
-                placeholderLabel="cerca commessa..."
-                noEntriesFoundLabel="commessa non trovata">
-              </ngx-mat-select-search>
-             </mat-option>
               <mat-option></mat-option>
               <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa.descrizione3}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <!--
           <mat-form-field>
             <mat-label>PM</mat-label>
             <mat-select formControlName="risorsa" placeholder="PM">
               <mat-option></mat-option>
               <mat-option *ngFor="let risorsa of risorse" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
             </mat-select>
-          </mat-form-field>
-          -->
-          <br>
+          </mat-form-field><br>
           <mat-form-field>
             <mat-label>Risorsa</mat-label>
             <mat-select formControlName="risorsa2" placeholder="Risorsa">
-              <mat-option>
-                <ngx-mat-select-search 
-                [formControl]="risorsar" 
-                placeholderLabel="cerca risorsa..."
-                noEntriesFoundLabel="risorsa non trovata">
-              </ngx-mat-select-search>
-             </mat-option>
               <mat-option></mat-option>
               <mat-option *ngFor="let risorsa of risorse2" [value]="risorsa">{{risorsa.descrizione2}}</mat-option>
             </mat-select>
           </mat-form-field>
-          <br>
           <mat-form-field>
             <mat-label>Anno</mat-label>
             <mat-select formControlName="anno" placeholder="anno">
               <mat-option></mat-option>
               <mat-option *ngFor="let anno of anni" [value]="anno">{{anno.anno}}</mat-option>
             </mat-select>
-          </mat-form-field>
+          </mat-form-field><br>
           <mat-form-field>
             <mat-label>Mese</mat-label>
             <mat-select formControlName="mese" placeholder="mese">
@@ -65,13 +46,6 @@
           <mat-form-field>
             <mat-label>Odl</mat-label>
             <mat-select formControlName="odl" placeholder="odl">
-              <mat-option>
-                <ngx-mat-select-search 
-                [formControl]="odlr" 
-                placeholderLabel="cerca odl..."
-                noEntriesFoundLabel="odl non trovata">
-              </ngx-mat-select-search>
-             </mat-option>
               <mat-option></mat-option>
               <mat-option *ngFor="let odl of odls" [value]="odl">{{odl.descrizione2}}</mat-option>
             </mat-select>
@@ -87,40 +61,12 @@
   
     
     </div>
-    <div style="flex: 2;padding: 1em;border: solid;" fxLayoutGap="10px">
-      <form [formGroup] = "form3">
-        
-        <mat-form-field>
-          <mat-label>budget totale</mat-label>
-          <input matInput readonly upperCaseInput formControlName="budTot">
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>budget mensile </mat-label>
-        <input matInput readonly upperCaseInput  formControlName="budMens">
-      </mat-form-field>
-        <br>
-        
-        <mat-form-field>
-          <mat-label>rendicontato totale</mat-label>
-          <input matInput readonly upperCaseInput formControlName="rendTot">
-       </mat-form-field>
-       
-      <mat-form-field>
-        <mat-label>rendicontato mensile </mat-label>
-        <input matInput readonly upperCaseInput formControlName="rendMens">
-      </mat-form-field>
-        <br>
-        
-        <mat-form-field>
-          <mat-label>rendicontato fittizio </mat-label>
-          <input matInput readonly upperCaseInput  formControlName="rendFitt">
-        </mat-form-field>
-        
-        
-      </form>
-      
-    </div>
    
+  
+   
+    
+    
+    
   </div>
   <ag-grid-angular style="height: 80vh;"
      class="ag-theme-alpine"
