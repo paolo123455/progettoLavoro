@@ -1,6 +1,5 @@
 SERVER DOCKER: 10.121.172.33
-UTENTE: docker
-PASSWORD: A1m4W4v3@DCK01
+
 
 PERCORSO: /home/docker/Anac/project_review/web_app
 
