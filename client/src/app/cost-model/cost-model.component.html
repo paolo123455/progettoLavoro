@@ -1,15 +1,9 @@
-
-    
-  <ag-grid-angular
-    class="ag-theme-alpine"
-    [getRowId]="getRowId"
-    [columnDefs]="columnDefs"
-    [defaultColDef]="defaultColDef"
-    [rowData]="rowData$ | async"
-    [rowSelection]="'multiple'"
-    (gridReady)="onGridReady($event)"
-    (cellClicked)="onCellClicked($event)"
-    (cellEditingStarted)="onCellEditingStarted($event)"
-    (cellValueChanged)="onCellValueChanged($event)"
-    domLayout='autoHeight'
-  ></ag-grid-angular>
+<ag-grid-angular
+  class="ag-theme-alpine"
+  [columnDefs]="columnDefs"
+  [defaultColDef]="defaultColDef"
+  [rowData]="rowData"
+  [rowSelection]="'multiple'"
+ 
+  domLayout='autoHeight'
+></ag-grid-angular>

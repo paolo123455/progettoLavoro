@@ -63,31 +63,22 @@ export class ClientiComponent {
   
 
     this.form = this.fb.group({
-      codice: new FormControl("",[ Validators.required,Validators.minLength(1)]),
       descrizione: new FormControl("",[ Validators.required,Validators.minLength(1)]),
-      note: ''
     })
   
 
   this.form.valueChanges.subscribe((data)=>{
     
-  
     var descrizione = data.descrizione === undefined || data.descrizione === null ? "" : data.descrizione
-    var codice = data.codice === undefined || data.codice === null ? "" : data.codice
-    var  note = data.note === undefined || data.note === null ? "" : data.note
-    
-
     console.log(this.dati)
     var filteredData = this.dati.filter((item: {
-      codice_cliente: string;
-      descrizione_cliente: string;
-      note : string
+      descrizione: string;
+    
      
   
         }) => (
-          (item.descrizione_cliente+"").toLowerCase().includes(descrizione.toLowerCase())  
-          && (item.codice_cliente+"").toLowerCase().includes(codice.toLowerCase()) 
-          && (item.note+"").toLowerCase().includes(note.toLowerCase()) 
+          (item.descrizione+"").toLowerCase().includes(descrizione.toLowerCase())  
+        
      
     ));
     this.agGrid.api.setRowData(filteredData);
@@ -95,9 +86,7 @@ export class ClientiComponent {
   })
     this.select()
     this.strucElaboration()
-   // this.setup1()
-   // this.setup2()
-
+ 
     
    
   }
@@ -108,7 +97,7 @@ export class ClientiComponent {
     this.agGrid.columnApi.autoSizeAllColumns(false);
   }
 
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_cliente;
+  getRowId: GetRowIdFunc<any>  = params => params.data.id;
 
   onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
@@ -120,7 +109,7 @@ export class ClientiComponent {
     
 
     console.log('cellClicked', e);
-    this.id_touch =  e.data.id_cliente
+    this.id_touch =  e.data.id
 
      
     console.log(this.id_touch) 
@@ -129,7 +118,7 @@ export class ClientiComponent {
     var left = e.column.getLeft()
     console.log(left)
     if (left === 0 && confirm('Eliminare definitivamente?')) {
-      this.delete("delete from  new_rilatt.clienti where id_cliente = " + this.id_touch)
+      this.delete("delete from  cost_model.clienti where id = " + this.id_touch)
     }
   }
 
@@ -148,7 +137,7 @@ export class ClientiComponent {
   var colonna =  e.colDef.field
   console.log(colonna , (colonna+"") === 'practice')
   var valore = e.value
-  var query = "update new_rilatt.clienti set " +  colonna + " = '" + valore +"' where id_cliente = "+datiC.id_cliente
+  var query = "update cost_model.clienti set " +  colonna + " = '" + valore +"' where id = "+datiC.id
   console.log(valore)  
   console.log(query)
   this.update(query)
@@ -170,7 +159,7 @@ export class ClientiComponent {
 
   testR = ()  => this.insP.testRest().subscribe(Response => console.log(Response))
  
-  select  = ()  => {var query = "select * from new_rilatt.clienti "
+  select  = ()  => {var query = "select * from cost_model.clienti "
     this.insP.select(query).subscribe(response =>{
       console.log(response);
       this.dati = JSON.parse(JSON.stringify(response)).rows;
@@ -226,17 +215,17 @@ export class ClientiComponent {
     if(risposata.upd === "ok")
     {
           console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_cliente : this.id_touch}]});
+          this.agGrid.api.applyTransaction({remove:[{id : this.id_touch}]});
     }
     else 
     { console.log("errore")
     
        
-      
+      var messaggio = risposata.detail === undefined ? "" : risposata.detail
       Swal.fire({  
         icon: 'error',  
         title: 'errore',  
-        text: 'errore delete',  
+        text: 'errore delete ' +messaggio ,  
        
       })  
     }
@@ -246,20 +235,12 @@ export class ClientiComponent {
   inserisciRiga = () : void => {
 
     var insert1 =  JSON.parse(JSON.stringify(this.form.value))
-   
     console.log(insert1)
     var descrizione = insert1.descrizione 
-    var codice = insert1.codice
-    var note = insert1.note 
-    note = note === undefined  || note === null? "" : note 
-   
-       
-  
     
-
-    var query = "insert into new_rilatt.clienti (descrizione_cliente , codice_cliente , note ) values ('"+descrizione+"','"+codice+"','"+note+"' )  "
+    var query = "insert into cost_model.clienti (descrizione  ) values ('"+descrizione+"' )  "
     console.log(query)
-    this.insP.select(query).subscribe(response =>{
+    this.insP.select_cost_modelDB(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
       if(risposta.upd === "ok")

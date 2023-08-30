@@ -5,19 +5,10 @@
 <div style="display: flex; margin-bottom: 12px;" *ngIf="showForm">
     <div style="flex: 1;padding: 1em;border: solid;">
         <form [formGroup] = "form">
-            <mat-form-field>
-                <mat-label>Cliente</mat-label>
-                <input matInput formControlName="codice" placeholder="Practice">
-            </mat-form-field>
-            <br>
+            
             <mat-form-field>
                 <mat-label>Descrizione</mat-label>
                 <input matInput formControlName="descrizione" placeholder="Descrizione">
-            </mat-form-field>
-            <br>
-            <mat-form-field>
-                <mat-label>Note</mat-label>
-                <input matInput formControlName="note" placeholder="Note">
             </mat-form-field>
             <br>
             <button mat-raised-button color="primary" (click)="inserisciRiga()">inserisci dati</button>

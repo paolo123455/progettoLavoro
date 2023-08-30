@@ -68,12 +68,7 @@ export class CommesseComponent {
       note : '', 
     
     })
-    this.form2 = this.fb.group({
-      istituito : new FormControl(""),
-      cliente:  new FormControl("",[ Validators.required,Validators.minLength(1)]),
-     
-  
-    })
+   
      var stato = ""
      var istituito = false
      var tipologia = ""
@@ -86,71 +81,30 @@ export class CommesseComponent {
     var budget_pregresso = ""
     var cliente = ""
 
-    this.form2.valueChanges.subscribe((data)=>{
-      console.log(this.form,this.form2)
-      this.disabilitato = this.form.valid && this.form2.valid
-    console.log(data)
-    
-   /* stato =  data.stato === undefined || data.stato === null  ? "" :data.stato.descrizione2  === undefined   || data.stato.descrizione2 === null ? "" :  data.stato.descrizione2
-    stato = stato === undefined || stato === "undefined"  ? "" : stato
-    tipologia  =  data.tipologia === undefined || data.tipologia === null ? "" :data.tipologia.descrizione2 === undefined  || data.tipologia.descrizione2 === null ? "" :  data.tipologia.descrizione2
-    tipologia = tipologia === undefined || tipologia === "undefined"  ? "" : tipologia
-     
-    */
-    istituito = data.istituito === undefined || data.istituito == null ? false : data.istituito
-    istituito = istituito === undefined   ? false : istituito
-    cliente  =  data.cliente === undefined || data.cliente === null ? "" :data.cliente.descrizione2 === undefined  || data.cliente.descrizione2 === null ? "" :  data.cliente.descrizione2.split(":")[0].split("-")[0]
-    cliente = cliente === undefined || cliente === "undefined"  ? "" : cliente
-   
-
-    var filteredData = this.dati.filter((item: {
-      flag_istituto: String;
-      note: string;
-      descrizione_codice: string;
-      codice: String;
-      descrizione_cliente : string
-
   
-        }) =>
-       (item.flag_istituto+ "").includes(istituito+"") 
-      && (item.codice+"").includes(codice)  
-      && (item.descrizione_codice+"").includes(descrizione) 
-      && (item.note+"").includes(note) 
-      && (item.descrizione_cliente+ "").includes(cliente) 
-    );
-    this.agGrid.api.setRowData(filteredData)
-  })
     
   this.form.valueChanges.subscribe((data)=>{
-    this.disabilitato = this.form.valid && this.form2.valid
-    console.log(data)
+    this.disabilitato = this.form.valid
+   
     codice =  data.codice === undefined || data.codice === null  ? "" :data.codice
     codice = codice === undefined || codice === "undefined"  ? "" : codice
     descrizione  =  data.descrizione === undefined || data.descrizione === null  ? "" :data.descrizione
     descrizione = descrizione === undefined || descrizione === "undefined"  ? "" : descrizione
     note =  data.note === undefined || data.note === null ? "" :data.note
     note = note === undefined || note === "undefined"  ? "" : note
-  /*  effort_totale = data.effortTot === undefined || data.effortTot == null ? "" : data.effortTot
-    effort_totale = effort_totale === undefined || effort_totale === "undefined"  ? "" : effort_totale
-    effort_pregresso = data.effortPreg === undefined || data.effortPreg == null ? "" : data.effortPreg
-    effort_pregresso = effort_pregresso === undefined || effort_pregresso === "undefined"  ? "" : effort_pregresso
-    budget_pregresso = data.budgetPreg === undefined || data.budgetPreg == null ? "" : data.budgetPreg
-    budget_pregresso = budget_pregresso === undefined || budget_pregresso === "undefined"  ? "" : budget_pregresso
-    budget  =  data.budget === undefined || data.budget === null  ? "" :data.budget
-    budget = budget === undefined || budget === "undefined"  ? "" : budget
-    */
+ 
 
     var filteredData = this.dati.filter((item: {
-      flag_istituto: String;
-      descrizione_progetto: string;
+     
+      descrizione : string;
       codice: string;
-      descrizione_cliente : string
+     
   
         }) =>
-      (item.flag_istituto+ "").toLowerCase().includes((istituito+"").toLowerCase()) 
-      && (item.codice+"").toLowerCase().includes(codice.toLowerCase())  
-      && (item.descrizione_progetto+"").toLowerCase().includes(descrizione.toLowerCase()) 
-      && (item.descrizione_cliente+ "").toLowerCase().includes(cliente.toLowerCase()) 
+     
+     (item.codice+"").toLowerCase().includes(codice.toLowerCase())  
+      && (item.descrizione+"").toLowerCase().includes(descrizione.toLowerCase()) 
+     
     );
     this.agGrid.api.setRowData(filteredData);
     this.resizeColumnWidth();
@@ -169,7 +123,7 @@ export class CommesseComponent {
     this.agGrid?.columnApi.autoSizeAllColumns(false);
   }
 
-  getRowId: GetRowIdFunc<any>  = params => params.data.id_progetto;
+  getRowId: GetRowIdFunc<any>  = params => params.data.id;
 
   onGridReady(params: GridReadyEvent) {
     this.agGrid.api.showNoRowsOverlay()
@@ -181,7 +135,7 @@ export class CommesseComponent {
     
 
     console.log('cellClicked', e);
-    this.id_touch =  e.data.id_progetto
+    this.id_touch =  e.data.id
 
      
     console.log(this.id_touch) 
@@ -190,7 +144,7 @@ export class CommesseComponent {
     var left = e.column.getLeft()
     console.log(left)
     if (left === 0 && confirm('Eliminare definitivamente?')) {
-      this.delete("delete from  new_rilatt.progetti where id_progetto = " + this.id_touch)
+      this.delete("delete from  cost_model.commesse where id = " + this.id_touch)
     }
   }
 
@@ -210,7 +164,7 @@ export class CommesseComponent {
   var colonna = e.colDef.field
   console.log(colonna)
   var valore = e.value
-  var query = "update new_rilatt.progetti set " + colonna + " = '" + valore +"' where id_progetto = "+datiC.id_progetto
+  var query = "update cost_model.commesse set " + colonna + " = '" + valore +"' where id = "+datiC.id
   console.log(valore)  
   console.log(query)
   this.update(query)
@@ -219,7 +173,10 @@ export class CommesseComponent {
 
   setup1= () => {
     var query = "select valore as descrizione2  from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='TIPOLOGIA' " 
-    this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.tipologie= dati; console.log(this.tipologie)
+    this.insP.select(query).subscribe(response =>{
+                      console.log(response) ;
+                      var dati = JSON.parse(JSON.stringify(response)).rows; 
+                      this.tipologie= dati; console.log(this.tipologie)
     this.setup2()
     })
 
@@ -227,28 +184,26 @@ export class CommesseComponent {
   setup2= () => {
     var query = "select valore as descrizione2 from new_rilatt.tab_dominio where tabella  = 'PROGETTI' AND colonna ='FLAG_STATO'"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.stati = dati
-    this.setup3()
-      this.strucElaboration()
+    
+    this.strucElaboration()
     })
   }
-  setup3= () => {
-    var query = "select descrizione_cliente || '-' || codice_cliente || ':' || id_cliente as descrizione2 from new_rilatt.clienti"
+ /* setup3= () => {
+    var query = "select descrizione || '-' || codice || ':' || id as descrizione2 from cost_model.clienti"
     this.insP.select(query).subscribe(response =>{console.log(response) ;var dati = JSON.parse(JSON.stringify(response)).rows;  this.clienti = dati
   
     })
-  }
+  }*/
 
-  select  = ()  => {var query = "select * from new_rilatt.progetti p left join new_rilatt.clienti c on c.id_cliente = p.id_cliente "
+  select  = ()  => {
+    console.log("select")
+     var query = "select * from cost_model.commesse"// p left join new_rilatt.clienti c on c.id_cliente = p.id_cliente "
       
- this.insP.select(query).subscribe(response =>{console.log(response) ;this.dati = JSON.parse(JSON.stringify(response)).rows; 
-  var  filteredData = this.dati.filter((item: {
-    flag_istituto: String;
-      }) =>
-    
-     (item.flag_istituto+ "").includes("false") 
-
-  );
-  this.agGrid.api.setRowData(filteredData)});
+ this.insP.select(query).subscribe(response =>{
+  console.log(response) ;
+  this.dati = JSON.parse(JSON.stringify(response)).rows; 
+  
+  this.agGrid.api.setRowData(this.dati)});
   this.resizeColumnWidth();
 }
  
@@ -301,7 +256,7 @@ export class CommesseComponent {
     if(risposata.upd === "ok")
     {
           console.log("delete  andato a buon fine "+ this.id_touch)
-          this.agGrid.api.applyTransaction({remove:[{id_progetto : this.id_touch}]});
+          this.agGrid.api.applyTransaction({remove:[{id : this.id_touch}]});
     }
     else 
     { console.log("errore")
@@ -321,32 +276,16 @@ export class CommesseComponent {
   inserisciRiga = () : void => {
 
     var insert1 =  JSON.parse(JSON.stringify(this.form.value))
-    var insert2 =  JSON.parse(JSON.stringify(this.form2.value))
-    console.log(insert1,insert2)
+   
+    console.log(insert1)
     var codice = insert1.codice
     var descrizione = insert1.descrizione
-   // var effort_totale = insert1.effortTot
-   // effort_totale = effort_totale === undefined || effort_totale === "" ? 0 : effort_totale
-   // var effort_pregresso = insert1.effortPreg
-   // effort_pregresso = effort_pregresso === undefined || effort_pregresso === "" ? 0 : effort_pregresso
-   // var  budget_pregresso = insert1.budgetPreg
-   // budget_pregresso = budget_pregresso === undefined || budget_pregresso === "" ? 0 : budget_pregresso
-    var note = insert1.note
-    var  cliente = insert2.cliente === undefined  || insert2.cliente === "" ? "" : insert2.cliente.descrizione2
-    console.log(cliente)
-    cliente = cliente === undefined || cliente === "" ? null :  cliente.split(":")[1]
-    //var budget = insert1.budget
-    //budget = budget === undefined || budget === "" ? 0 : budget
-   // var stato = insert2.stato.descrizione2
-   // var tipologia = insert2.tipologia.descrizione2
-    var istituito = insert2.istituito === "" || insert2.istituito === undefined ? false :  insert2.istituito 
-       
-  
+    
     
 
-    var query = "insert into new_rilatt.progetti (codice, descrizione_progetto, note,  flag_istituto ,id_cliente) values ('"+codice+"','"+descrizione+"','"+note+"',"+istituito+","+cliente+" )  RETURNING id_progetto"
+    var query = "insert into cost_model.commesse (codice, descrizione) values ('"+codice+"','"+descrizione+"' ) "
     console.log(query)
-    this.insP.select(query).subscribe(response =>{
+    this.insP.select_cost_modelDB(query).subscribe(response =>{
       console.log(response)
       var risposta = JSON.parse(JSON.stringify(response)) 
       if(risposta.upd === "ok")

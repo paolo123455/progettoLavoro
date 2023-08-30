@@ -31,11 +31,11 @@ import { ProspettoGeneraleComponent } from './prospetto-generale/prospetto-gener
 import { ClientiComponent } from './clienti/clienti.component';
 import { OdlComponent } from './odl/odl.component';
 import { ProspettoMeseComponent } from './prospetto-mese/prospetto-mese.component';
-import { CostModelComponent } from './cost-model/cost-model.component'
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { ProspettoCommessaComponent } from './prospetto-commessa/prospetto-commessa.component';
 import { NrisoreComponent } from './nrisore/nrisore.component';
 import { NlivelliComponent } from './nlivelli/nlivelli.component';
+import { CostModelComponent } from './cost-model/cost-model.component';
 
 //const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 
@@ -57,10 +57,10 @@ import { NlivelliComponent } from './nlivelli/nlivelli.component';
     ClientiComponent,
     OdlComponent,
     ProspettoMeseComponent,
-    CostModelComponent,
     ProspettoCommessaComponent,
     NrisoreComponent,
     NlivelliComponent,
+    CostModelComponent,
     
     
   ],

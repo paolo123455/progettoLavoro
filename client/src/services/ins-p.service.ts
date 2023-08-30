@@ -38,6 +38,10 @@ export class InsPService {
     return  this.client.post('/esegui/query/get/cost/model' , {"id_odl" : id})
   }
 
+  select_cost_modelDB(query: String): Observable<any[]> {
+    return  this.client.post<any[]>('/esegui/query/selezione/costmodel' , {"query" : query})
+  }
+
 
   // select(query: String): Observable<any[]> {
   //   return this.client.post<any[]>('http://node:8080/esegui/query/selezione', { "query": query })

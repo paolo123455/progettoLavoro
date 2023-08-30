@@ -220,7 +220,7 @@ ngOnInit(): void {
   
 }
 
-// funzioni di setup per la gstione delle select
+// funzioni di setup per la gstione delle select form 
 setup1= () => {
   var query = "select distinct descrizione_ruolo  as descrizione2 , id_ruolo as id from new_rilatt.ruoli order by descrizione2 ";
   this.insP.select(query).subscribe(response =>{

@@ -166,7 +166,8 @@ this.odlr.valueChanges.subscribe(data => {
       this.odls = this.odl2
 
       // filtro incrociato per la select commessa scelto l'odl
-      console.log(this.commesse3 , codice_odl , descrizione_odl)
+      console.log(this.commesse3 , codice_odl , descrizione_odl, this.commesse2)
+
       this.commesse2 = this.commesse3 
       this.commesse2  = this.commesse2.filter(element => (element.descrizione4 +"").includes(codice_odl ) && (element.descrizione4 +"").includes(descrizione_odl ))
       console.log(this.commesse2 )
@@ -810,7 +811,8 @@ if(this.supportf){
      
       var dati = JSON.parse(JSON.stringify(response)).rows;
       this.commesse =  [...new Map(dati.map((item: { [x: string]: any; }) =>
-      [item["descrizione3"], item])).values()].sort(this.compare);
+      [item["descrizione3"], item])).values()];
+      console.log(this.commesse , dati)
       this.commesse2 = this.commesse
       this.commesse3 = this.commesse
 
@@ -915,7 +917,8 @@ this.insP.select(query).subscribe(response =>{
   })}
 
   elaborazioneStruttura  = (json : Object) =>{
-    var listaR = JSON.parse(JSON.stringify(json)).rows.filter((element: { descrizione_progetto: null; }) => element.descrizione_progetto != null)
+    var listaR = JSON.parse(JSON.stringify(json)).rows.filter(
+  (element: { descrizione_progetto: null; }) => element.descrizione_progetto != null)
     this.columnDefs.push({"field" : "id_risorsa"  , editable : true , hide : true }) 
     this.columnDefs.push({"field" : "id_attivita"  , editable : true , hide : true }) 
     this.columnDefs.push({"field" : "nome_risorsa"  , editable : false , hide : false}) 
@@ -1043,6 +1046,7 @@ this.insP.select(query).subscribe(response =>{
     var queryc = "SELECT new_rilatt.fnc_consolida_pianificazione("+id_progetto+","+id_odl+","+anno+","+mese+")"
     var flag = false
     var flag2 = false
+    console.log(queryc)
     this.insP.select(queryc).subscribe(response =>{
       var risposta = JSON.parse(JSON.stringify(response)) 
       if (risposta.upd === "nok")
@@ -1059,6 +1063,7 @@ this.insP.select(query).subscribe(response =>{
       var messaggio = risposta.rows[0].fnc_consolida_pianificazione
       var tipoMessaggio : String= messaggio.split("=")[0]
       var msg =  messaggio.split("=")[1]
+      console.log(tipoMessaggio)
       this.form.reset()
       if(tipoMessaggio =="OK" )
       {  
@@ -1088,6 +1093,15 @@ this.insP.select(query).subscribe(response =>{
           
         }) 
   
+      }
+      if(tipoMessaggio != "KO" && tipoMessaggio != "OK" && tipoMessaggio != "WR")
+      {
+        Swal.fire({  
+          icon: 'error',  
+          title: 'errore generico non previsto',  
+          text: messaggio,  
+          
+        }) 
       }
                       
                
