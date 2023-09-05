@@ -1,4 +1,122 @@
-<ag-grid-angular
+<button mat-button (click)="showForm=!showForm">
+	<span *ngIf="showForm">Nascondi form</span>
+	<span *ngIf="!showForm">Mostra form</span>
+</button>
+<div style="display: flex; margin-bottom: 12px;" *ngIf="showForm">
+    <div style="flex: 1;padding: 1em;border: solid;">
+     <form [formGroup] = "form">
+        <mat-form-field>
+            <mat-label>Commessa</mat-label>
+            <mat-select formControlName="commessa" placeholder="commessa">
+              <mat-option>
+                <ngx-mat-select-search 
+                [formControl]="commessar" 
+                placeholderLabel="cerca commessa..."
+                noEntriesFoundLabel="commessa non trovata">
+              </ngx-mat-select-search>
+             </mat-option>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let commessa of commesse" [value]="commessa">{{commessa[0]}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <mat-label>odl</mat-label>
+            <mat-select formControlName="odl" placeholder="odl">
+              <mat-option>
+                <ngx-mat-select-search 
+                [formControl]="odlr" 
+                placeholderLabel="cerca odl..."
+                noEntriesFoundLabel="odl non trovato">
+              </ngx-mat-select-search>
+             </mat-option>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let odl of odls" [value]="odl">{{odl[0]}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <mat-label>cliente</mat-label>
+            <mat-select formControlName="cliente" placeholder="cliente">
+              <mat-option>
+                <ngx-mat-select-search 
+                [formControl]="clienter" 
+                placeholderLabel="cerca cliente..."
+                noEntriesFoundLabel="cliente non trovato">
+              </ngx-mat-select-search>
+             </mat-option>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let cliente of clienti" [value]="cliente">{{cliente[0]}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <br>
+          <mat-form-field>
+            <mat-label>pracitce</mat-label>
+            <mat-select formControlName="practice" placeholder="practice">
+              <mat-option>
+                <ngx-mat-select-search 
+                [formControl]="practicer" 
+                placeholderLabel="cerca practice..."
+                noEntriesFoundLabel="practice non trovata">
+              </ngx-mat-select-search>
+             </mat-option>
+              <mat-option></mat-option>
+              <mat-option *ngFor="let practice of practices" [value]="practice">{{practice[0]}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+      </form>
+    </div>
+    <div style="flex: 2;padding: 1em;border: solid;">
+      <form [formGroup] = "formDati">
+        <mat-form-field>
+          <mat-label>Odl</mat-label>
+          <input matInput readonly upperCaseInput formControlName="odlDati">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Descrizione </mat-label>
+        <input matInput readonly upperCaseInput  formControlName="descrizioneDati">
+      </mat-form-field>
+        <br>
+        
+        <mat-form-field>
+          <mat-label>Data_Inizio_Ipotizzata</mat-label>
+          <input matInput readonly upperCaseInput formControlName="dataInizioIpo">
+       </mat-form-field>
+       
+      <mat-form-field>
+        <mat-label>Data_Fine_Ipotizzata</mat-label>
+        <input matInput readonly upperCaseInput formControlName="dataFineIpo">
+      </mat-form-field>
+        <br>
+        
+        <mat-form-field>
+          <mat-label>Data_Inizio_Contrattuale </mat-label>
+          <input matInput readonly upperCaseInput  formControlName="dataInizioCon">
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Data_Fine_Contrattuale</mat-label>
+          <input matInput readonly upperCaseInput formControlName="dataFineCon">
+        </mat-form-field>
+          <br>
+
+          <mat-form-field>
+            <mat-label>Responsabile_Vendite </mat-label>
+            <input matInput readonly upperCaseInput  formControlName="responsabile">
+          </mat-form-field>
+          
+          <mat-form-field>
+            <mat-label>Project_Manager</mat-label>
+            <input matInput readonly upperCaseInput formControlName="manager">
+          </mat-form-field>
+            <br>
+         
+       </form>
+     </div>
+</div>
+    
+
+<ag-grid-angular *ngIf="showTable"
   class="ag-theme-alpine"
   [columnDefs]="columnDefs"
   [defaultColDef]="defaultColDef"

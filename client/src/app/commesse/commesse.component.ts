@@ -283,7 +283,7 @@ export class CommesseComponent {
     
     
 
-    var query = "insert into cost_model.commesse (codice, descrizione) values ('"+codice+"','"+descrizione+"' ) "
+    var query = "insert into public.commesse (codice, descrizione) values ('"+codice+"','"+descrizione+"' ) "
     console.log(query)
     this.insP.select_cost_modelDB(query).subscribe(response =>{
       console.log(response)
@@ -300,19 +300,19 @@ export class CommesseComponent {
              
             
             this.form.reset()
-            this.form2.reset()
+          
             this.select()
       }
       else 
       { console.log("errore")
         console.log(risposta)
-       console.log(this.datiV)
+        console.log(this.datiV)
          
       
         Swal.fire({  
           icon: 'error',  
           title: 'errore',  
-          text: 'inserimento commessa a utente andata in errore ',  
+          text: 'inserimento commessa  andato in errore con codice : ' + risposta.code,  
         })  
       }
     
